@@ -16,7 +16,12 @@ function TicketsPage() {
   const [pageSize] = useState(10);
 
   const [search, setSearch] = useState("");
+
   const [status, setStatus] = useState("");
+  const [priority, setPriority] = useState("");
+
+  const [sortBy, setSortBy] = useState("CreatedAt");
+  const [descending, setDescending] = useState(true);
 
   const debouncedSearch = useDebounce(
     search,
@@ -46,6 +51,9 @@ function TicketsPage() {
           pageSize,
           search: debouncedSearch || undefined,
           status: status || undefined,
+          priority: priority || undefined,
+          sortBy: sortBy || undefined,
+          descending,
         });
 
         setTickets(response.items);
@@ -68,6 +76,9 @@ function TicketsPage() {
     pageSize,
     debouncedSearch,
     status,
+    priority,
+    sortBy,
+    descending,
   ]);
 
   if (isLoading) {
@@ -157,19 +168,61 @@ function TicketsPage() {
         </select>
 
         <select
-          defaultValue="all"
+          value={priority}
+          onChange={(event) => {
+            setPriority(event.target.value);
+            setPage(1);
+          }}
           className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
         >
-          <option value="all">
+          <option value="">
             All priorities
           </option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="critical">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+          <option value="Critical">
             Critical
           </option>
         </select>
+
+        <select
+          value={sortBy}
+          onChange={(event) => {
+            setSortBy(event.target.value);
+            setPage(1);
+          }}
+          className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+        >
+          <option value="CreatedAt">
+            Created At
+          </option>
+
+          <option value="Title">
+            Title
+          </option>
+
+          <option value="Priority">
+            Priority
+          </option>
+
+          <option value="Status">
+            Status
+          </option>
+        </select>
+
+        <button
+          type="button"
+          onClick={() => {
+            setDescending((current) => !current);
+            setPage(1);
+          }}
+          className="rounded-md border px-3 py-2.5 text-sm hover:bg-muted"
+        >
+          {descending
+            ? "Descending"
+            : "Ascending"}
+        </button>
       </div>
 
       {/* Table */}
