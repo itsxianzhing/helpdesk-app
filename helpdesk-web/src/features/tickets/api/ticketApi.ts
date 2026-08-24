@@ -36,7 +36,7 @@ function buildQueryParams(
   }
 
   if (query.sortBy) {
-    params.set("sortBy", query.sortBy);
+    params.set("sortBy", query.sortBy); 
   }
 
   if (query.descending !== undefined) {

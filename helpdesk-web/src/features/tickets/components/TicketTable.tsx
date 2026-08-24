@@ -1,4 +1,5 @@
 import type { TicketListResponse } from "../types";
+import { Link } from "react-router";
 
 interface TicketTableProps {
   tickets: TicketListResponse[];
@@ -54,8 +55,13 @@ function TicketTable({
               key={ticket.id}
               className="transition hover:bg-muted/50"
             >
-              <td className="px-4 py-3 font-medium">
-                {ticket.ticketNumber}
+              <td>
+                <Link
+                  to={`/tickets/${ticket.id}`}
+                  className="font-medium hover:underline"
+                >
+                  {ticket.ticketNumber}
+                </Link>
               </td>
 
               <td className="px-4 py-3">
