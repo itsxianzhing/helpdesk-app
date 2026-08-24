@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
+import { Pencil } from "lucide-react";
 import type { TicketDetailResponse } from "../types";
 import { ApiError } from "../../../lib/apiError";
 import { getTicketById } from "../api/ticketApi";
@@ -97,6 +99,14 @@ function TicketDetail({
             <span className="rounded-full border px-3 py-1 text-xs font-medium">
               {ticket.priority}
             </span>
+
+            <Link
+              to={`/tickets/${ticket.id}/edit`}
+              className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+            >
+              <Pencil size={16} />
+              Edit
+            </Link>
           </div>
         </div>
       </div>
