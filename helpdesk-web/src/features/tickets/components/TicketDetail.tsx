@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import { Pencil } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { Pencil, Trash2 } from "lucide-react";
 import type { TicketDetailResponse } from "../types";
 import { ApiError } from "../../../lib/apiError";
-import { getTicketById } from "../api/ticketApi";
+import { getTicketById, deleteTicket } from "../api/ticketApi";
 import { formatDate } from "../../../lib/formatDate";
 
 interface TicketDetailProps {
@@ -13,11 +13,16 @@ interface TicketDetailProps {
 function TicketDetail({
   ticketId,
 }: TicketDetailProps) {
+  const navigate = useNavigate();
+
   const [ticket, setTicket] =
     useState<TicketDetailResponse | null>(null);
 
   const [isLoading, setIsLoading] =
     useState(true);
+
+  const [isDeleting, setIsDeleting] =
+    useState(false);
 
   const [error, setError] =
     useState<string | null>(null);
@@ -51,6 +56,37 @@ function TicketDetail({
 
     fetchTicket();
   }, [ticketId]);
+
+  async function handleDelete() {
+    if (isDeleting) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this ticket?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setError(null);
+    setIsDeleting(true);
+
+    try {
+      await deleteTicket(ticket.id);
+
+      navigate("/tickets");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Failed to delete ticket.");
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -107,6 +143,16 @@ function TicketDetail({
               <Pencil size={16} />
               Edit
             </Link>
+
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Trash2 size={16} />
+              {isDeleting ? "Deleting..." : "Delete"}
+            </button>
           </div>
         </div>
       </div>
