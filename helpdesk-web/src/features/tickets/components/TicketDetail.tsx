@@ -5,6 +5,7 @@ import type { TicketDetailResponse } from "../types";
 import { ApiError } from "../../../lib/apiError";
 import { getTicketById, deleteTicket } from "../api/ticketApi";
 import { formatDate } from "../../../lib/formatDate";
+import CommentList from "../../comments/components/CommentList";
 
 interface TicketDetailProps {
   ticketId: number;
@@ -177,6 +178,10 @@ function TicketDetail({
           <p className="mt-2 text-sm text-muted-foreground">
             {formatDate(ticket.createdAt)}
           </p>
+        </div>
+
+        <div className="border-t pt-6">
+          <CommentList comments={ticket.comments} />
         </div>
       </div>
     </div>
