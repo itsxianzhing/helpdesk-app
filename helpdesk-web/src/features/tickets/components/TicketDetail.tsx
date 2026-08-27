@@ -8,6 +8,7 @@ import { getTicketById, deleteTicket } from "../api/ticketApi";
 import { formatDate } from "../../../lib/formatDate";
 import CommentList from "../../comments/components/CommentList";
 import CommentForm from "../../comments/components/CommentForm";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 interface TicketDetailProps {
   ticketId: number;
@@ -16,6 +17,8 @@ interface TicketDetailProps {
 function TicketDetail({
   ticketId,
 }: TicketDetailProps) {
+  const { auth } = useAuth();
+
   const navigate = useNavigate();
 
   const [ticket, setTicket] =
@@ -109,6 +112,26 @@ function TicketDetail({
     });
   }
 
+  function handleCommentUpdated(
+    updatedComment: CommentResponse,
+  ) {
+    setTicket((currentTicket) => {
+      if (!currentTicket) {
+        return currentTicket;
+      }
+
+      return {
+        ...currentTicket,
+        comments: currentTicket.comments.map(
+          (comment) =>
+            comment.id === updatedComment.id
+              ? updatedComment
+              : comment,
+        ),
+      };
+    });
+  }
+
   if (isLoading) {
     return (
       <div className="rounded-xl border bg-card p-6">
@@ -130,6 +153,10 @@ function TicketDetail({
   }
 
   if (!ticket) {
+    return null;
+  }
+
+  if (!auth) {
     return null;
   }
 
@@ -201,7 +228,11 @@ function TicketDetail({
         </div>
 
         <div className="border-t pt-6">
-          <CommentList comments={ticket.comments} />
+          <CommentList
+            comments={ticket.comments}
+            currentUserId={auth.id}
+            onUpdated={handleCommentUpdated}
+          />
 
           <div className="mt-6">
             <CommentForm

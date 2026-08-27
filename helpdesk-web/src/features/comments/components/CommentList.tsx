@@ -3,10 +3,16 @@ import CommentItem from "./CommentItem";
 
 interface CommentListProps {
   comments: CommentResponse[];
+  currentUserId: number;
+  onUpdated: (
+    comment: CommentResponse,
+  ) => void;
 }
 
 function CommentList({
   comments,
+  currentUserId,
+  onUpdated,
 }: CommentListProps) {
   if (comments.length === 0) {
     return (
@@ -24,6 +30,8 @@ function CommentList({
         <CommentItem
           key={comment.id}
           comment={comment}
+          currentUserId={currentUserId}
+          onUpdated={onUpdated}
         />
       ))}
     </div>
