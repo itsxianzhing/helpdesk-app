@@ -7,12 +7,14 @@ interface CommentListProps {
   onUpdated: (
     comment: CommentResponse,
   ) => void;
+  onDeleted: (commentId: number) => void;
 }
 
 function CommentList({
   comments,
   currentUserId,
   onUpdated,
+  onDeleted,
 }: CommentListProps) {
   if (comments.length === 0) {
     return (
@@ -32,6 +34,7 @@ function CommentList({
           comment={comment}
           currentUserId={currentUserId}
           onUpdated={onUpdated}
+          onDeleted={onDeleted}
         />
       ))}
     </div>

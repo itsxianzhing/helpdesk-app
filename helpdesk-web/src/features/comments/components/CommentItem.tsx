@@ -2,10 +2,10 @@ import {
   useState,
   type FormEvent,
 } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 import type { CommentResponse } from "../types";
-import { updateComment } from "../api/commentApi";
+import { updateComment, deleteComment } from "../api/commentApi";
 import { ApiError } from "../../../lib/apiError";
 import { formatDate } from "../../../lib/formatDate";
 
@@ -15,12 +15,14 @@ interface CommentItemProps {
   onUpdated: (
     comment: CommentResponse,
   ) => void;
+  onDeleted: (commentId: number) => void;
 }
 
 function CommentItem({
   comment,
   currentUserId,
   onUpdated,
+  onDeleted,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] =
     useState(false);
@@ -29,6 +31,9 @@ function CommentItem({
     useState(comment.content);
 
   const [isSubmitting, setIsSubmitting] =
+    useState(false);
+
+  const [isDeleting, setIsDeleting] =
     useState(false);
 
   const [error, setError] =
@@ -89,6 +94,37 @@ function CommentItem({
     }
   }
 
+  async function handleDelete() {
+    if (isDeleting) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this comment?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setError(null);
+    setIsDeleting(true);
+
+    try {
+      await deleteComment(comment.id);
+
+      onDeleted(comment.id);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Failed to delete comment.");
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <article className="rounded-lg border p-4">
       <div className="flex items-start justify-between gap-4">
@@ -103,6 +139,7 @@ function CommentItem({
         </div>
 
         {isOwner && !isEditing && (
+        <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => {
@@ -115,7 +152,21 @@ function CommentItem({
             <Pencil size={14} />
             Edit
           </button>
-        )}
+
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Trash2 size={14} />
+
+            {isDeleting
+              ? "Deleting..."
+              : "Delete"}
+          </button>
+        </div>
+      )}
       </div>
 
       {isEditing ? (

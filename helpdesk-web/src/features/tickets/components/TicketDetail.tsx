@@ -132,6 +132,24 @@ function TicketDetail({
     });
   }
 
+  function handleCommentDeleted(
+    commentId: number,
+  ) {
+    setTicket((currentTicket) => {
+      if (!currentTicket) {
+        return currentTicket;
+      }
+
+      return {
+        ...currentTicket,
+        comments: currentTicket.comments.filter(
+          (comment) =>
+            comment.id !== commentId,
+        ),
+      };
+    });
+  }
+
   if (isLoading) {
     return (
       <div className="rounded-xl border bg-card p-6">
@@ -232,6 +250,7 @@ function TicketDetail({
             comments={ticket.comments}
             currentUserId={auth.id}
             onUpdated={handleCommentUpdated}
+            onDeleted={handleCommentDeleted}
           />
 
           <div className="mt-6">
