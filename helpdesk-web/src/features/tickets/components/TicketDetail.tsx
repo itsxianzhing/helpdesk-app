@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Pencil, Trash2 } from "lucide-react";
 import type { TicketDetailResponse } from "../types";
+import type { CommentResponse } from "../../comments/types";
 import { ApiError } from "../../../lib/apiError";
 import { getTicketById, deleteTicket } from "../api/ticketApi";
 import { formatDate } from "../../../lib/formatDate";
 import CommentList from "../../comments/components/CommentList";
+import CommentForm from "../../comments/components/CommentForm";
 
 interface TicketDetailProps {
   ticketId: number;
@@ -87,6 +89,24 @@ function TicketDetail({
     } finally {
       setIsDeleting(false);
     }
+  }
+
+  function handleCommentCreated(
+    comment: CommentResponse,
+  ) {
+    setTicket((currentTicket) => {
+      if (!currentTicket) {
+        return currentTicket;
+      }
+
+      return {
+        ...currentTicket,
+        comments: [
+          ...currentTicket.comments,
+          comment,
+        ],
+      };
+    });
   }
 
   if (isLoading) {
@@ -182,6 +202,13 @@ function TicketDetail({
 
         <div className="border-t pt-6">
           <CommentList comments={ticket.comments} />
+
+          <div className="mt-6">
+            <CommentForm
+              ticketId={ticket.id}
+              onCreated={handleCommentCreated}
+            />
+          </div>
         </div>
       </div>
     </div>
