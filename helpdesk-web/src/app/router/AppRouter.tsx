@@ -15,10 +15,11 @@ import TicketDetailPage from "../../features/tickets/pages/TicketDetailPage";
 import CreateTicketPage from "../../features/tickets/pages/CreateTicketPage";
 import EditTicketPage from "../../features/tickets/pages/EditTicketPage";
 
-import AdminTicketsPage from "../../features/admin/pages/AdminTicketsPage";
-import AdminTicketDetailPage from "../../features/admin/pages/AdminTicketDetailPage";
+import AdminTicketsPage from "../../features/users/pages/AdminTicketsPage";
+import AdminTicketDetailPage from "../../features/users/pages/AdminTicketDetailPage";
 
-import AdminUsersPage from "../../features/admin/pages/AdminUsersPage";
+import AdminUsersPage from "../../features/users/pages/AdminUsersPage";
+import AdminUserDetailPage from "../../features/users/pages/AdminUserDetailPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 import RoleRoute from "./RoleRoute";
@@ -46,7 +47,7 @@ function AppRouter() {
               path="/"
               element={
                 <Navigate
-                  to="/dashboard"
+                  to="/login"
                   replace
                 />
               }
@@ -98,6 +99,11 @@ function AppRouter() {
               <Route
                 path="/admin/users"
                 element={<AdminUsersPage />}
+              />
+
+              <Route
+                path="/admin/users/:id"
+                element={<AdminUserDetailPage />}
               />
             </Route>
           </Route>

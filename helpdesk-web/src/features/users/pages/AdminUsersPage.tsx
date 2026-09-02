@@ -1,57 +1,127 @@
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
-import UserTable from "../components/UserTable";
-
-const users = [
-  {
-    id: "USR-001",
-    name: "John Doe",
-    email: "john@example.com",
-    role: "User",
-    status: "Active",
-    createdAt: "Aug 10, 2026",
-  },
-  {
-    id: "USR-002",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "User",
-    status: "Active",
-    createdAt: "Aug 9, 2026",
-  },
-  {
-    id: "USR-003",
-    name: "Admin",
-    email: "admin@example.com",
-    role: "Admin",
-    status: "Active",
-    createdAt: "Aug 1, 2026",
-  },
-  {
-    id: "USR-004",
-    name: "Michael Lee",
-    email: "michael@example.com",
-    role: "User",
-    status: "Inactive",
-    createdAt: "Jul 28, 2026",
-  },
-];
+import { getUsers } from "../api/userApi";
+import type { UserResponse } from "../types";
+import { ApiError } from "../../../lib/apiError";
+import useDebounce from "../../../hooks/useDebounce";
+import UserTable from "../../users/components/UserTable";
 
 function AdminUsersPage() {
+  const [users, setUsers] = useState<UserResponse[]>([]);
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+
+  // Filters
+  const [search, setSearch] = useState("");
+  const [role, setRole] = useState("");
+  const [status, setStatus] = useState("");
+
+  // Sorting
+  const [sortBy, setSortBy] =
+    useState("CreatedAt");
+
+  const [descending, setDescending] =
+    useState(true);
+
+  const debouncedSearch = useDebounce(
+    search,
+    500,
+  );
+
+  // Pagination metadata
+  const [totalItems, setTotalItems] =
+    useState(0);
+
+  const [totalPages, setTotalPages] =
+    useState(0);
+
+  // Request state
+  const [isLoading, setIsLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchUsers() {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await getUsers({
+          page,
+          pageSize,
+          search:
+            debouncedSearch || undefined,
+          role: role || undefined,
+          status: status || undefined,
+          sortBy: sortBy || undefined,
+          descending,
+        });
+
+        setUsers(response.items);
+        setTotalItems(response.totalItems);
+        setTotalPages(response.totalPages);
+      } catch (error) {
+        if (error instanceof ApiError) {
+          setError(error.message);
+        } else {
+          setError("Failed to load users.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchUsers();
+  }, [
+    page,
+    pageSize,
+    debouncedSearch,
+    role,
+    status,
+    sortBy,
+    descending,
+  ]);
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <p className="text-sm text-muted-foreground">
+          Loading users...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <p className="text-sm text-destructive">
+          {error}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Manage Users
+          All Users
         </h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          View and manage users in the helpdesk system.
+          Manage users and their access.
         </p>
       </div>
 
       {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row">
+        {/* Search */}
         <div className="relative flex-1">
           <Search
             size={18}
@@ -60,58 +130,161 @@ function AdminUsersPage() {
 
           <input
             type="search"
+            value={search}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
             placeholder="Search users..."
             className="w-full rounded-md border bg-background py-2.5 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
 
+        {/* Role filter */}
         <select
-          defaultValue="all"
+          value={role}
+          onChange={(event) => {
+            setRole(event.target.value);
+            setPage(1);
+          }}
           className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
         >
-          <option value="all">All roles</option>
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
+          <option value="">
+            All roles
+          </option>
+
+          <option value="User">
+            User
+          </option>
+
+          <option value="Admin">
+            Admin
+          </option>
         </select>
 
+        {/* Status filter */}
         <select
-          defaultValue="all"
+          value={status}
+          onChange={(event) => {
+            setStatus(event.target.value);
+            setPage(1);
+          }}
           className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
         >
-          <option value="all">All statuses</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="">
+            All statuses
+          </option>
+
+          <option value="Active">
+            Active
+          </option>
+
+          <option value="Inactive">
+            Inactive
+          </option>
         </select>
+
+        {/* Sort */}
+        <select
+          value={sortBy}
+          onChange={(event) => {
+            setSortBy(event.target.value);
+            setPage(1);
+          }}
+          className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+        >
+          <option value="CreatedAt">
+            Created At
+          </option>
+
+          <option value="Name">
+            Name
+          </option>
+
+          <option value="Email">
+            Email
+          </option>
+
+          <option value="Role">
+            Role
+          </option>
+
+          <option value="Status">
+            Status
+          </option>
+        </select>
+
+        {/* Sort direction */}
+        <button
+          type="button"
+          onClick={() => {
+            setDescending(
+              (current) => !current,
+            );
+            setPage(1);
+          }}
+          className="rounded-md border px-3 py-2.5 text-sm hover:bg-muted"
+        >
+          {descending
+            ? "Descending"
+            : "Ascending"}
+        </button>
       </div>
 
       {/* Table */}
-      <UserTable users={users} />
+      <UserTable
+        users={users}
+        detailPath={(id) => `/users/${id}`}
+      />
 
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Showing 1–4 of 4 users
+          Showing{" "}
+          {totalItems === 0
+            ? 0
+            : (page - 1) * pageSize + 1}
+          –
+          {Math.min(
+            page * pageSize,
+            totalItems,
+          )}{" "}
+          of {totalItems} users
         </p>
 
         <div className="flex items-center gap-1">
           <button
             type="button"
-            disabled
+            disabled={
+              page === 1 || isLoading
+            }
+            onClick={() =>
+              setPage(
+                (current) => current - 1,
+              )
+            }
             className="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             Previous
           </button>
 
-          <button
-            type="button"
-            className="rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground"
-          >
-            1
-          </button>
+          <span className="px-3 py-2 text-sm">
+            {page} / {totalPages}
+          </span>
 
           <button
             type="button"
-            className="rounded-md border px-3 py-2 text-sm"
+            disabled={
+              page === totalPages ||
+              isLoading ||
+              totalPages === 0
+            }
+            onClick={() =>
+              setPage(
+                (current) => current + 1,
+              )
+            }
+            className="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             Next
           </button>

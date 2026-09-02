@@ -52,3 +52,11 @@ export interface UserResponse {
   updatedAt: string | null;
   version: number;
 }
+
+export interface PagedResponse<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
