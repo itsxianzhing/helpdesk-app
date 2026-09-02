@@ -18,7 +18,7 @@ import EditTicketPage from "../../features/tickets/pages/EditTicketPage";
 import AdminTicketsPage from "../../features/admin/pages/AdminTicketsPage";
 import AdminTicketDetailPage from "../../features/admin/pages/AdminTicketDetailPage";
 
-import AdminUsersPage from "../../features/users/pages/AdminUsersPage";
+import AdminUsersPage from "../../features/admin/pages/AdminUsersPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 import RoleRoute from "./RoleRoute";

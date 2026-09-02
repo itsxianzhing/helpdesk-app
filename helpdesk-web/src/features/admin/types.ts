@@ -9,6 +9,16 @@ export interface UserResponse {
   version: number;
 }
 
+export interface UserQueryRequest {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  role?: string;
+  status?: string;
+  sortBy?: string;
+  descending?: boolean;
+}
+
 export interface PagedResponse<T> {
   items: T[];
   page: number;

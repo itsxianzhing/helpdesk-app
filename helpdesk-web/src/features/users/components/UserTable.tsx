@@ -1,79 +1,75 @@
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  createdAt: string;
-}
+import { Link } from "react-router";
+import type { UserResponse } from "../types";
+import { formatDate } from "../../../lib/formatDate";
 
 interface UserTableProps {
-  users: User[];
+  users: UserResponse[];
 }
 
-function UserTable({ users }: UserTableProps) {
+function UserTable({
+  users,
+}: UserTableProps) {
   return (
-    <div className="overflow-hidden rounded-xl border">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="border-b bg-muted/50">
-            <tr>
-              <th className="px-4 py-3 text-left font-medium">
-                User
-              </th>
+    <div className="overflow-x-auto rounded-xl border">
+      <table className="w-full text-sm">
+        <thead className="border-b bg-muted/50">
+          <tr className="text-left">
+            <th className="px-4 py-3 font-medium">
+              Name
+            </th>
 
-              <th className="px-4 py-3 text-left font-medium">
-                Email
-              </th>
+            <th className="px-4 py-3 font-medium">
+              Email
+            </th>
 
-              <th className="px-4 py-3 text-left font-medium">
-                Role
-              </th>
+            <th className="px-4 py-3 font-medium">
+              Role
+            </th>
 
-              <th className="px-4 py-3 text-left font-medium">
-                Status
-              </th>
+            <th className="px-4 py-3 font-medium">
+              Status
+            </th>
 
-              <th className="px-4 py-3 text-left font-medium">
-                Created
-              </th>
-            </tr>
-          </thead>
+            <th className="px-4 py-3 font-medium">
+              Created
+            </th>
+          </tr>
+        </thead>
 
-          <tbody>
-            {users.map((user) => (
-              <tr
-                key={user.id}
-                className="border-b last:border-b-0 hover:bg-muted/30"
-              >
-                <td className="px-4 py-3 font-medium">
+        <tbody className="divide-y">
+          {users.map((user) => (
+            <tr
+              key={user.id}
+              className="hover:bg-muted/30"
+            >
+              <td className="px-4 py-3">
+                <Link
+                  to={`/admin/users/${user.id}`}
+                  className="font-medium hover:underline"
+                >
                   {user.name}
-                </td>
+                </Link>
+              </td>
 
-                <td className="px-4 py-3 text-muted-foreground">
-                  {user.email}
-                </td>
+              <td className="px-4 py-3 text-muted-foreground">
+                {user.email}
+              </td>
 
-                <td className="px-4 py-3">
-                  <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium">
-                    {user.role}
-                  </span>
-                </td>
+              <td className="px-4 py-3">
+                {user.role}
+              </td>
 
-                <td className="px-4 py-3">
-                  <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium">
-                    {user.status}
-                  </span>
-                </td>
+              <td className="px-4 py-3">
+                {user.status}
+              </td>
 
-                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
-                  {user.createdAt}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              <td className="px-4 py-3 text-muted-foreground">
+                {formatDate(user.createdAt)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
