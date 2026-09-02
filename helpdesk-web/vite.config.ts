@@ -14,14 +14,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {
-    proxy: {
-      // Setiap ada request ke /api, lempar ke backend .NET
-      '/api': {
-        target: 'http://localhost:5109', // Ganti 5000 dengan port HTTP backend lu
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  },
+  // server: {
+  //   proxy: {
+  //     // Setiap ada request ke /api, lempar ke backend .NET
+  //     '/api': {
+  //       target: 'http://localhost:5109', // Ganti 5000 dengan port HTTP backend lu
+  //       changeOrigin: true,
+  //       secure: false,
+  //     }
+  //   }
+  // },
 });

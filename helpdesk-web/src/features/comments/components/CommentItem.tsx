@@ -83,11 +83,15 @@ function CommentItem({
       setIsEditing(false);
     } catch (error) {
       if (error instanceof ApiError) {
-        setError(error.message);
+        if (error.statusCode === 409) {
+          setError(
+            "This comment was modified by another user. Please refresh and try again.",
+          );
+        } else {
+          setError(error.message);
+        }
       } else {
-        setError(
-          "Failed to update comment.",
-        );
+        setError("Failed to update comment.");
       }
     } finally {
       setIsSubmitting(false);
@@ -219,7 +223,7 @@ function CommentItem({
           )}
         </form>
       ) : (
-        <p className="mt-4 whitespace-pre-wrap text-sm leading-6">
+        <p className="mt-4 whitespace-pre-wrap break-all text-sm leading-6">
           {comment.content}
         </p>
       )}

@@ -14,7 +14,9 @@ import TicketsPage from "../../features/tickets/pages/TicketsPage";
 import TicketDetailPage from "../../features/tickets/pages/TicketDetailPage";
 import CreateTicketPage from "../../features/tickets/pages/CreateTicketPage";
 import EditTicketPage from "../../features/tickets/pages/EditTicketPage";
-import AdminTicketsPage from "../../features/tickets/pages/AdminTicketsPage";
+
+import AdminTicketsPage from "../../features/admin/pages/AdminTicketsPage";
+import AdminTicketDetailPage from "../../features/admin/pages/AdminTicketDetailPage";
 
 import AdminUsersPage from "../../features/users/pages/AdminUsersPage";
 
@@ -86,6 +88,11 @@ function AppRouter() {
               <Route
                 path="/admin/tickets"
                 element={<AdminTicketsPage />}
+              />
+
+              <Route
+                path="/admin/tickets/:id"
+                element={<AdminTicketDetailPage />}
               />
 
               <Route

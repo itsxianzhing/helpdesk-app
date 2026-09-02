@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { getTickets } from "../api/ticketApi";
+import { Search } from "lucide-react";
 import type { TicketListResponse } from "../types";
+import { getTickets } from "../../tickets/api/ticketApi";
 import { ApiError } from "../../../lib/apiError";
-import { Link } from "react-router";
-import { Plus, Search } from "lucide-react";
-import TicketTable from "../components/TicketTable";
+import TicketTable from "../../tickets/components/TicketTable";
 import useDebounce from "../../../hooks/useDebounce";
 
-function TicketsPage() {
+function AdminTicketsPage() {
   const [tickets, setTickets] = useState<
     TicketListResponse[]
   >([]);
@@ -63,7 +62,9 @@ function TicketsPage() {
         if (error instanceof ApiError) {
           setError(error.message);
         } else {
-          setError("Failed to load tickets.");
+          setError(
+            "Failed to load tickets.",
+          );
         }
       } finally {
         setIsLoading(false);
@@ -103,28 +104,16 @@ function TicketsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Tickets
-          </h1>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          All Tickets
+        </h1>
 
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage your support requests.
-          </p>
-        </div>
-
-        <Link
-          to="/tickets/new"
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
-        >
-          <Plus size={18} />
-          New Ticket
-        </Link>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Manage support tickets from all users.
+        </p>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <Search
@@ -225,13 +214,11 @@ function TicketsPage() {
         </button>
       </div>
 
-      {/* Table */}
       <TicketTable
         tickets={tickets}
-        detailPath={(id) => `/tickets/${id}`}
+        detailPath={(id) => `/admin/tickets/${id}`}
       />
 
-      {/* Pagination */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           Showing{" "}
@@ -286,4 +273,4 @@ function TicketsPage() {
   );
 }
 
-export default TicketsPage;
+export default AdminTicketsPage;

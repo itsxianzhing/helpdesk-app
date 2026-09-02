@@ -3,10 +3,12 @@ import { Link } from "react-router";
 
 interface TicketTableProps {
   tickets: TicketListResponse[];
+  detailPath: (ticketId: number) => string;
 }
 
 function TicketTable({
   tickets,
+  detailPath,
 }: TicketTableProps) {
   if (tickets.length === 0) {
     return (
@@ -57,7 +59,7 @@ function TicketTable({
             >
               <td>
                 <Link
-                  to={`/tickets/${ticket.id}`}
+                  to={detailPath(ticket.id)}
                   className="font-medium hover:underline"
                 >
                   {ticket.ticketNumber}
