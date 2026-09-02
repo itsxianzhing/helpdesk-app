@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Search } from "lucide-react";
+import { Link } from "react-router";
+import { Plus, Search } from "lucide-react";
 import { getUsers } from "../api/userApi";
 import type { UserResponse } from "../types";
 import { ApiError } from "../../../lib/apiError";
@@ -118,6 +119,14 @@ function AdminUsersPage() {
           Manage users and their access.
         </p>
       </div>
+
+      <Link
+        to="/admin/users/create"
+        className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+      >
+        <Plus size={16} />
+        Create User
+      </Link>
 
       {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row">

@@ -19,6 +19,7 @@ import AdminTicketsPage from "../../features/users/pages/AdminTicketsPage";
 import AdminTicketDetailPage from "../../features/users/pages/AdminTicketDetailPage";
 
 import AdminUsersPage from "../../features/users/pages/AdminUsersPage";
+import CreateUserPage from "../../features/users/pages/CreateUserPage";
 import AdminUserDetailPage from "../../features/users/pages/AdminUserDetailPage";
 
 import ProtectedRoute from "./ProtectedRoute";
@@ -99,6 +100,11 @@ function AppRouter() {
               <Route
                 path="/admin/users"
                 element={<AdminUsersPage />}
+              />
+
+              <Route
+                path="/admin/users/create"
+                element={<CreateUserPage />}
               />
 
               <Route

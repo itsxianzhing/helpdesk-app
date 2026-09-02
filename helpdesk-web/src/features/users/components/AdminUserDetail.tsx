@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getUserById } from "../api/userApi";
+import { useNavigate } from "react-router";
+import { getUserById, updateUser, deleteUser } from "../api/userApi";
 import type { UserResponse } from "../types";
 import { ApiError } from "../../../lib/apiError";
 import { formatDate } from "../../../lib/formatDate";
@@ -13,6 +14,17 @@ function AdminUserDetail({
 }: AdminUserDetailProps) {
   const [user, setUser] =
     useState<UserResponse | null>(null);
+
+  const [role, setRole] = useState("");
+  const [status, setStatus] = useState("");
+
+  const navigate = useNavigate();
+
+  const [isUpdating, setIsUpdating] =
+    useState(false);
+
+  const [isDeleting, setIsDeleting] =
+  useState(false);
 
   const [isLoading, setIsLoading] =
     useState(true);
@@ -30,6 +42,8 @@ function AdminUserDetail({
           await getUserById(userId);
 
         setUser(response);
+        setRole(response.role);
+        setStatus(response.status);
       } catch (error) {
         if (error instanceof ApiError) {
           setError(error.message);
@@ -49,6 +63,75 @@ function AdminUserDetail({
 
     fetchUser();
   }, [userId]);
+
+  async function handleUpdate() {
+    if (!user || isUpdating) {
+      return;
+    }
+
+    setError(null);
+    setIsUpdating(true);
+
+    try {
+      const response = await updateUser(
+        user.id,
+        {
+          role,
+          status,
+          version: user.version,
+        },
+      );
+
+      setUser(response);
+      setRole(response.role);
+      setStatus(response.status);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        if (error.statusCode === 409) {
+          setError(
+            "This user was modified by another admin. Please refresh and try again.",
+          );
+        } else {
+          setError(error.message);
+        }
+      } else {
+        setError("Failed to update user.");
+      }
+    } finally {
+      setIsUpdating(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!user || isDeleting) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${user.name}?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setError(null);
+    setIsDeleting(true);
+
+    try {
+      await deleteUser(user.id);
+
+      navigate("/admin/users");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Failed to delete user.");
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -103,24 +186,48 @@ function AdminUserDetail({
           </p>
         </div>
 
-        <div>
-          <p className="text-sm text-muted-foreground">
+        <div className="space-y-2">
+          <label
+            htmlFor="role"
+            className="text-sm text-muted-foreground"
+          >
             Role
-          </p>
+          </label>
 
-          <p className="mt-1 font-medium">
-            {user.role}
-          </p>
+          <select
+            id="role"
+            value={role}
+            onChange={(event) =>
+              setRole(event.target.value)
+            }
+            disabled={isUpdating}
+            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+          >
+            <option value="User">User</option>
+            <option value="Admin">Admin</option>
+          </select>
         </div>
 
-        <div>
-          <p className="text-sm text-muted-foreground">
+        <div className="space-y-2">
+          <label
+            htmlFor="status"
+            className="text-sm text-muted-foreground"
+          >
             Status
-          </p>
+          </label>
 
-          <p className="mt-1 font-medium">
-            {user.status}
-          </p>
+          <select
+            id="status"
+            value={status}
+            onChange={(event) =>
+              setStatus(event.target.value)
+            }
+            disabled={isUpdating}
+            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+          >
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
         </div>
 
         <div>
@@ -143,6 +250,26 @@ function AdminUserDetail({
               ? formatDate(user.updatedAt)
               : "-"}
           </p>
+        </div>
+
+        <div className="mt-6 justify-between">
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isDeleting || isUpdating}
+            className="rounded-md border px-4 py-2 text-sm font-medium text-destructive disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isDeleting ? "Deleting..." : "Delete User"}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleUpdate}
+            disabled={isUpdating || isDeleting}
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isUpdating ? "Updating..." : "Update User"}
+          </button>
         </div>
       </div>
     </div>
