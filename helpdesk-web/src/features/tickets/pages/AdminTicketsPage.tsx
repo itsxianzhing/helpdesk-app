@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import type { TicketListResponse } from "../types";
-import { getTickets } from "../../tickets/api/ticketApi";
+import { getTickets } from "../api/ticketApi";
 import { ApiError } from "../../../lib/apiError";
-import TicketTable from "../../tickets/components/TicketTable";
+import TicketTable from "../components/TicketTable";
 import useDebounce from "../../../hooks/useDebounce";
 
 function AdminTicketsPage() {

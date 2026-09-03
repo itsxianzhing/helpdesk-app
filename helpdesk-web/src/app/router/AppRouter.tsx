@@ -15,8 +15,8 @@ import TicketDetailPage from "../../features/tickets/pages/TicketDetailPage";
 import CreateTicketPage from "../../features/tickets/pages/CreateTicketPage";
 import EditTicketPage from "../../features/tickets/pages/EditTicketPage";
 
-import AdminTicketsPage from "../../features/users/pages/AdminTicketsPage";
-import AdminTicketDetailPage from "../../features/users/pages/AdminTicketDetailPage";
+import AdminTicketsPage from "../../features/tickets/pages/AdminTicketsPage";
+import AdminTicketDetailPage from "../../features/tickets/pages/AdminTicketDetailPage";
 
 import AdminUsersPage from "../../features/users/pages/AdminUsersPage";
 import CreateUserPage from "../../features/users/pages/CreateUserPage";
