@@ -1,103 +1,185 @@
+import { useEffect, useState } from "react";
+import { getTickets } from "../../tickets/api/ticketApi";
+import type { TicketListResponse } from "../../tickets/types";
+import { ApiError } from "../../../lib/apiError";
+import { useAuth } from "../../auth/hooks/useAuth";
 import StatCard from "../components/StatCard";
-
-const recentTickets = [
-  {
-    id: "TCK-001",
-    title: "Cannot access email",
-    status: "Open",
-    priority: "High",
-  },
-  {
-    id: "TCK-002",
-    title: "Printer problem",
-    status: "Resolved",
-    priority: "Medium",
-  },
-  {
-    id: "TCK-003",
-    title: "VPN connection issue",
-    status: "Open",
-    priority: "Low",
-  },
-];
+import RecentTickets from "../components/RecentTickets";
+import QuickActions from "../components/QuickActions";
 
 function DashboardPage() {
+  const { auth } = useAuth();
+
+  const [tickets, setTickets] =
+    useState<TicketListResponse[]>([]);
+
+  const [totalTickets, setTotalTickets] =
+    useState(0);
+
+  const [openTickets, setOpenTickets] =
+    useState(0);
+
+  const [inProgressTickets, setInProgressTickets] =
+    useState(0);
+
+  const [resolvedTickets, setResolvedTickets] =
+    useState(0);
+
+  const [closedTickets, setClosedTickets] =
+    useState(0);
+
+  const [isLoading, setIsLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchDashboard() {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const [
+          totalResponse,
+          openResponse,
+          inProgressResponse,
+          resolvedResponse,
+          closedResponse,
+          recentResponse,
+        ] = await Promise.all([
+          getTickets({
+            page: 1,
+            pageSize: 1,
+          }),
+
+          getTickets({
+            page: 1,
+            pageSize: 1,
+            status: "Open",
+          }),
+
+          getTickets({
+            page: 1,
+            pageSize: 1,
+            status: "InProgress",
+          }),
+
+          getTickets({
+            page: 1,
+            pageSize: 1,
+            status: "Resolved",
+          }),
+
+          getTickets({
+            page: 1,
+            pageSize: 1,
+            status: "Closed",
+          }),
+
+          getTickets({
+            page: 1,
+            pageSize: 5,
+            sortBy: "CreatedAt",
+            descending: true,
+          }),
+        ]);
+
+        setTotalTickets(
+          totalResponse.totalItems,
+        );
+
+        setOpenTickets(
+          openResponse.totalItems,
+        );
+
+        setInProgressTickets(
+          inProgressResponse.totalItems,
+        );
+
+        setResolvedTickets(
+          resolvedResponse.totalItems,
+        );
+
+        setClosedTickets(
+          closedResponse.totalItems,
+        );
+
+        setTickets(recentResponse.items);
+      } catch (error) {
+        if (error instanceof ApiError) {
+          setError(error.message);
+        } else {
+          setError(
+            "Failed to load dashboard.",
+          );
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchDashboard();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="text-sm text-muted-foreground">
+        Loading dashboard...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border bg-card p-6 text-sm text-destructive">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-semibold">
           Dashboard
         </h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          Welcome back. Here's what's happening with your
-          tickets.
+          Welcome back, {auth?.name}.
         </p>
       </div>
 
-      {/* Statistics */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard
           title="Total Tickets"
-          value={12}
-          description="All your tickets"
+          value={totalTickets}
         />
 
         <StatCard
-          title="Open Tickets"
-          value={4}
-          description="Currently unresolved"
+          title="Open"
+          value={openTickets}
         />
 
         <StatCard
-          title="Resolved Tickets"
-          value={8}
-          description="Successfully resolved"
+          title="In Progress"
+          value={inProgressTickets}
         />
-      </section>
 
-      {/* Recent Tickets */}
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold">
-            Recent Tickets
-          </h2>
+        <StatCard
+          title="Resolved"
+          value={resolvedTickets}
+        />
 
-          <p className="text-sm text-muted-foreground">
-            Your most recent support requests.
-          </p>
-        </div>
+        <StatCard
+          title="Closed"
+          value={closedTickets}
+        />
+      </div>
 
-        <div className="overflow-hidden rounded-xl border">
-          {recentTickets.map((ticket) => (
-            <div
-              key={ticket.id}
-              className="flex items-center justify-between gap-4 border-b p-4 last:border-b-0"
-            >
-              <div className="min-w-0">
-                <p className="text-sm font-medium">
-                  {ticket.title}
-                </p>
+      <QuickActions />
 
-                <p className="mt-1 text-xs text-muted-foreground">
-                  #{ticket.id}
-                </p>
-              </div>
-
-              <div className="flex shrink-0 items-center gap-3">
-                <span className="text-xs text-muted-foreground">
-                  {ticket.priority}
-                </span>
-
-                <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium">
-                  {ticket.status}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <RecentTickets tickets={tickets} />
     </div>
   );
 }
