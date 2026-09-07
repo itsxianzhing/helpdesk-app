@@ -43,6 +43,15 @@ function EditTicketPage() {
   const [error, setError] =
     useState<string | null>(null);
 
+  const [fieldErrors, setFieldErrors] =
+    useState<{
+      title?: string;
+      description?: string;
+    }>({});
+
+  const [actionError, setActionError] =
+    useState<string | null>(null);
+
   useEffect(() => {
     async function fetchTicket() {
       setIsLoading(true);
@@ -84,36 +93,43 @@ function EditTicketPage() {
       return;
     }
 
-    setError(null);
-
     const trimmedTitle = title.trim();
     const trimmedDescription =
       description.trim();
 
-    if (!trimmedTitle) {
-      setError("Title is required.");
-      return;
-    }
+    const validationErrors: {
+      title?: string;
+      description?: string;
+    } = {};
 
-    if (trimmedTitle.length > 100) {
-      setError(
-        "Title cannot exceed 100 characters.",
-      );
-      return;
+    if (!trimmedTitle) {
+      validationErrors.title =
+        "Title is required.";
+    } else if (trimmedTitle.length > 100) {
+      validationErrors.title =
+        "Title cannot exceed 100 characters.";
     }
 
     if (!trimmedDescription) {
-      setError("Description is required.");
+      validationErrors.description =
+        "Description is required.";
+    } else if (
+      trimmedDescription.length > 1000
+    ) {
+      validationErrors.description =
+        "Description cannot exceed 1000 characters.";
+    }
+
+    if (
+      validationErrors.title ||
+      validationErrors.description
+    ) {
+      setFieldErrors(validationErrors);
       return;
     }
 
-    if (trimmedDescription.length > 1000) {
-      setError(
-        "Description cannot exceed 1000 characters.",
-      );
-      return;
-    }
-
+    setFieldErrors({});
+    setActionError(null);
     setIsSubmitting(true);
 
     try {
@@ -126,9 +142,17 @@ function EditTicketPage() {
       navigate(`/tickets/${ticket.id}`);
     } catch (error) {
       if (error instanceof ApiError) {
-        setError(error.message);
+        if (error.statusCode === 409) {
+          setActionError(
+            "This ticket was modified by another user. Please refresh and try again.",
+          );
+        } else {
+          setActionError(error.message);
+        }
       } else {
-        setError("Failed to update ticket.");
+        setActionError(
+          "Failed to update ticket.",
+        );
       }
     } finally {
       setIsSubmitting(false);
@@ -190,6 +214,7 @@ function EditTicketPage() {
         onSubmit={handleSubmit}
         className="space-y-6 rounded-lg border bg-card p-6"
       >
+        {/* Title */}
         <div className="space-y-2">
           <label
             htmlFor="title"
@@ -202,11 +227,25 @@ function EditTicketPage() {
             id="title"
             type="text"
             value={title}
-            onChange={(event) =>
-              setTitle(event.target.value)
-            }
+            onChange={(event) => {
+              setTitle(event.target.value);
+
+              setFieldErrors((current) => ({
+                ...current,
+                title: undefined,
+              }));
+
+              setActionError(null);
+            }}
             maxLength={100}
+            required
             disabled={isSubmitting}
+            aria-invalid={!!fieldErrors.title}
+            aria-describedby={
+              fieldErrors.title
+                ? "title-error"
+                : undefined
+            }
             className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
           />
 
@@ -215,8 +254,18 @@ function EditTicketPage() {
               {title.length}/100
             </span>
           </div>
+
+          {fieldErrors.title && (
+            <p
+              id="title-error"
+              className="text-sm text-destructive"
+            >
+              {fieldErrors.title}
+            </p>
+          )}
         </div>
 
+        {/* Description */}
         <div className="space-y-2">
           <label
             htmlFor="description"
@@ -228,12 +277,30 @@ function EditTicketPage() {
           <textarea
             id="description"
             value={description}
-            onChange={(event) =>
-              setDescription(event.target.value)
-            }
+            onChange={(event) => {
+              setDescription(
+                event.target.value,
+              );
+
+              setFieldErrors((current) => ({
+                ...current,
+                description: undefined,
+              }));
+
+              setActionError(null);
+            }}
             maxLength={1000}
             rows={7}
+            required
             disabled={isSubmitting}
+            aria-invalid={
+              !!fieldErrors.description
+            }
+            aria-describedby={
+              fieldErrors.description
+                ? "description-error"
+                : undefined
+            }
             className="w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
           />
 
@@ -242,14 +309,28 @@ function EditTicketPage() {
               {description.length}/1000
             </span>
           </div>
+
+          {fieldErrors.description && (
+            <p
+              id="description-error"
+              className="text-sm text-destructive"
+            >
+              {fieldErrors.description}
+            </p>
+          )}
         </div>
 
-        {error && (
-          <p className="text-sm text-destructive">
-            {error}
+        {/* Action Error */}
+        {actionError && (
+          <p
+            role="alert"
+            className="text-sm text-destructive"
+          >
+            {actionError}
           </p>
         )}
 
+        {/* Actions */}
         <div className="flex justify-end gap-3">
           <Link
             to={`/tickets/${ticket.id}`}

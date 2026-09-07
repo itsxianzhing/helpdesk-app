@@ -29,8 +29,6 @@ function CommentForm({
   ) {
     event.preventDefault();
 
-    setError(null);
-
     const trimmedContent =
       content.trim();
 
@@ -46,6 +44,7 @@ function CommentForm({
       return;
     }
 
+    setError(null);
     setIsSubmitting(true);
 
     try {
@@ -86,13 +85,19 @@ function CommentForm({
       <textarea
         id="comment"
         value={content}
-        onChange={(event) =>
-          setContent(event.target.value)
-        }
+        onChange={(event) => {
+          setContent(event.target.value);
+          setError(null);
+        }}
         placeholder="Write a comment..."
         maxLength={1000}
         rows={4}
+        required
         disabled={isSubmitting}
+        aria-invalid={!!error}
+        aria-describedby={
+          error ? "comment-error" : undefined
+        }
         className="w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
       />
 
@@ -113,7 +118,11 @@ function CommentForm({
       </div>
 
       {error && (
-        <p className="text-sm text-destructive">
+        <p
+          id="comment-error"
+          role="alert"
+          className="text-sm text-destructive"
+        >
           {error}
         </p>
       )}

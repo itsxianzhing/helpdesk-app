@@ -5,51 +5,61 @@ import { ApiError } from "../../../lib/apiError";
 
 function TicketForm() {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] =
+    useState("");
 
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] =
-  useState(false);
+    useState(false);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [errors, setErrors] = useState<{
+    title?: string;
+    description?: string;
+    submit?: string;
+  }>({});
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
 
-    setError(null);
-
     const trimmedTitle = title.trim();
     const trimmedDescription =
       description.trim();
 
-    if (!trimmedTitle) {
-      setError("Title is required.");
-      return;
-    }
+    const validationErrors: {
+      title?: string;
+      description?: string;
+    } = {};
 
-    if (trimmedTitle.length > 100) {
-      setError(
-        "Title cannot exceed 100 characters.",
-      );
-      return;
+    if (!trimmedTitle) {
+      validationErrors.title =
+        "Title is required.";
+    } else if (trimmedTitle.length > 100) {
+      validationErrors.title =
+        "Title cannot exceed 100 characters.";
     }
 
     if (!trimmedDescription) {
-      setError("Description is required.");
+      validationErrors.description =
+        "Description is required.";
+    } else if (
+      trimmedDescription.length > 1000
+    ) {
+      validationErrors.description =
+        "Description cannot exceed 1000 characters.";
+    }
+
+    if (
+      validationErrors.title ||
+      validationErrors.description
+    ) {
+      setErrors(validationErrors);
       return;
     }
 
-    if (trimmedDescription.length > 1000) {
-      setError(
-        "Description cannot exceed 1000 characters.",
-      );
-      return;
-    }
-
+    setErrors({});
     setIsSubmitting(true);
 
     try {
@@ -61,9 +71,13 @@ function TicketForm() {
       navigate(`/tickets/${ticket.id}`);
     } catch (error) {
       if (error instanceof ApiError) {
-        setError(error.message);
+        setErrors({
+          submit: error.message,
+        });
       } else {
-        setError("Failed to create ticket.");
+        setErrors({
+          submit: "Failed to create ticket.",
+        });
       }
     } finally {
       setIsSubmitting(false);
@@ -71,89 +85,139 @@ function TicketForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Title */}
-        <div className="space-y-2">
-          <label
-            htmlFor="title"
-            className="text-sm font-medium"
-          >
-            Title
-          </label>
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6"
+    >
+      {/* Title */}
+      <div className="space-y-2">
+        <label
+          htmlFor="title"
+          className="text-sm font-medium"
+        >
+          Title
+        </label>
 
-          <input
-            id="title"
-            type="text"
-            value={title}
-            onChange={(event) =>
-              setTitle(event.target.value)
-            }
-            placeholder="e.g. Cannot access email"
-            maxLength={100}
-            className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none transition focus:ring-2 focus:ring-ring"
-          />
+        <input
+          id="title"
+          type="text"
+          value={title}
+          onChange={(event) => {
+            setTitle(event.target.value);
 
-          <div className="flex justify-end">
-            <span className="text-xs text-muted-foreground">
-              {title.length}/100
-            </span>
-          </div>
+            setErrors((current) => ({
+              ...current,
+              title: undefined,
+              submit: undefined,
+            }));
+          }}
+          placeholder="e.g. Cannot access email"
+          maxLength={100}
+          required
+          aria-invalid={!!errors.title}
+          aria-describedby={
+            errors.title
+              ? "title-error"
+              : undefined
+          }
+          className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none transition focus:ring-2 focus:ring-ring"
+        />
+
+        <div className="flex justify-end">
+          <span className="text-xs text-muted-foreground">
+            {title.length}/100
+          </span>
         </div>
 
-        {/* Description */}
-        <div className="space-y-2">
-          <label
-            htmlFor="description"
-            className="text-sm font-medium"
+        {errors.title && (
+          <p
+            id="title-error"
+            className="text-sm text-destructive"
           >
-            Description
-          </label>
-
-          <textarea
-            id="description"
-            value={description}
-            onChange={(event) =>
-              setDescription(event.target.value)
-            }
-            placeholder="Describe the problem you're experiencing..."
-            maxLength={1000}
-            rows={7}
-            className="w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm outline-none transition focus:ring-2 focus:ring-ring"
-          />
-
-          <div className="flex justify-end">
-            <span className="text-xs text-muted-foreground">
-              {description.length}/1000
-            </span>
-          </div>
-        </div>
-
-        {/* Error */}
-        {error && (
-          <p className="text-sm text-destructive">
-            {error}
+            {errors.title}
           </p>
         )}
+      </div>
 
-        {/* Actions */}
-        <div className="flex justify-end gap-3">
-          <Link
-            to="/tickets"
-            className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
-          >
-            Cancel
-          </Link>
+      {/* Description */}
+      <div className="space-y-2">
+        <label
+          htmlFor="description"
+          className="text-sm font-medium"
+        >
+          Description
+        </label>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isSubmitting
-              ? "Creating..."
-              : "Create Ticket"}
-          </button>
+        <textarea
+          id="description"
+          value={description}
+          onChange={(event) => {
+            setDescription(event.target.value);
+
+            setErrors((current) => ({
+              ...current,
+              description: undefined,
+              submit: undefined,
+            }));
+          }}
+          placeholder="Describe the problem you're experiencing..."
+          maxLength={1000}
+          rows={7}
+          required
+          aria-invalid={!!errors.description}
+          aria-describedby={
+            errors.description
+              ? "description-error"
+              : undefined
+          }
+          className="w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm outline-none transition focus:ring-2 focus:ring-ring"
+        />
+
+        <div className="flex justify-end">
+          <span className="text-xs text-muted-foreground">
+            {description.length}/1000
+          </span>
         </div>
+
+        {errors.description && (
+          <p
+            id="description-error"
+            className="text-sm text-destructive"
+          >
+            {errors.description}
+          </p>
+        )}
+      </div>
+
+      {/* Submit Error */}
+      {errors.submit && (
+        <p
+          role="alert"
+          className="text-sm text-destructive"
+        >
+          {errors.submit}
+        </p>
+      )}
+
+      {/* Actions */}
+      <div className="flex justify-end gap-3">
+        <Link
+          to="/tickets"
+          className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
+        >
+          Cancel
+        </Link>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isSubmitting
+            ? "Creating..."
+            : "Create Ticket"}
+        </button>
+      </div>
     </form>
   );
 }

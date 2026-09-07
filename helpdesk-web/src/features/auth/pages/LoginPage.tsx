@@ -13,19 +13,19 @@ function LoginPage() {
   const [password, setPassword] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    setError("");
+    const trimmedEmail = email.trim();
+
+    setError(null);
     setIsLoading(true);
 
     try {
       const response = await loginApi({
-        email,
+        email: trimmedEmail,
         password,
       });
 
@@ -86,12 +86,17 @@ function LoginPage() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(event) =>
-                  setEmail(event.target.value)
-                }
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  setError(null);
+                }}
                 placeholder="you@example.com"
                 autoComplete="email"
                 required
+                aria-invalid={!!error}
+                aria-describedby={
+                  error ? "login-error" : undefined
+                }
                 className="w-full rounded-md border bg-background py-2.5 pl-10 pr-3 text-sm outline-none transition focus:ring-2 focus:ring-ring"
               />
             </div>
@@ -115,19 +120,28 @@ function LoginPage() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(event) =>
-                  setPassword(event.target.value)
-                }
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                  setError(null);
+                }}
                 placeholder="••••••••"
                 autoComplete="current-password"
                 required
+                aria-invalid={!!error}
+                aria-describedby={
+                  error ? "login-error" : undefined
+                }
                 className="w-full rounded-md border bg-background py-2.5 pl-10 pr-3 text-sm outline-none transition focus:ring-2 focus:ring-ring"
               />
             </div>
           </div>
 
           {error && (
-            <p className="text-sm text-destructive">
+            <p
+              id="login-error"
+              role="alert"
+              className="text-sm text-destructive"
+            >
               {error}
             </p>
           )}

@@ -76,6 +76,26 @@ function AdminUserDetail({
       return;
     }
 
+    const validRoles = [
+      "User",
+      "Admin",
+    ];
+
+    const validStatuses = [
+      "Active",
+      "Inactive",
+    ];
+
+    if (!validRoles.includes(role)) {
+      setActionError("Invalid role.");
+      return;
+    }
+
+    if (!validStatuses.includes(status)) {
+      setActionError("Invalid status.");
+      return;
+    }
+
     setActionError(null);
     setIsUpdating(true);
 
@@ -212,14 +232,22 @@ function AdminUserDetail({
           <select
             id="role"
             value={role}
-            onChange={(event) =>
-              setRole(event.target.value)
+            onChange={(event) => {
+              setRole(event.target.value);
+              setActionError(null);
+            }}
+            disabled={
+              isUpdating || isDeleting
             }
-            disabled={isUpdating || isDeleting}
             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
           >
-            <option value="User">User</option>
-            <option value="Admin">Admin</option>
+            <option value="User">
+              User
+            </option>
+
+            <option value="Admin">
+              Admin
+            </option>
           </select>
         </div>
 
@@ -234,10 +262,13 @@ function AdminUserDetail({
           <select
             id="status"
             value={status}
-            onChange={(event) =>
-              setStatus(event.target.value)
+            onChange={(event) => {
+              setStatus(event.target.value);
+              setActionError(null);
+            }}
+            disabled={
+              isUpdating || isDeleting
             }
-            disabled={isUpdating || isDeleting}
             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
           >
             <option value="Active">
@@ -274,7 +305,10 @@ function AdminUserDetail({
       </div>
 
       {actionError && (
-        <p className="mt-6 text-sm text-destructive">
+        <p
+          role="alert"
+          className="mt-6 text-sm text-destructive"
+        >
           {actionError}
         </p>
       )}

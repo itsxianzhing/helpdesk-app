@@ -9,13 +9,18 @@ function CreateUserPage() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] =
+    useState("");
 
   const [isSubmitting, setIsSubmitting] =
     useState(false);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [errors, setErrors] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+    submit?: string;
+  }>({});
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>,
@@ -26,22 +31,69 @@ function CreateUserPage() {
       return;
     }
 
-    setError(null);
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+
+    const validationErrors: {
+      name?: string;
+      email?: string;
+      password?: string;
+    } = {};
+
+    if (!trimmedName) {
+      validationErrors.name =
+        "Name is required.";
+    }
+
+    if (!trimmedEmail) {
+      validationErrors.email =
+        "Email is required.";
+    } else if (
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+        trimmedEmail,
+      )
+    ) {
+      validationErrors.email =
+        "Please enter a valid email address.";
+    }
+
+    if (!password) {
+      validationErrors.password =
+        "Password is required.";
+    } else if (password.length < 8) {
+      validationErrors.password =
+        "Password must be at least 8 characters.";
+    }
+
+    if (
+      validationErrors.name ||
+      validationErrors.email ||
+      validationErrors.password
+    ) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
     setIsSubmitting(true);
 
     try {
       await createUser({
-        name,
-        email,
+        name: trimmedName,
+        email: trimmedEmail,
         password,
       });
 
       navigate("/admin/users");
     } catch (error) {
       if (error instanceof ApiError) {
-        setError(error.message);
+        setErrors({
+          submit: error.message,
+        });
       } else {
-        setError("Failed to create user.");
+        setErrors({
+          submit: "Failed to create user.",
+        });
       }
     } finally {
       setIsSubmitting(false);
@@ -69,16 +121,11 @@ function CreateUserPage() {
           </p>
         </div>
 
-        {error && (
-          <div className="mb-6 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-
         <form
           onSubmit={handleSubmit}
           className="space-y-5"
         >
+          {/* Name */}
           <div className="space-y-2">
             <label
               htmlFor="name"
@@ -91,15 +138,37 @@ function CreateUserPage() {
               id="name"
               type="text"
               value={name}
-              onChange={(event) =>
-                setName(event.target.value)
-              }
+              onChange={(event) => {
+                setName(event.target.value);
+
+                setErrors((current) => ({
+                  ...current,
+                  name: undefined,
+                  submit: undefined,
+                }));
+              }}
               disabled={isSubmitting}
               required
+              aria-invalid={!!errors.name}
+              aria-describedby={
+                errors.name
+                  ? "name-error"
+                  : undefined
+              }
               className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
+
+            {errors.name && (
+              <p
+                id="name-error"
+                className="text-sm text-destructive"
+              >
+                {errors.name}
+              </p>
+            )}
           </div>
 
+          {/* Email */}
           <div className="space-y-2">
             <label
               htmlFor="email"
@@ -112,15 +181,37 @@ function CreateUserPage() {
               id="email"
               type="email"
               value={email}
-              onChange={(event) =>
-                setEmail(event.target.value)
-              }
+              onChange={(event) => {
+                setEmail(event.target.value);
+
+                setErrors((current) => ({
+                  ...current,
+                  email: undefined,
+                  submit: undefined,
+                }));
+              }}
               disabled={isSubmitting}
               required
+              aria-invalid={!!errors.email}
+              aria-describedby={
+                errors.email
+                  ? "email-error"
+                  : undefined
+              }
               className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
+
+            {errors.email && (
+              <p
+                id="email-error"
+                className="text-sm text-destructive"
+              >
+                {errors.email}
+              </p>
+            )}
           </div>
 
+          {/* Password */}
           <div className="space-y-2">
             <label
               htmlFor="password"
@@ -133,19 +224,50 @@ function CreateUserPage() {
               id="password"
               type="password"
               value={password}
-              onChange={(event) =>
-                setPassword(event.target.value)
-              }
+              onChange={(event) => {
+                setPassword(event.target.value);
+
+                setErrors((current) => ({
+                  ...current,
+                  password: undefined,
+                  submit: undefined,
+                }));
+              }}
               disabled={isSubmitting}
               required
               minLength={8}
+              aria-invalid={!!errors.password}
+              aria-describedby={
+                errors.password
+                  ? "password-error"
+                  : undefined
+              }
               className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
 
             <p className="text-xs text-muted-foreground">
               Password must be at least 8 characters.
             </p>
+
+            {errors.password && (
+              <p
+                id="password-error"
+                className="text-sm text-destructive"
+              >
+                {errors.password}
+              </p>
+            )}
           </div>
+
+          {/* Submit Error */}
+          {errors.submit && (
+            <p
+              role="alert"
+              className="text-sm text-destructive"
+            >
+              {errors.submit}
+            </p>
+          )}
 
           <div className="flex justify-end">
             <button

@@ -5,7 +5,10 @@ import {
 import { Pencil, Trash2 } from "lucide-react";
 
 import type { CommentResponse } from "../types";
-import { updateComment, deleteComment } from "../api/commentApi";
+import {
+  updateComment,
+  deleteComment,
+} from "../api/commentApi";
 import { ApiError } from "../../../lib/apiError";
 import { formatDate } from "../../../lib/formatDate";
 
@@ -24,11 +27,11 @@ function CommentItem({
   onUpdated,
   onDeleted,
 }: CommentItemProps) {
-  const [isEditing, setIsEditing] =
-    useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const [content, setContent] =
-    useState(comment.content);
+  const [content, setContent] = useState(
+    comment.content,
+  );
 
   const [isSubmitting, setIsSubmitting] =
     useState(false);
@@ -36,8 +39,9 @@ function CommentItem({
   const [isDeleting, setIsDeleting] =
     useState(false);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    null,
+  );
 
   const isOwner =
     currentUserId === comment.userId;
@@ -53,8 +57,7 @@ function CommentItem({
   ) {
     event.preventDefault();
 
-    const trimmedContent =
-      content.trim();
+    const trimmedContent = content.trim();
 
     if (!trimmedContent) {
       setError("Comment is required.");
@@ -72,14 +75,15 @@ function CommentItem({
     setIsSubmitting(true);
 
     try {
-      const updatedComment =
-        await updateComment(comment.id, {
+      const updatedComment = await updateComment(
+        comment.id,
+        {
           content: trimmedContent,
           version: comment.version,
-        });
+        },
+      );
 
       onUpdated(updatedComment);
-
       setIsEditing(false);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -143,34 +147,34 @@ function CommentItem({
         </div>
 
         {isOwner && !isEditing && (
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => {
-              setError(null);
-              setContent(comment.content);
-              setIsEditing(true);
-            }}
-            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs hover:bg-muted"
-          >
-            <Pencil size={14} />
-            Edit
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                setError(null);
+                setContent(comment.content);
+                setIsEditing(true);
+              }}
+              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs hover:bg-muted"
+            >
+              <Pencil size={14} />
+              Edit
+            </button>
 
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Trash2 size={14} />
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Trash2 size={14} />
 
-            {isDeleting
-              ? "Deleting..."
-              : "Delete"}
-          </button>
-        </div>
-      )}
+              {isDeleting
+                ? "Deleting..."
+                : "Delete"}
+            </button>
+          </div>
+        )}
       </div>
 
       {isEditing ? (
@@ -180,12 +184,20 @@ function CommentItem({
         >
           <textarea
             value={content}
-            onChange={(event) =>
-              setContent(event.target.value)
-            }
+            onChange={(event) => {
+              setContent(event.target.value);
+              setError(null);
+            }}
             maxLength={1000}
             rows={4}
             disabled={isSubmitting}
+            required
+            aria-invalid={!!error}
+            aria-describedby={
+              error
+                ? "comment-edit-error"
+                : undefined
+            }
             className="w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
           />
 
@@ -217,7 +229,11 @@ function CommentItem({
           </div>
 
           {error && (
-            <p className="text-sm text-destructive">
+            <p
+              id="comment-edit-error"
+              role="alert"
+              className="text-sm text-destructive"
+            >
               {error}
             </p>
           )}
