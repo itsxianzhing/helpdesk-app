@@ -17,7 +17,7 @@ interface AdminTicketDetailProps {
 function AdminTicketDetail({
   ticketId,
 }: AdminTicketDetailProps) {
-	const { auth } = useAuth();
+  const { auth } = useAuth();
 
   const [ticket, setTicket] =
     useState<TicketDetailResponse | null>(null);
@@ -32,6 +32,9 @@ function AdminTicketDetail({
     useState(false);
 
   const [error, setError] =
+    useState<string | null>(null);
+
+  const [actionError, setActionError] =
     useState<string | null>(null);
 
   useEffect(() => {
@@ -50,9 +53,7 @@ function AdminTicketDetail({
         if (error instanceof ApiError) {
           setError(error.message);
         } else {
-          setError(
-            "Failed to load ticket.",
-          );
+          setError("Failed to load ticket.");
         }
       } finally {
         setIsLoading(false);
@@ -73,7 +74,7 @@ function AdminTicketDetail({
       return;
     }
 
-    setError(null);
+    setActionError(null);
     setIsUpdating(true);
 
     try {
@@ -93,14 +94,14 @@ function AdminTicketDetail({
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.statusCode === 409) {
-          setError(
+          setActionError(
             "This ticket was modified by another user. Please refresh and try again.",
           );
         } else {
-          setError(error.message);
+          setActionError(error.message);
         }
       } else {
-        setError(
+        setActionError(
           "Failed to update ticket.",
         );
       }
@@ -186,6 +187,10 @@ function AdminTicketDetail({
   }
 
   if (!ticket) {
+    return null;
+  }
+
+  if (!auth) {
     return null;
   }
 
@@ -275,6 +280,12 @@ function AdminTicketDetail({
             </option>
           </select>
         </div>
+
+        {actionError && (
+          <p className="text-sm text-destructive">
+            {actionError}
+          </p>
+        )}
 
         <button
           type="button"

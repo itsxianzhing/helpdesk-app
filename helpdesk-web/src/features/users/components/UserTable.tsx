@@ -9,6 +9,20 @@ interface UserTableProps {
 function UserTable({
   users,
 }: UserTableProps) {
+  if (users.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-lg border px-6 py-12 text-center">
+        <p className="font-medium">
+          No users found
+        </p>
+
+        <p className="mt-1 text-sm text-muted-foreground">
+          There are no users to display.
+        </p>
+      </div>
+    );
+  }
+  
   return (
     <div className="overflow-x-auto rounded-xl border">
       <table className="w-full text-sm">

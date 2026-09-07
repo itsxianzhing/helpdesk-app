@@ -4,6 +4,7 @@ import { Link } from "react-router";
 interface TicketTableProps {
   tickets: TicketListResponse[];
   detailPath: (ticketId: number) => string;
+  showCreateButton?: boolean;
 }
 
 function TicketTable({
@@ -12,21 +13,14 @@ function TicketTable({
 }: TicketTableProps) {
   if (tickets.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
+      <div className="flex flex-col items-center justify-center rounded-lg border px-6 py-12 text-center">
         <p className="font-medium">
-          No tickets yet
+          No tickets found
         </p>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          Create your first ticket to get help from the support team.
+          There are no tickets to display.
         </p>
-
-        <Link
-          to="/tickets/new"
-          className="mt-4 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-        >
-          Create Ticket
-        </Link>
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import { useState, useContext, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { LockKeyhole, Mail } from "lucide-react";
 

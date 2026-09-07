@@ -4,7 +4,10 @@ import { Pencil, Trash2 } from "lucide-react";
 import type { TicketDetailResponse } from "../types";
 import type { CommentResponse } from "../../comments/types";
 import { ApiError } from "../../../lib/apiError";
-import { getTicketById, deleteTicket } from "../api/ticketApi";
+import {
+  getTicketById,
+  deleteTicket,
+} from "../api/ticketApi";
 import { formatDate } from "../../../lib/formatDate";
 import CommentList from "../../comments/components/CommentList";
 import CommentForm from "../../comments/components/CommentForm";
@@ -18,7 +21,6 @@ function TicketDetail({
   ticketId,
 }: TicketDetailProps) {
   const { auth } = useAuth();
-
   const navigate = useNavigate();
 
   const [ticket, setTicket] =
@@ -31,6 +33,9 @@ function TicketDetail({
     useState(false);
 
   const [error, setError] =
+    useState<string | null>(null);
+
+  const [actionError, setActionError] =
     useState<string | null>(null);
 
   useEffect(() => {
@@ -64,7 +69,7 @@ function TicketDetail({
   }, [ticketId]);
 
   async function handleDelete() {
-    if (isDeleting) {
+    if (!ticket || isDeleting) {
       return;
     }
 
@@ -76,7 +81,7 @@ function TicketDetail({
       return;
     }
 
-    setError(null);
+    setActionError(null);
     setIsDeleting(true);
 
     try {
@@ -85,9 +90,11 @@ function TicketDetail({
       navigate("/tickets");
     } catch (error) {
       if (error instanceof ApiError) {
-        setError(error.message);
+        setActionError(error.message);
       } else {
-        setError("Failed to delete ticket.");
+        setActionError(
+          "Failed to delete ticket.",
+        );
       }
     } finally {
       setIsDeleting(false);
@@ -193,32 +200,42 @@ function TicketDetail({
             </h1>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
-              {ticket.status}
-            </span>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
+                {ticket.status}
+              </span>
 
-            <span className="rounded-full border px-3 py-1 text-xs font-medium">
-              {ticket.priority}
-            </span>
+              <span className="rounded-full border px-3 py-1 text-xs font-medium">
+                {ticket.priority}
+              </span>
 
-            <Link
-              to={`/tickets/${ticket.id}/edit`}
-              className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
-            >
-              <Pencil size={16} />
-              Edit
-            </Link>
+              <Link
+                to={`/tickets/${ticket.id}/edit`}
+                className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+              >
+                <Pencil size={16} />
+                Edit
+              </Link>
 
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Trash2 size={16} />
-              {isDeleting ? "Deleting..." : "Delete"}
-            </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Trash2 size={16} />
+                {isDeleting
+                  ? "Deleting..."
+                  : "Delete"}
+              </button>
+            </div>
+
+            {actionError && (
+              <p className="text-sm text-destructive">
+                {actionError}
+              </p>
+            )}
           </div>
         </div>
       </div>

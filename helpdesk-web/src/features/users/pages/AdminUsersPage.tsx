@@ -241,10 +241,7 @@ function AdminUsersPage() {
       </div>
 
       {/* Table */}
-      <UserTable
-        users={users}
-        detailPath={(id) => `/users/${id}`}
-      />
+      <UserTable users={users} />
 
       {/* Pagination */}
       <div className="flex items-center justify-between">

@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { getUserById, updateUser, deleteUser } from "../api/userApi";
+import {
+  getUserById,
+  updateUser,
+  deleteUser,
+} from "../api/userApi";
 import type { UserResponse } from "../types";
 import { ApiError } from "../../../lib/apiError";
 import { formatDate } from "../../../lib/formatDate";
@@ -12,24 +16,27 @@ interface AdminUserDetailProps {
 function AdminUserDetail({
   userId,
 }: AdminUserDetailProps) {
+  const navigate = useNavigate();
+
   const [user, setUser] =
     useState<UserResponse | null>(null);
 
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
 
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] =
+    useState(true);
 
   const [isUpdating, setIsUpdating] =
     useState(false);
 
   const [isDeleting, setIsDeleting] =
-  useState(false);
-
-  const [isLoading, setIsLoading] =
-    useState(true);
+    useState(false);
 
   const [error, setError] =
+    useState<string | null>(null);
+
+  const [actionError, setActionError] =
     useState<string | null>(null);
 
   useEffect(() => {
@@ -65,11 +72,11 @@ function AdminUserDetail({
   }, [userId]);
 
   async function handleUpdate() {
-    if (!user || isUpdating) {
+    if (!user || isUpdating || isDeleting) {
       return;
     }
 
-    setError(null);
+    setActionError(null);
     setIsUpdating(true);
 
     try {
@@ -88,14 +95,16 @@ function AdminUserDetail({
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.statusCode === 409) {
-          setError(
+          setActionError(
             "This user was modified by another admin. Please refresh and try again.",
           );
         } else {
-          setError(error.message);
+          setActionError(error.message);
         }
       } else {
-        setError("Failed to update user.");
+        setActionError(
+          "Failed to update user.",
+        );
       }
     } finally {
       setIsUpdating(false);
@@ -103,7 +112,7 @@ function AdminUserDetail({
   }
 
   async function handleDelete() {
-    if (!user || isDeleting) {
+    if (!user || isDeleting || isUpdating) {
       return;
     }
 
@@ -115,7 +124,7 @@ function AdminUserDetail({
       return;
     }
 
-    setError(null);
+    setActionError(null);
     setIsDeleting(true);
 
     try {
@@ -124,9 +133,11 @@ function AdminUserDetail({
       navigate("/admin/users");
     } catch (error) {
       if (error instanceof ApiError) {
-        setError(error.message);
+        setActionError(error.message);
       } else {
-        setError("Failed to delete user.");
+        setActionError(
+          "Failed to delete user.",
+        );
       }
     } finally {
       setIsDeleting(false);
@@ -136,15 +147,19 @@ function AdminUserDetail({
   if (isLoading) {
     return (
       <div className="rounded-xl border bg-card p-6">
-        Loading user...
+        <p className="text-sm text-muted-foreground">
+          Loading user...
+        </p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-xl border bg-card p-6 text-sm text-destructive">
-        {error}
+      <div className="rounded-xl border bg-card p-6">
+        <p className="text-sm text-destructive">
+          {error}
+        </p>
       </div>
     );
   }
@@ -200,7 +215,7 @@ function AdminUserDetail({
             onChange={(event) =>
               setRole(event.target.value)
             }
-            disabled={isUpdating}
+            disabled={isUpdating || isDeleting}
             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
           >
             <option value="User">User</option>
@@ -222,11 +237,16 @@ function AdminUserDetail({
             onChange={(event) =>
               setStatus(event.target.value)
             }
-            disabled={isUpdating}
+            disabled={isUpdating || isDeleting}
             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
           >
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
+            <option value="Active">
+              Active
+            </option>
+
+            <option value="Inactive">
+              Inactive
+            </option>
           </select>
         </div>
 
@@ -251,26 +271,40 @@ function AdminUserDetail({
               : "-"}
           </p>
         </div>
+      </div>
 
-        <div className="mt-6 justify-between">
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={isDeleting || isUpdating}
-            className="rounded-md border px-4 py-2 text-sm font-medium text-destructive disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isDeleting ? "Deleting..." : "Delete User"}
-          </button>
+      {actionError && (
+        <p className="mt-6 text-sm text-destructive">
+          {actionError}
+        </p>
+      )}
 
-          <button
-            type="button"
-            onClick={handleUpdate}
-            disabled={isUpdating || isDeleting}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isUpdating ? "Updating..." : "Update User"}
-          </button>
-        </div>
+      <div className="mt-6 flex justify-between">
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={
+            isDeleting || isUpdating
+          }
+          className="rounded-md border px-4 py-2 text-sm font-medium text-destructive disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isDeleting
+            ? "Deleting..."
+            : "Delete User"}
+        </button>
+
+        <button
+          type="button"
+          onClick={handleUpdate}
+          disabled={
+            isUpdating || isDeleting
+          }
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isUpdating
+            ? "Updating..."
+            : "Update User"}
+        </button>
       </div>
     </div>
   );
