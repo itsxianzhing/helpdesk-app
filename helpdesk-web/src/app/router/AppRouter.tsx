@@ -15,9 +15,9 @@ import TicketDetailPage from "../../features/tickets/pages/TicketDetailPage";
 import CreateTicketPage from "../../features/tickets/pages/CreateTicketPage";
 import EditTicketPage from "../../features/tickets/pages/EditTicketPage";
 
+import AdminDashboardPage from "../../features/dashboard/pages/AdminDashboardPage";
 import AdminTicketsPage from "../../features/tickets/pages/AdminTicketsPage";
 import AdminTicketDetailPage from "../../features/tickets/pages/AdminTicketDetailPage";
-
 import AdminUsersPage from "../../features/users/pages/AdminUsersPage";
 import CreateUserPage from "../../features/users/pages/CreateUserPage";
 import AdminUserDetailPage from "../../features/users/pages/AdminUserDetailPage";
@@ -87,6 +87,11 @@ function AppRouter() {
                 />
               }
             >
+              <Route
+                path="/admin/dashboard"
+                element={<AdminDashboardPage />}
+              />
+
               <Route
                 path="/admin/tickets"
                 element={<AdminTicketsPage />}

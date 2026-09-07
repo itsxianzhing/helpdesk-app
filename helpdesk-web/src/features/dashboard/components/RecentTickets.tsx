@@ -4,10 +4,18 @@ import { formatDate } from "../../../lib/formatDate";
 
 interface RecentTicketsProps {
   tickets: TicketListResponse[];
+  viewAllPath: string;
+  detailBasePath: string;
+  showCreateButton?: boolean;
+  description?: string;
 }
 
 function RecentTickets({
   tickets,
+  viewAllPath,
+  detailBasePath,
+  showCreateButton = false,
+  description,
 }: RecentTicketsProps) {
   return (
     <div className="rounded-xl border bg-card">
@@ -17,7 +25,7 @@ function RecentTickets({
         </h2>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          Your latest tickets.
+          {description}
         </p>
       </div>
 
@@ -28,22 +36,26 @@ function RecentTickets({
           </p>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            Create your first ticket to get help from the support team.
+            {showCreateButton
+              ? "Create your first ticket to get help from the support team."
+              : "There are no tickets to display yet."}
           </p>
 
-          <Link
-            to="/tickets/new"
-            className="mt-4 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-          >
-            Create Ticket
-          </Link>
+          {showCreateButton && (
+            <Link
+              to="/tickets/new"
+              className="mt-4 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            >
+              Create Ticket
+            </Link>
+          )}
         </div>
       ) : (
         <div className="divide-y">
           {tickets.map((ticket) => (
             <Link
               key={ticket.id}
-              to={`/tickets/${ticket.id}`}
+              to={`${detailBasePath}/${ticket.id}`}
               className="block p-4 hover:bg-muted/50"
             >
               <div className="flex items-center justify-between gap-4">
@@ -66,6 +78,15 @@ function RecentTickets({
           ))}
         </div>
       )}
+
+      <div className="border-t p-4">
+        <Link
+          to={viewAllPath}
+          className="text-sm font-medium hover:underline"
+        >
+          View all tickets →
+        </Link>
+      </div>
     </div>
   );
 }

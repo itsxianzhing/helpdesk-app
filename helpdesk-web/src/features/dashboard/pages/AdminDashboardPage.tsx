@@ -5,39 +5,36 @@ import {
   Clock3,
   CheckCircle2,
   CircleCheckBig,
+  Users,
 } from "lucide-react";
+
+import { useAuth } from "../../auth/hooks/useAuth";
 import { getTickets } from "../../tickets/api/ticketApi";
+import { getUsers } from "../../users/api/userApi";
 import type { TicketListResponse } from "../../tickets/types";
 import { ApiError } from "../../../lib/apiError";
-import { useAuth } from "../../auth/hooks/useAuth";
+
 import StatCard from "../components/StatCard";
 import RecentTickets from "../components/RecentTickets";
-import QuickActions from "../components/QuickActions";
 
-function DashboardPage() {
+function AdminDashboardPage() {
   const { auth } = useAuth();
 
-  const [tickets, setTickets] =
-    useState<TicketListResponse[]>([]);
-
-  const [totalTickets, setTotalTickets] =
-    useState(0);
-
-  const [openTickets, setOpenTickets] =
-    useState(0);
-
+  const [totalTickets, setTotalTickets] = useState(0);
+  const [openTickets, setOpenTickets] = useState(0);
   const [inProgressTickets, setInProgressTickets] =
     useState(0);
-
   const [resolvedTickets, setResolvedTickets] =
     useState(0);
-
   const [closedTickets, setClosedTickets] =
     useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
 
-  const [isLoading, setIsLoading] =
-    useState(true);
+  const [recentTickets, setRecentTickets] = useState<
+    TicketListResponse[]
+  >([]);
 
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] =
     useState<string | null>(null);
 
@@ -53,6 +50,7 @@ function DashboardPage() {
           inProgressResponse,
           resolvedResponse,
           closedResponse,
+          usersResponse,
           recentResponse,
         ] = await Promise.all([
           getTickets({
@@ -84,6 +82,11 @@ function DashboardPage() {
             status: "Closed",
           }),
 
+          getUsers({
+            page: 1,
+            pageSize: 1,
+          }),
+
           getTickets({
             page: 1,
             pageSize: 5,
@@ -112,7 +115,13 @@ function DashboardPage() {
           closedResponse.totalItems,
         );
 
-        setTickets(recentResponse.items);
+        setTotalUsers(
+          usersResponse.totalItems,
+        );
+
+        setRecentTickets(
+          recentResponse.items,
+        );
       } catch (error) {
         if (error instanceof ApiError) {
           setError(error.message);
@@ -134,24 +143,26 @@ function DashboardPage() {
       <div className="space-y-8">
         <div>
           <h1 className="text-2xl font-semibold">
-            Dashboard
+            Admin Dashboard
           </h1>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            Loading your dashboard...
+            Loading dashboard...
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={index}
-              className="h-28 animate-pulse rounded-xl border bg-card"
-            />
-          ))}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map(
+            (_, index) => (
+              <div
+                key={index}
+                className="h-28 animate-pulse rounded-xl border bg-card"
+              />
+            ),
+          )}
         </div>
 
-        <div className="h-40 animate-pulse rounded-xl border bg-card" />
+        <div className="h-64 animate-pulse rounded-xl border bg-card" />
       </div>
     );
   }
@@ -161,7 +172,7 @@ function DashboardPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-semibold">
-            Dashboard
+            Admin Dashboard
           </h1>
 
           <p className="mt-1 text-sm text-muted-foreground">
@@ -186,7 +197,7 @@ function DashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold">
-          Dashboard
+          Admin Dashboard
         </h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
@@ -194,7 +205,7 @@ function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           title="Total Tickets"
           value={totalTickets}
@@ -224,19 +235,22 @@ function DashboardPage() {
           value={closedTickets}
           icon={CircleCheckBig}
         />
+
+        <StatCard
+          title="Total Users"
+          value={totalUsers}
+          icon={Users}
+        />
       </div>
 
-      <QuickActions />
-
       <RecentTickets
-        tickets={tickets}
-        viewAllPath="/tickets"
-        detailBasePath="/tickets"
-        showCreateButton
-        description = "Your latest tickets."
+        tickets={recentTickets}
+        viewAllPath="/admin/tickets"
+        detailBasePath="/admin/tickets"
+        description="The latest tickets across the helpdesk."
       />
     </div>
   );
 }
 
-export default DashboardPage;
+export default AdminDashboardPage;
