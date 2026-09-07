@@ -16,6 +16,7 @@ import { ApiError } from "../../../lib/apiError";
 
 import StatCard from "../components/StatCard";
 import RecentTickets from "../components/RecentTickets";
+import AdminQuickActions from "../components/AdminQuickActions";
 
 function AdminDashboardPage() {
   const { auth } = useAuth();
@@ -152,15 +153,15 @@ function AdminDashboardPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map(
-            (_, index) => (
-              <div
-                key={index}
-                className="h-28 animate-pulse rounded-xl border bg-card"
-              />
-            ),
-          )}
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-28 animate-pulse rounded-xl border bg-card"
+            />
+          ))}
         </div>
+
+        <div className="h-32 animate-pulse rounded-xl border bg-card" />
 
         <div className="h-64 animate-pulse rounded-xl border bg-card" />
       </div>
@@ -242,6 +243,8 @@ function AdminDashboardPage() {
           icon={Users}
         />
       </div>
+
+      <AdminQuickActions />
 
       <RecentTickets
         tickets={recentTickets}
