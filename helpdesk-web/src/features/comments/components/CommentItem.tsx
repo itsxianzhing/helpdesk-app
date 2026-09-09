@@ -11,6 +11,7 @@ import {
 } from "../api/commentApi";
 import { ApiError } from "../../../lib/apiError";
 import { formatDate } from "../../../lib/formatDate";
+import { useNotification } from "../../../app/notification/NotificationContext";
 
 interface CommentItemProps {
   comment: CommentResponse;
@@ -32,6 +33,8 @@ function CommentItem({
   const [content, setContent] = useState(
     comment.content,
   );
+
+  const { showNotification } = useNotification();
 
   const [isSubmitting, setIsSubmitting] =
     useState(false);
@@ -84,6 +87,12 @@ function CommentItem({
       );
 
       onUpdated(updatedComment);
+
+      showNotification(
+        "Comment updated successfully.",
+        "success",
+      );
+
       setIsEditing(false);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -122,6 +131,11 @@ function CommentItem({
       await deleteComment(comment.id);
 
       onDeleted(comment.id);
+
+      showNotification(
+        "Comment deleted successfully.",
+        "success",
+      );
     } catch (error) {
       if (error instanceof ApiError) {
         setError(error.message);

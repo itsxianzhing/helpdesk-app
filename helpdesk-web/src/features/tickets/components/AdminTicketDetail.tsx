@@ -9,6 +9,7 @@ import CommentList from "../../comments/components/CommentList";
 import CommentForm from "../../comments/components/CommentForm";
 import type { CommentResponse } from "../../comments/types";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { useNotification } from "../../../app/notification/NotificationContext";
 
 interface AdminTicketDetailProps {
   ticketId: number;
@@ -24,6 +25,8 @@ function AdminTicketDetail({
 
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
+
+  const { showNotification } = useNotification();
 
   const [isLoading, setIsLoading] =
     useState(true);
@@ -91,6 +94,11 @@ function AdminTicketDetail({
       setTicket(response);
       setStatus(response.status);
       setPriority(response.priority);
+
+      showNotification(
+        "Ticket updated successfully.",
+        "success",
+      );
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.statusCode === 409) {

@@ -5,6 +5,7 @@ import {
 import { ApiError } from "../../../lib/apiError";
 import { createComment } from "../api/commentApi";
 import type { CommentResponse } from "../types";
+import { useNotification } from "../../../app/notification/NotificationContext";
 
 interface CommentFormProps {
   ticketId: number;
@@ -17,6 +18,8 @@ function CommentForm({
 }: CommentFormProps) {
   const [content, setContent] =
     useState("");
+
+  const { showNotification } = useNotification();
 
   const [isSubmitting, setIsSubmitting] =
     useState(false);
@@ -56,6 +59,12 @@ function CommentForm({
       );
 
       onCreated(comment);
+
+      showNotification(
+        "Comment created successfully.",
+        "success",
+      );
+      
       setContent("");
     } catch (error) {
       if (error instanceof ApiError) {

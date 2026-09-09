@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { createUser } from "../api/userApi";
 import { ApiError } from "../../../lib/apiError";
+import { useNotification } from "../../../app/notification/NotificationContext";
 
 function CreateUserPage() {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ function CreateUserPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] =
     useState("");
+
+  const { showNotification } = useNotification();
 
   const [isSubmitting, setIsSubmitting] =
     useState(false);
@@ -83,6 +86,11 @@ function CreateUserPage() {
         email: trimmedEmail,
         password,
       });
+
+      showNotification(
+        "User created successfully.",
+        "success",
+      );
 
       navigate("/admin/users");
     } catch (error) {

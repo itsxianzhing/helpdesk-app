@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
 import { createTicket } from "../api/ticketApi";
 import { ApiError } from "../../../lib/apiError";
+import { useNotification } from "../../../app/notification/NotificationContext";
 
 function TicketForm() {
   const [title, setTitle] = useState("");
@@ -9,6 +10,7 @@ function TicketForm() {
     useState("");
 
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   const [isSubmitting, setIsSubmitting] =
     useState(false);
@@ -67,6 +69,11 @@ function TicketForm() {
         title: trimmedTitle,
         description: trimmedDescription,
       });
+
+      showNotification(
+        "Ticket created successfully.",
+        "success",
+      );
 
       navigate(`/tickets/${ticket.id}`);
     } catch (error) {

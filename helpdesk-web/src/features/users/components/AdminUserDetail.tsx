@@ -8,6 +8,7 @@ import {
 import type { UserResponse } from "../types";
 import { ApiError } from "../../../lib/apiError";
 import { formatDate } from "../../../lib/formatDate";
+import { useNotification } from "../../../app/notification/NotificationContext";
 
 interface AdminUserDetailProps {
   userId: number;
@@ -23,6 +24,8 @@ function AdminUserDetail({
 
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
+
+  const { showNotification } = useNotification();
 
   const [isLoading, setIsLoading] =
     useState(true);
@@ -112,6 +115,11 @@ function AdminUserDetail({
       setUser(response);
       setRole(response.role);
       setStatus(response.status);
+
+      showNotification(
+        "User updated successfully.",
+        "success",
+      );
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.statusCode === 409) {
@@ -149,6 +157,11 @@ function AdminUserDetail({
 
     try {
       await deleteUser(user.id);
+
+      showNotification(
+        "User deleted successfully.",
+        "success",
+      );
 
       navigate("/admin/users");
     } catch (error) {

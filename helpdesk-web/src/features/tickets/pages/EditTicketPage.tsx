@@ -20,10 +20,13 @@ import type {
 } from "../types";
 
 import { ApiError } from "../../../lib/apiError";
+import { useNotification } from "../../../app/notification/NotificationContext";
 
 function EditTicketPage() {
   const { id } = useParams();
+
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   const ticketId = Number(id);
 
@@ -138,6 +141,11 @@ function EditTicketPage() {
         description: trimmedDescription,
         version: ticket.version,
       });
+
+      showNotification(
+        "Ticket updated successfully.",
+        "success",
+      );
 
       navigate(`/tickets/${ticket.id}`);
     } catch (error) {
