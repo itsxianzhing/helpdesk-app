@@ -19,7 +19,7 @@ function RecentTickets({
 }: RecentTicketsProps) {
   return (
     <div className="rounded-xl border bg-card">
-      <div className="border-b p-6">
+      <div className="border-b p-4 sm:p-6">
         <h2 className="font-semibold">
           Recent Tickets
         </h2>
@@ -58,9 +58,9 @@ function RecentTickets({
               to={`${detailBasePath}/${ticket.id}`}
               className="block p-4 hover:bg-muted/50"
             >
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
-                  <p className="font-medium">
+                  <p className="break-words font-medium">
                     {ticket.title}
                   </p>
 
@@ -70,7 +70,7 @@ function RecentTickets({
                   </p>
                 </div>
 
-                <span className="rounded-full border px-2.5 py-1 text-xs font-medium">
+                <span className="w-fit shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium">
                   {ticket.status}
                 </span>
               </div>

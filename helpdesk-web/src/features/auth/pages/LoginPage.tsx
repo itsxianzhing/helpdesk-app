@@ -32,7 +32,7 @@ function LoginPage() {
       login(response);
 
       if (response.role === "Admin") {
-        navigate("/admin/tickets", {
+        navigate("/admin/dashboard", {
           replace: true,
         });
       } else {

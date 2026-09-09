@@ -17,23 +17,18 @@ interface TicketDetailProps {
   ticketId: number;
 }
 
-function TicketDetail({
-  ticketId,
-}: TicketDetailProps) {
+function TicketDetail({ ticketId }: TicketDetailProps) {
   const { auth } = useAuth();
   const navigate = useNavigate();
 
   const [ticket, setTicket] =
     useState<TicketDetailResponse | null>(null);
 
-  const [isLoading, setIsLoading] =
-    useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [isDeleting, setIsDeleting] =
-    useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const [actionError, setActionError] =
     useState<string | null>(null);
@@ -44,8 +39,7 @@ function TicketDetail({
       setError(null);
 
       try {
-        const response =
-          await getTicketById(ticketId);
+        const response = await getTicketById(ticketId);
 
         setTicket(response);
       } catch (error) {
@@ -92,18 +86,14 @@ function TicketDetail({
       if (error instanceof ApiError) {
         setActionError(error.message);
       } else {
-        setActionError(
-          "Failed to delete ticket.",
-        );
+        setActionError("Failed to delete ticket.");
       }
     } finally {
       setIsDeleting(false);
     }
   }
 
-  function handleCommentCreated(
-    comment: CommentResponse,
-  ) {
+  function handleCommentCreated(comment: CommentResponse) {
     setTicket((currentTicket) => {
       if (!currentTicket) {
         return currentTicket;
@@ -139,9 +129,7 @@ function TicketDetail({
     });
   }
 
-  function handleCommentDeleted(
-    commentId: number,
-  ) {
+  function handleCommentDeleted(commentId: number) {
     setTicket((currentTicket) => {
       if (!currentTicket) {
         return currentTicket;
@@ -150,8 +138,7 @@ function TicketDetail({
       return {
         ...currentTicket,
         comments: currentTicket.comments.filter(
-          (comment) =>
-            comment.id !== commentId,
+          (comment) => comment.id !== commentId,
         ),
       };
     });
@@ -159,7 +146,7 @@ function TicketDetail({
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border bg-card p-6">
+      <div className="p-4">
         <p className="text-sm text-muted-foreground">
           Loading ticket...
         </p>
@@ -169,8 +156,11 @@ function TicketDetail({
 
   if (error) {
     return (
-      <div className="rounded-xl border bg-card p-6">
-        <p className="text-sm text-destructive">
+      <div className="p-4">
+        <p
+          role="alert"
+          className="text-sm text-destructive"
+        >
           {error}
         </p>
       </div>
@@ -186,22 +176,22 @@ function TicketDetail({
   }
 
   return (
-    <div className="rounded-xl border bg-card">
+    <div className="overflow-hidden rounded-lg border bg-background">
       {/* Header */}
-      <div className="border-b p-6">
+      <div className="border-b p-4 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
+          <div className="min-w-0">
             <p className="text-sm text-muted-foreground">
               #{ticket.ticketNumber}
             </p>
 
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+            <h1 className="mt-1 break-words text-2xl font-semibold tracking-tight">
               {ticket.title}
             </h1>
           </div>
 
-          <div className="flex flex-col items-end gap-2">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col items-start gap-2 sm:items-end">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
                 {ticket.status}
               </span>
@@ -225,9 +215,8 @@ function TicketDetail({
                 className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Trash2 size={16} />
-                {isDeleting
-                  ? "Deleting..."
-                  : "Delete"}
+
+                {isDeleting ? "Deleting..." : "Delete"}
               </button>
             </div>
 
@@ -241,13 +230,13 @@ function TicketDetail({
       </div>
 
       {/* Content */}
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 p-4 sm:p-6">
         <div>
           <h2 className="text-sm font-medium">
             Description
           </h2>
 
-          <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
+          <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-muted-foreground">
             {ticket.description}
           </p>
         </div>

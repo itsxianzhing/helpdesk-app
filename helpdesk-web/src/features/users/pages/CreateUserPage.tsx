@@ -118,7 +118,7 @@ function CreateUserPage() {
         Back to users
       </Link>
 
-      <div className="rounded-xl border bg-card p-6">
+      <div className="rounded-xl border bg-card p-4 sm:p-6">
         <div className="mb-6">
           <h1 className="text-xl font-semibold">
             Create User
@@ -277,11 +277,11 @@ function CreateUserPage() {
             </p>
           )}
 
-          <div className="flex justify-end">
+          <div className="flex">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {isSubmitting
                 ? "Creating..."

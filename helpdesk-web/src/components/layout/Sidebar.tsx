@@ -14,7 +14,7 @@ function Sidebar() {
   const isAdmin = auth?.role === "Admin";
 
   return (
-    <aside className="w-64 shrink-0 border-r bg-background">
+    <aside className="hidden w-64 shrink-0 border-r bg-background md:block">
       <nav className="space-y-1 p-4">
         {isAdmin ? (
           <>

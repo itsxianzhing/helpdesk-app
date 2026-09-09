@@ -129,9 +129,9 @@ function AdminUsersPage() {
       </Link>
 
       {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="grid grid-cols-2 gap-3 lg:flex">
         {/* Search */}
-        <div className="relative flex-1">
+        <div className="relative col-span-2 flex-1 lg:col-span-1">
           <Search
             size={18}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
@@ -149,48 +149,32 @@ function AdminUsersPage() {
           />
         </div>
 
-        {/* Role filter */}
+        {/* Role */}
         <select
           value={role}
           onChange={(event) => {
             setRole(event.target.value);
             setPage(1);
           }}
-          className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
-          <option value="">
-            All roles
-          </option>
-
-          <option value="User">
-            User
-          </option>
-
-          <option value="Admin">
-            Admin
-          </option>
+          <option value="">All roles</option>
+          <option value="User">User</option>
+          <option value="Admin">Admin</option>
         </select>
 
-        {/* Status filter */}
+        {/* Status */}
         <select
           value={status}
           onChange={(event) => {
             setStatus(event.target.value);
             setPage(1);
           }}
-          className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
-          <option value="">
-            All statuses
-          </option>
-
-          <option value="Active">
-            Active
-          </option>
-
-          <option value="Inactive">
-            Inactive
-          </option>
+          <option value="">All statuses</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
         </select>
 
         {/* Sort */}
@@ -200,43 +184,25 @@ function AdminUsersPage() {
             setSortBy(event.target.value);
             setPage(1);
           }}
-          className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
-          <option value="CreatedAt">
-            Created At
-          </option>
-
-          <option value="Name">
-            Name
-          </option>
-
-          <option value="Email">
-            Email
-          </option>
-
-          <option value="Role">
-            Role
-          </option>
-
-          <option value="Status">
-            Status
-          </option>
+          <option value="CreatedAt">Created At</option>
+          <option value="Name">Name</option>
+          <option value="Email">Email</option>
+          <option value="Role">Role</option>
+          <option value="Status">Status</option>
         </select>
 
         {/* Sort direction */}
         <button
           type="button"
           onClick={() => {
-            setDescending(
-              (current) => !current,
-            );
+            setDescending((current) => !current);
             setPage(1);
           }}
-          className="rounded-md border px-3 py-2.5 text-sm hover:bg-muted"
+          className="w-full rounded-md border px-3 py-2.5 text-sm hover:bg-muted lg:w-auto"
         >
-          {descending
-            ? "Descending"
-            : "Ascending"}
+          {descending ? "Descending" : "Ascending"}
         </button>
       </div>
 

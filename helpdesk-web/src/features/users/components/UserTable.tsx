@@ -6,15 +6,11 @@ interface UserTableProps {
   users: UserResponse[];
 }
 
-function UserTable({
-  users,
-}: UserTableProps) {
+function UserTable({ users }: UserTableProps) {
   if (users.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border px-6 py-12 text-center">
-        <p className="font-medium">
-          No users found
-        </p>
+      <div>
+        <p className="font-medium">No users found</p>
 
         <p className="mt-1 text-sm text-muted-foreground">
           There are no users to display.
@@ -22,29 +18,29 @@ function UserTable({
       </div>
     );
   }
-  
+
   return (
-    <div className="overflow-x-auto rounded-xl border">
+    <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/50">
-          <tr className="text-left">
-            <th className="px-4 py-3 font-medium">
+          <tr>
+            <th className="px-4 py-3 text-left font-medium">
               Name
             </th>
 
-            <th className="px-4 py-3 font-medium">
+            <th className="px-4 py-3 text-left font-medium">
               Email
             </th>
 
-            <th className="px-4 py-3 font-medium">
+            <th className="px-4 py-3 text-left font-medium">
               Role
             </th>
 
-            <th className="px-4 py-3 font-medium">
+            <th className="px-4 py-3 text-left font-medium">
               Status
             </th>
 
-            <th className="px-4 py-3 font-medium">
+            <th className="px-4 py-3 text-left font-medium">
               Created
             </th>
           </tr>

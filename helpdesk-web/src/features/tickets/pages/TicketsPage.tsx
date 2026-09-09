@@ -125,8 +125,8 @@ function TicketsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
+      <div className="grid grid-cols-2 gap-3 lg:flex">
+        <div className="relative col-span-2 flex-1 lg:col-span-1">
           <Search
             size={18}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
@@ -150,7 +150,7 @@ function TicketsPage() {
             setStatus(event.target.value);
             setPage(1);
           }}
-          className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
           <option value="">
             All statuses
@@ -173,7 +173,7 @@ function TicketsPage() {
             setPriority(event.target.value);
             setPage(1);
           }}
-          className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
           <option value="">
             All priorities
@@ -192,7 +192,7 @@ function TicketsPage() {
             setSortBy(event.target.value);
             setPage(1);
           }}
-          className="rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
           <option value="CreatedAt">
             Created At
@@ -217,7 +217,7 @@ function TicketsPage() {
             setDescending((current) => !current);
             setPage(1);
           }}
-          className="rounded-md border px-3 py-2.5 text-sm hover:bg-muted"
+          className="w-full rounded-md border px-3 py-2.5 text-sm hover:bg-muted lg:w-auto"
         >
           {descending
             ? "Descending"

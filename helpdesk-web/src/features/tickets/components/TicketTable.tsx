@@ -13,10 +13,8 @@ function TicketTable({
 }: TicketTableProps) {
   if (tickets.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border px-6 py-12 text-center">
-        <p className="font-medium">
-          No tickets found
-        </p>
+      <div>
+        <p className="font-medium">No tickets found</p>
 
         <p className="mt-1 text-sm text-muted-foreground">
           There are no tickets to display.
@@ -26,7 +24,7 @@ function TicketTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border">
+    <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b bg-muted/50">
           <tr>
@@ -62,7 +60,7 @@ function TicketTable({
               key={ticket.id}
               className="transition hover:bg-muted/50"
             >
-              <td>
+              <td className="px-4 py-3">
                 <Link
                   to={detailPath(ticket.id)}
                   className="font-medium hover:underline"

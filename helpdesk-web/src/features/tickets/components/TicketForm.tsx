@@ -207,10 +207,10 @@ function TicketForm() {
       )}
 
       {/* Actions */}
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <Link
           to="/tickets"
-          className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
+          className="w-full rounded-md border px-4 py-2 text-center text-sm font-medium hover:bg-muted sm:w-auto"
         >
           Cancel
         </Link>
@@ -218,7 +218,7 @@ function TicketForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {isSubmitting
             ? "Creating..."

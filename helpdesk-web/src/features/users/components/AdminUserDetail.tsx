@@ -179,7 +179,7 @@ function AdminUserDetail({
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border bg-card p-6">
+      <div className="rounded-xl border bg-card p-6 p-4 sm:p-6">
         <p className="text-sm text-muted-foreground">
           Loading user...
         </p>
@@ -189,7 +189,7 @@ function AdminUserDetail({
 
   if (error) {
     return (
-      <div className="rounded-xl border bg-card p-6">
+      <div className="rounded-xl border bg-card p-6 p-4 sm:p-6">
         <p className="text-sm text-destructive">
           {error}
         </p>
@@ -202,7 +202,7 @@ function AdminUserDetail({
   }
 
   return (
-    <div className="rounded-xl border bg-card p-6">
+    <div className="rounded-xl border bg-card p-4 sm:p-6">
       <div className="mb-6">
         <h1 className="text-xl font-semibold">
           User Details
@@ -326,14 +326,14 @@ function AdminUserDetail({
         </p>
       )}
 
-      <div className="mt-6 flex justify-between">
+      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
         <button
           type="button"
           onClick={handleDelete}
           disabled={
             isDeleting || isUpdating
           }
-          className="rounded-md border px-4 py-2 text-sm font-medium text-destructive disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-md border px-4 py-2 text-sm font-medium text-destructive disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {isDeleting
             ? "Deleting..."
@@ -346,7 +346,7 @@ function AdminUserDetail({
           disabled={
             isUpdating || isDeleting
           }
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {isUpdating
             ? "Updating..."
