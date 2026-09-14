@@ -145,6 +145,7 @@ function AdminUsersPage() {
               setPage(1);
             }}
             placeholder="Search users..."
+            aria-label="Search users"
             className="w-full rounded-md border bg-background py-2.5 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
@@ -156,6 +157,7 @@ function AdminUsersPage() {
             setRole(event.target.value);
             setPage(1);
           }}
+          aria-label="Filter by role"
           className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
           <option value="">All roles</option>
@@ -170,6 +172,7 @@ function AdminUsersPage() {
             setStatus(event.target.value);
             setPage(1);
           }}
+          aria-label="Filter by status"
           className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
           <option value="">All statuses</option>
@@ -184,6 +187,7 @@ function AdminUsersPage() {
             setSortBy(event.target.value);
             setPage(1);
           }}
+          aria-label="Sort users by"
           className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
           <option value="CreatedAt">Created At</option>

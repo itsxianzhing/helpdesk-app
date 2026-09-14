@@ -64,7 +64,7 @@ function CommentForm({
         "Comment created successfully.",
         "success",
       );
-      
+
       setContent("");
     } catch (error) {
       if (error instanceof ApiError) {

@@ -140,6 +140,7 @@ function TicketsPage() {
               setPage(1);
             }}
             placeholder="Search tickets..."
+            aria-label="Search tickets"
             className="w-full rounded-md border bg-background py-2.5 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
@@ -150,6 +151,7 @@ function TicketsPage() {
             setStatus(event.target.value);
             setPage(1);
           }}
+          aria-label="Filter by status"
           className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
           <option value="">
@@ -173,6 +175,7 @@ function TicketsPage() {
             setPriority(event.target.value);
             setPage(1);
           }}
+          aria-label="Filter by priority"
           className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
           <option value="">
@@ -192,6 +195,7 @@ function TicketsPage() {
             setSortBy(event.target.value);
             setPage(1);
           }}
+          aria-label="Sort tickets by"
           className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
         >
           <option value="CreatedAt">
