@@ -17,7 +17,6 @@ import { setUnauthorizedHandler } from "../../lib/api";
 interface AuthContextValue {
   auth: AuthResponse | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
   login: (auth: AuthResponse) => void;
   logout: () => void;
 }
@@ -33,16 +32,7 @@ export function AuthProvider({
   children,
 }: AuthProviderProps) {
   const [auth, setAuth] =
-    useState<AuthResponse | null>(null);
-
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const storedAuth = getStoredAuth();
-
-    setAuth(storedAuth);
-    setIsLoading(false);
-  }, []);
+    useState<AuthResponse | null>(getStoredAuth);
 
   useEffect(() => {
     setUnauthorizedHandler(() => {
@@ -74,7 +64,6 @@ export function AuthProvider({
       value={{
         auth,
         isAuthenticated,
-        isLoading,
         login,
         logout,
       }}
