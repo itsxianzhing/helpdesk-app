@@ -4,7 +4,6 @@ import { Link } from "react-router";
 interface TicketTableProps {
   tickets: TicketListResponse[];
   detailPath: (ticketId: number) => string;
-  showCreateButton?: boolean;
 }
 
 function TicketTable({

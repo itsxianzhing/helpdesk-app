@@ -233,7 +233,7 @@ function DashboardPage() {
         viewAllPath="/tickets"
         detailBasePath="/tickets"
         showCreateButton
-        description = "Your latest tickets."
+        description="Your latest tickets."
       />
     </div>
   );

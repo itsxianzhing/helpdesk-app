@@ -6,12 +6,6 @@ import type {
   UpdateCommentRequest,
 } from "../types";
 
-export function getComments(ticketId: number) {
-  return apiFetch<CommentResponse[]>(
-    `/tickets/${ticketId}/comments`,
-  );
-}
-
 export function createComment(
   ticketId: number,
   request: CreateCommentRequest,

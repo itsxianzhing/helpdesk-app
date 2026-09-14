@@ -3,7 +3,6 @@ import { apiFetch } from "../../../lib/api";
 import type {
   CreateUserRequest,
   PagedResponse,
-  UpdateProfileRequest,
   UpdateUserRequest,
   UserQueryRequest,
   UserResponse,
@@ -103,28 +102,6 @@ export function deleteUser(id: number) {
     `/users/${id}`,
     {
       method: "DELETE",
-    },
-  );
-}
-
-// =========================
-// Current User
-// =========================
-
-export function getCurrentProfile() {
-  return apiFetch<UserResponse>(
-    "/users/me",
-  );
-}
-
-export function updateProfile(
-  request: UpdateProfileRequest,
-) {
-  return apiFetch<UserResponse>(
-    "/users/me",
-    {
-      method: "PUT",
-      body: JSON.stringify(request),
     },
   );
 }
