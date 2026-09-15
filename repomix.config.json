@@ -1,0 +1,30 @@
+{
+  "output": {
+    "filePath": "repomix-output.xml",
+    "style": "xml"
+  },
+  "ignore": {
+    "customPatterns": [
+      "**/appsettings.json",
+      "**/appsettings.*.json",
+      "**/.env",
+      "**/.env.*",
+
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/bin/**",
+      "**/obj/**",
+      "**/.git/**",
+      "**/.vs/**",
+      "**/.vscode/**",
+
+      "**/*.user",
+      "**/*.suo",
+      "**/*.cache",
+      "**/*.log",
+
+      "**/coverage/**",
+      "**/TestResults/**"
+    ]
+  }
+}
