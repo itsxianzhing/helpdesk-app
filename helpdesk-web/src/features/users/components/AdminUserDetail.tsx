@@ -1,50 +1,34 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import {
-  getUserById,
-  updateUser,
-  deleteUser,
-} from "../api/userApi";
-import type {
-  Role,
-  UserResponse,
-  UserStatus,
-} from "../types";
-import { ApiError } from "../../../lib/apiError";
-import { formatDate } from "../../../lib/formatDate";
-import { useNotification } from "../../../app/notification/NotificationContext";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { getUserById, updateUser, deleteUser } from '../api/userApi';
+import type { Role, UserResponse, UserStatus } from '../types';
+import { ApiError } from '../../../lib/apiError';
+import { formatDate } from '../../../lib/formatDate';
+import { useNotification } from '../../../app/notification/NotificationContext';
 
 interface AdminUserDetailProps {
   userId: number;
 }
 
-function AdminUserDetail({
-  userId,
-}: AdminUserDetailProps) {
+function AdminUserDetail({ userId }: AdminUserDetailProps) {
   const navigate = useNavigate();
 
-  const [user, setUser] =
-    useState<UserResponse | null>(null);
+  const [user, setUser] = useState<UserResponse | null>(null);
 
-  const [role, setRole] = useState<Role>("User");
-  const [status, setStatus] = useState<UserStatus>("Active");
+  const [role, setRole] = useState<Role>('User');
+  const [status, setStatus] = useState<UserStatus>('Active');
 
   const { showNotification } = useNotification();
 
-  const [isLoading, setIsLoading] =
-    useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [isUpdating, setIsUpdating] =
-    useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const [isDeleting, setIsDeleting] =
-    useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const [actionError, setActionError] =
-    useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUser() {
@@ -52,8 +36,7 @@ function AdminUserDetail({
       setError(null);
 
       try {
-        const response =
-          await getUserById(userId);
+        const response = await getUserById(userId);
 
         setUser(response);
         setRole(response.role);
@@ -62,7 +45,7 @@ function AdminUserDetail({
         if (error instanceof ApiError) {
           setError(error.message);
         } else {
-          setError("Failed to load user.");
+          setError('Failed to load user.');
         }
       } finally {
         setIsLoading(false);
@@ -70,7 +53,7 @@ function AdminUserDetail({
     }
 
     if (!Number.isInteger(userId)) {
-      setError("Invalid user ID.");
+      setError('Invalid user ID.');
       setIsLoading(false);
       return;
     }
@@ -83,23 +66,17 @@ function AdminUserDetail({
       return;
     }
 
-    const validRoles: Role[] = [
-      "User",
-      "Admin",
-    ];
+    const validRoles: Role[] = ['User', 'Admin'];
 
-    const validStatuses: UserStatus[] = [
-      "Active",
-      "Inactive",
-    ];
+    const validStatuses: UserStatus[] = ['Active', 'Inactive'];
 
     if (!validRoles.includes(role)) {
-      setActionError("Invalid role.");
+      setActionError('Invalid role.');
       return;
     }
 
     if (!validStatuses.includes(status)) {
-      setActionError("Invalid status.");
+      setActionError('Invalid status.');
       return;
     }
 
@@ -107,36 +84,26 @@ function AdminUserDetail({
     setIsUpdating(true);
 
     try {
-      const response = await updateUser(
-        user.id,
-        {
-          role,
-          status,
-          version: user.version,
-        },
-      );
+      const response = await updateUser(user.id, {
+        role,
+        status,
+        version: user.version,
+      });
 
       setUser(response);
       setRole(response.role);
       setStatus(response.status);
 
-      showNotification(
-        "User updated successfully.",
-        "success",
-      );
+      showNotification('User updated successfully.', 'success');
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.statusCode === 409) {
-          setActionError(
-            "This user was modified by another admin. Please refresh and try again.",
-          );
+          setActionError('This user was modified by another admin. Please refresh and try again.');
         } else {
           setActionError(error.message);
         }
       } else {
-        setActionError(
-          "Failed to update user.",
-        );
+        setActionError('Failed to update user.');
       }
     } finally {
       setIsUpdating(false);
@@ -148,9 +115,7 @@ function AdminUserDetail({
       return;
     }
 
-    const confirmed = window.confirm(
-      `Are you sure you want to delete ${user.name}?`,
-    );
+    const confirmed = window.confirm(`Are you sure you want to delete ${user.name}?`);
 
     if (!confirmed) {
       return;
@@ -162,19 +127,14 @@ function AdminUserDetail({
     try {
       await deleteUser(user.id);
 
-      showNotification(
-        "User deleted successfully.",
-        "success",
-      );
+      showNotification('User deleted successfully.', 'success');
 
-      navigate("/admin/users");
+      navigate('/admin/users');
     } catch (error) {
       if (error instanceof ApiError) {
         setActionError(error.message);
       } else {
-        setActionError(
-          "Failed to delete user.",
-        );
+        setActionError('Failed to delete user.');
       }
     } finally {
       setIsDeleting(false);
@@ -184,9 +144,7 @@ function AdminUserDetail({
   if (isLoading) {
     return (
       <div className="rounded-xl border bg-card p-6 p-4 sm:p-6">
-        <p className="text-sm text-muted-foreground">
-          Loading user...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading user...</p>
       </div>
     );
   }
@@ -194,9 +152,7 @@ function AdminUserDetail({
   if (error) {
     return (
       <div className="rounded-xl border bg-card p-6 p-4 sm:p-6">
-        <p className="text-sm text-destructive">
-          {error}
-        </p>
+        <p className="text-sm text-destructive">{error}</p>
       </div>
     );
   }
@@ -208,41 +164,26 @@ function AdminUserDetail({
   return (
     <div className="rounded-xl border bg-card p-4 sm:p-6">
       <div className="mb-6">
-        <h1 className="text-xl font-semibold">
-          User Details
-        </h1>
+        <h1 className="text-xl font-semibold">User Details</h1>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage this user's account and access.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Manage this user's account and access.</p>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <p className="text-sm text-muted-foreground">
-            Name
-          </p>
+          <p className="text-sm text-muted-foreground">Name</p>
 
-          <p className="mt-1 font-medium">
-            {user.name}
-          </p>
+          <p className="mt-1 font-medium">{user.name}</p>
         </div>
 
         <div>
-          <p className="text-sm text-muted-foreground">
-            Email
-          </p>
+          <p className="text-sm text-muted-foreground">Email</p>
 
-          <p className="mt-1 font-medium">
-            {user.email}
-          </p>
+          <p className="mt-1 font-medium">{user.email}</p>
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="role"
-            className="text-sm text-muted-foreground"
-          >
+          <label htmlFor="role" className="text-sm text-muted-foreground">
             Role
           </label>
 
@@ -253,26 +194,17 @@ function AdminUserDetail({
               setRole(event.target.value as Role);
               setActionError(null);
             }}
-            disabled={
-              isUpdating || isDeleting
-            }
+            disabled={isUpdating || isDeleting}
             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
           >
-            <option value="User">
-              User
-            </option>
+            <option value="User">User</option>
 
-            <option value="Admin">
-              Admin
-            </option>
+            <option value="Admin">Admin</option>
           </select>
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="status"
-            className="text-sm text-muted-foreground"
-          >
+          <label htmlFor="status" className="text-sm text-muted-foreground">
             Status
           </label>
 
@@ -283,49 +215,30 @@ function AdminUserDetail({
               setStatus(event.target.value as UserStatus);
               setActionError(null);
             }}
-            disabled={
-              isUpdating || isDeleting
-            }
+            disabled={isUpdating || isDeleting}
             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
           >
-            <option value="Active">
-              Active
-            </option>
+            <option value="Active">Active</option>
 
-            <option value="Inactive">
-              Inactive
-            </option>
+            <option value="Inactive">Inactive</option>
           </select>
         </div>
 
         <div>
-          <p className="text-sm text-muted-foreground">
-            Created
-          </p>
+          <p className="text-sm text-muted-foreground">Created</p>
 
-          <p className="mt-1 font-medium">
-            {formatDate(user.createdAt)}
-          </p>
+          <p className="mt-1 font-medium">{formatDate(user.createdAt)}</p>
         </div>
 
         <div>
-          <p className="text-sm text-muted-foreground">
-            Last Updated
-          </p>
+          <p className="text-sm text-muted-foreground">Last Updated</p>
 
-          <p className="mt-1 font-medium">
-            {user.updatedAt
-              ? formatDate(user.updatedAt)
-              : "-"}
-          </p>
+          <p className="mt-1 font-medium">{user.updatedAt ? formatDate(user.updatedAt) : '-'}</p>
         </div>
       </div>
 
       {actionError && (
-        <p
-          role="alert"
-          className="mt-6 text-sm text-destructive"
-        >
+        <p role="alert" className="mt-6 text-sm text-destructive">
           {actionError}
         </p>
       )}
@@ -334,27 +247,19 @@ function AdminUserDetail({
         <button
           type="button"
           onClick={handleDelete}
-          disabled={
-            isDeleting || isUpdating
-          }
+          disabled={isDeleting || isUpdating}
           className="w-full rounded-md border px-4 py-2 text-sm font-medium text-destructive disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
-          {isDeleting
-            ? "Deleting..."
-            : "Delete User"}
+          {isDeleting ? 'Deleting...' : 'Delete User'}
         </button>
 
         <button
           type="button"
           onClick={handleUpdate}
-          disabled={
-            isUpdating || isDeleting
-          }
+          disabled={isUpdating || isDeleting}
           className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
-          {isUpdating
-            ? "Updating..."
-            : "Update User"}
+          {isUpdating ? 'Updating...' : 'Update User'}
         </button>
       </div>
     </div>

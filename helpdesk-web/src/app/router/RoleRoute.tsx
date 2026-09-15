@@ -1,13 +1,11 @@
-import { Navigate, Outlet } from "react-router";
-import { useAuth } from "../../features/auth/hooks/useAuth";
+import { Navigate, Outlet } from 'react-router';
+import { useAuth } from '../../features/auth/hooks/useAuth';
 
 interface RoleRouteProps {
   allowedRoles: string[];
 }
 
-function RoleRoute({
-  allowedRoles,
-}: RoleRouteProps) {
+function RoleRoute({ allowedRoles }: RoleRouteProps) {
   const { auth } = useAuth();
 
   const userRole = auth?.role;

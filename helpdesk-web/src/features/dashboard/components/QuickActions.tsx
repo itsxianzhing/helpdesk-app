@@ -1,17 +1,13 @@
-import { Link } from "react-router";
-import { List, Plus } from "lucide-react";
+import { Link } from 'react-router';
+import { List, Plus } from 'lucide-react';
 
 function QuickActions() {
   return (
     <div className="rounded-xl border bg-card p-6">
       <div className="mb-4">
-        <h2 className="font-semibold">
-          Quick Actions
-        </h2>
+        <h2 className="font-semibold">Quick Actions</h2>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          Quickly access common actions.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Quickly access common actions.</p>
       </div>
 
       <div className="flex flex-wrap gap-3">

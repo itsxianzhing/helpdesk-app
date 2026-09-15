@@ -1,0 +1,39 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+# C# / .NET
+[*.cs]
+indent_size = 4
+
+# C# project files
+[*.csproj]
+indent_size = 2
+
+# Solution files
+[*.sln]
+indent_size = 2
+
+[*.slnx]
+indent_size = 2
+
+# JavaScript / TypeScript / React
+[*.{js,jsx,ts,tsx}]
+indent_size = 2
+
+# JSON
+[*.{json,jsonc}]
+indent_size = 2
+
+# Web
+[*.{html,css,scss}]
+indent_size = 2
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = false

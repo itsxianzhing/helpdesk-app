@@ -1,54 +1,34 @@
-import { useEffect, useState } from "react";
-import { Search } from "lucide-react";
-import type {
-  TicketListResponse,
-  TicketPriority,
-  TicketSortBy,
-  TicketStatus,
-} from "../types";
-import { getTickets } from "../api/ticketApi";
-import { ApiError } from "../../../lib/apiError";
-import TicketTable from "../components/TicketTable";
-import useDebounce from "../../../hooks/useDebounce";
+import { useEffect, useState } from 'react';
+import { Search } from 'lucide-react';
+import type { TicketListResponse, TicketPriority, TicketSortBy, TicketStatus } from '../types';
+import { getTickets } from '../api/ticketApi';
+import { ApiError } from '../../../lib/apiError';
+import TicketTable from '../components/TicketTable';
+import useDebounce from '../../../hooks/useDebounce';
 
 function AdminTicketsPage() {
-  const [tickets, setTickets] = useState<
-    TicketListResponse[]
-  >([]);
+  const [tickets, setTickets] = useState<TicketListResponse[]>([]);
 
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
-  const [status, setStatus] = useState<
-    TicketStatus | ""
-  >("");
-  const [priority, setPriority] = useState<
-    TicketPriority | ""
-  >("");
+  const [status, setStatus] = useState<TicketStatus | ''>('');
+  const [priority, setPriority] = useState<TicketPriority | ''>('');
 
-  const [sortBy, setSortBy] = useState<TicketSortBy>(
-    "CreatedAt",
-  );
+  const [sortBy, setSortBy] = useState<TicketSortBy>('CreatedAt');
   const [descending, setDescending] = useState(true);
 
-  const debouncedSearch = useDebounce(
-    search,
-    500,
-  );
+  const debouncedSearch = useDebounce(search, 500);
 
-  const [totalItems, setTotalItems] =
-    useState(0);
+  const [totalItems, setTotalItems] = useState(0);
 
-  const [totalPages, setTotalPages] =
-    useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const [isLoading, setIsLoading] =
-    useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchTickets() {
@@ -73,9 +53,7 @@ function AdminTicketsPage() {
         if (error instanceof ApiError) {
           setError(error.message);
         } else {
-          setError(
-            "Failed to load tickets.",
-          );
+          setError('Failed to load tickets.');
         }
       } finally {
         setIsLoading(false);
@@ -83,22 +61,12 @@ function AdminTicketsPage() {
     }
 
     fetchTickets();
-  }, [
-    page,
-    pageSize,
-    debouncedSearch,
-    status,
-    priority,
-    sortBy,
-    descending,
-  ]);
+  }, [page, pageSize, debouncedSearch, status, priority, sortBy, descending]);
 
   if (isLoading) {
     return (
       <div className="p-6">
-        <p className="text-sm text-muted-foreground">
-          Loading tickets...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading tickets...</p>
       </div>
     );
   }
@@ -106,9 +74,7 @@ function AdminTicketsPage() {
   if (error) {
     return (
       <div className="p-6">
-        <p className="text-sm text-destructive">
-          {error}
-        </p>
+        <p className="text-sm text-destructive">{error}</p>
       </div>
     );
   }
@@ -116,13 +82,9 @@ function AdminTicketsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          All Tickets
-        </h1>
+        <h1 className="text-2xl font-semibold tracking-tight">All Tickets</h1>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage support tickets from all users.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Manage support tickets from all users.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:flex">
@@ -148,9 +110,7 @@ function AdminTicketsPage() {
         <select
           value={status}
           onChange={(event) => {
-            setStatus(
-              event.target.value as TicketStatus | "",
-            );
+            setStatus(event.target.value as TicketStatus | '');
             setPage(1);
           }}
           aria-label="Filter by status"
@@ -166,9 +126,7 @@ function AdminTicketsPage() {
         <select
           value={priority}
           onChange={(event) => {
-            setPriority(
-              event.target.value as TicketPriority | "",
-            );
+            setPriority(event.target.value as TicketPriority | '');
             setPage(1);
           }}
           aria-label="Filter by priority"
@@ -184,9 +142,7 @@ function AdminTicketsPage() {
         <select
           value={sortBy}
           onChange={(event) => {
-            setSortBy(
-              event.target.value as TicketSortBy,
-            );
+            setSortBy(event.target.value as TicketSortBy);
             setPage(1);
           }}
           aria-label="Sort tickets by"
@@ -206,38 +162,23 @@ function AdminTicketsPage() {
           }}
           className="w-full rounded-md border px-3 py-2.5 text-sm hover:bg-muted lg:w-auto"
         >
-          {descending ? "Descending" : "Ascending"}
+          {descending ? 'Descending' : 'Ascending'}
         </button>
       </div>
 
-      <TicketTable
-        tickets={tickets}
-        detailPath={(id) => `/admin/tickets/${id}`}
-      />
+      <TicketTable tickets={tickets} detailPath={(id) => `/admin/tickets/${id}`} />
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Showing{" "}
-          {totalItems === 0
-            ? 0
-            : (page - 1) * pageSize + 1}
-          –
-          {Math.min(
-            page * pageSize,
-            totalItems,
-          )}{" "}
-          of {totalItems} tickets
+          Showing {totalItems === 0 ? 0 : (page - 1) * pageSize + 1}–
+          {Math.min(page * pageSize, totalItems)} of {totalItems} tickets
         </p>
 
         <div className="flex items-center gap-1">
           <button
             type="button"
             disabled={page === 1 || isLoading}
-            onClick={() =>
-              setPage(
-                (current) => current - 1,
-              )
-            }
+            onClick={() => setPage((current) => current - 1)}
             className="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             Previous
@@ -249,16 +190,8 @@ function AdminTicketsPage() {
 
           <button
             type="button"
-            disabled={
-              page === totalPages ||
-              isLoading ||
-              totalPages === 0
-            }
-            onClick={() =>
-              setPage(
-                (current) => current + 1,
-              )
-            }
+            disabled={page === totalPages || isLoading || totalPages === 0}
+            onClick={() => setPage((current) => current + 1)}
             className="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             Next

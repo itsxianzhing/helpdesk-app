@@ -1,18 +1,15 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { Pencil, Trash2 } from "lucide-react";
-import type { TicketDetailResponse } from "../types";
-import type { CommentResponse } from "../../comments/types";
-import { ApiError } from "../../../lib/apiError";
-import {
-  getTicketById,
-  deleteTicket,
-} from "../api/ticketApi";
-import { formatDate } from "../../../lib/formatDate";
-import CommentList from "../../comments/components/CommentList";
-import CommentForm from "../../comments/components/CommentForm";
-import { useAuth } from "../../auth/hooks/useAuth";
-import { useNotification } from "../../../app/notification/NotificationContext";
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { Pencil, Trash2 } from 'lucide-react';
+import type { TicketDetailResponse } from '../types';
+import type { CommentResponse } from '../../comments/types';
+import { ApiError } from '../../../lib/apiError';
+import { getTicketById, deleteTicket } from '../api/ticketApi';
+import { formatDate } from '../../../lib/formatDate';
+import CommentList from '../../comments/components/CommentList';
+import CommentForm from '../../comments/components/CommentForm';
+import { useAuth } from '../../auth/hooks/useAuth';
+import { useNotification } from '../../../app/notification/NotificationContext';
 
 interface TicketDetailProps {
   ticketId: number;
@@ -24,8 +21,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
 
   const { showNotification } = useNotification();
 
-  const [ticket, setTicket] =
-    useState<TicketDetailResponse | null>(null);
+  const [ticket, setTicket] = useState<TicketDetailResponse | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,8 +29,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
 
   const [error, setError] = useState<string | null>(null);
 
-  const [actionError, setActionError] =
-    useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchTicket() {
@@ -49,7 +44,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
         if (error instanceof ApiError) {
           setError(error.message);
         } else {
-          setError("Failed to load ticket.");
+          setError('Failed to load ticket.');
         }
       } finally {
         setIsLoading(false);
@@ -57,7 +52,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
     }
 
     if (!Number.isInteger(ticketId)) {
-      setError("Invalid ticket ID.");
+      setError('Invalid ticket ID.');
       setIsLoading(false);
       return;
     }
@@ -70,9 +65,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
       return;
     }
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this ticket?",
-    );
+    const confirmed = window.confirm('Are you sure you want to delete this ticket?');
 
     if (!confirmed) {
       return;
@@ -84,17 +77,14 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
     try {
       await deleteTicket(ticket.id);
 
-      showNotification(
-        "Ticket deleted successfully.",
-        "success",
-      );
+      showNotification('Ticket deleted successfully.', 'success');
 
-      navigate("/tickets");
+      navigate('/tickets');
     } catch (error) {
       if (error instanceof ApiError) {
         setActionError(error.message);
       } else {
-        setActionError("Failed to delete ticket.");
+        setActionError('Failed to delete ticket.');
       }
     } finally {
       setIsDeleting(false);
@@ -109,17 +99,12 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
 
       return {
         ...currentTicket,
-        comments: [
-          ...currentTicket.comments,
-          comment,
-        ],
+        comments: [...currentTicket.comments, comment],
       };
     });
   }
 
-  function handleCommentUpdated(
-    updatedComment: CommentResponse,
-  ) {
+  function handleCommentUpdated(updatedComment: CommentResponse) {
     setTicket((currentTicket) => {
       if (!currentTicket) {
         return currentTicket;
@@ -127,11 +112,8 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
 
       return {
         ...currentTicket,
-        comments: currentTicket.comments.map(
-          (comment) =>
-            comment.id === updatedComment.id
-              ? updatedComment
-              : comment,
+        comments: currentTicket.comments.map((comment) =>
+          comment.id === updatedComment.id ? updatedComment : comment,
         ),
       };
     });
@@ -145,9 +127,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
 
       return {
         ...currentTicket,
-        comments: currentTicket.comments.filter(
-          (comment) => comment.id !== commentId,
-        ),
+        comments: currentTicket.comments.filter((comment) => comment.id !== commentId),
       };
     });
   }
@@ -155,9 +135,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
   if (isLoading) {
     return (
       <div className="p-4">
-        <p className="text-sm text-muted-foreground">
-          Loading ticket...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading ticket...</p>
       </div>
     );
   }
@@ -165,10 +143,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
   if (error) {
     return (
       <div className="p-4">
-        <p
-          role="alert"
-          className="text-sm text-destructive"
-        >
+        <p role="alert" className="text-sm text-destructive">
           {error}
         </p>
       </div>
@@ -189,9 +164,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
       <div className="border-b p-4 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <p className="text-sm text-muted-foreground">
-              #{ticket.ticketNumber}
-            </p>
+            <p className="text-sm text-muted-foreground">#{ticket.ticketNumber}</p>
 
             <h1 className="mt-1 break-words text-2xl font-semibold tracking-tight">
               {ticket.title}
@@ -224,15 +197,11 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
               >
                 <Trash2 size={16} />
 
-                {isDeleting ? "Deleting..." : "Delete"}
+                {isDeleting ? 'Deleting...' : 'Delete'}
               </button>
             </div>
 
-            {actionError && (
-              <p className="text-sm text-destructive">
-                {actionError}
-              </p>
-            )}
+            {actionError && <p className="text-sm text-destructive">{actionError}</p>}
           </div>
         </div>
       </div>
@@ -240,9 +209,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
       {/* Content */}
       <div className="space-y-6 p-4 sm:p-6">
         <div>
-          <h2 className="text-sm font-medium">
-            Description
-          </h2>
+          <h2 className="text-sm font-medium">Description</h2>
 
           <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-muted-foreground">
             {ticket.description}
@@ -250,29 +217,22 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
         </div>
 
         <div>
-          <h2 className="text-sm font-medium">
-            Created
-          </h2>
+          <h2 className="text-sm font-medium">Created</h2>
 
-          <p className="mt-2 text-sm text-muted-foreground">
-            {formatDate(ticket.createdAt)}
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">{formatDate(ticket.createdAt)}</p>
         </div>
 
         <div className="border-t pt-6">
           <CommentList
             comments={ticket.comments}
             currentUserId={auth.id}
-            isAdmin={auth.role === "Admin"}
+            isAdmin={auth.role === 'Admin'}
             onUpdated={handleCommentUpdated}
             onDeleted={handleCommentDeleted}
           />
 
           <div className="mt-6">
-            <CommentForm
-              ticketId={ticket.id}
-              onCreated={handleCommentCreated}
-            />
+            <CommentForm ticketId={ticket.id} onCreated={handleCommentCreated} />
           </div>
         </div>
       </div>

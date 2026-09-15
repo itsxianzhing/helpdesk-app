@@ -1,6 +1,6 @@
-import { Link, useParams } from "react-router";
-import { ArrowLeft } from "lucide-react";
-import AdminTicketDetail from "../components/AdminTicketDetail";
+import { Link, useParams } from 'react-router';
+import { ArrowLeft } from 'lucide-react';
+import AdminTicketDetail from '../components/AdminTicketDetail';
 
 function AdminTicketDetailPage() {
   const { id } = useParams();

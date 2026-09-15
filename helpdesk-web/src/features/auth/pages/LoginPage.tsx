@@ -1,16 +1,16 @@
-import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router";
-import { LockKeyhole, Mail } from "lucide-react";
+import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router';
+import { LockKeyhole, Mail } from 'lucide-react';
 
-import { login as loginApi } from "../api/authApi";
-import { useAuth } from "../hooks/useAuth";
+import { login as loginApi } from '../api/authApi';
+import { useAuth } from '../hooks/useAuth';
 
 function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,21 +31,17 @@ function LoginPage() {
 
       login(response);
 
-      if (response.role === "Admin") {
-        navigate("/admin/dashboard", {
+      if (response.role === 'Admin') {
+        navigate('/admin/dashboard', {
           replace: true,
         });
       } else {
-        navigate("/dashboard", {
+        navigate('/dashboard', {
           replace: true,
         });
       }
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Login failed.",
-      );
+      setError(error instanceof Error ? error.message : 'Login failed.');
     } finally {
       setIsLoading(false);
     }
@@ -55,24 +51,14 @@ function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Welcome back
-          </h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
 
-          <p className="mt-2 text-sm text-muted-foreground">
-            Sign in to your Helpdesk account
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Sign in to your Helpdesk account</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="text-sm font-medium"
-            >
+            <label htmlFor="email" className="text-sm font-medium">
               Email
             </label>
 
@@ -94,19 +80,14 @@ function LoginPage() {
                 autoComplete="email"
                 required
                 aria-invalid={!!error}
-                aria-describedby={
-                  error ? "login-error" : undefined
-                }
+                aria-describedby={error ? 'login-error' : undefined}
                 className="w-full rounded-md border bg-background py-2.5 pl-10 pr-3 text-sm outline-none transition focus:ring-2 focus:ring-ring"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="password"
-              className="text-sm font-medium"
-            >
+            <label htmlFor="password" className="text-sm font-medium">
               Password
             </label>
 
@@ -128,20 +109,14 @@ function LoginPage() {
                 autoComplete="current-password"
                 required
                 aria-invalid={!!error}
-                aria-describedby={
-                  error ? "login-error" : undefined
-                }
+                aria-describedby={error ? 'login-error' : undefined}
                 className="w-full rounded-md border bg-background py-2.5 pl-10 pr-3 text-sm outline-none transition focus:ring-2 focus:ring-ring"
               />
             </div>
           </div>
 
           {error && (
-            <p
-              id="login-error"
-              role="alert"
-              className="text-sm text-destructive"
-            >
+            <p id="login-error" role="alert" className="text-sm text-destructive">
               {error}
             </p>
           )}
@@ -151,7 +126,7 @@ function LoginPage() {
             disabled={isLoading}
             className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
       </div>

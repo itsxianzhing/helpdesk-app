@@ -1,6 +1,6 @@
-import { Link } from "react-router";
-import type { TicketListResponse } from "../../tickets/types";
-import { formatDate } from "../../../lib/formatDate";
+import { Link } from 'react-router';
+import type { TicketListResponse } from '../../tickets/types';
+import { formatDate } from '../../../lib/formatDate';
 
 interface RecentTicketsProps {
   tickets: TicketListResponse[];
@@ -20,25 +20,19 @@ function RecentTickets({
   return (
     <div className="rounded-xl border bg-card">
       <div className="border-b p-4 sm:p-6">
-        <h2 className="font-semibold">
-          Recent Tickets
-        </h2>
+        <h2 className="font-semibold">Recent Tickets</h2>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          {description}
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       </div>
 
       {tickets.length === 0 ? (
         <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
-          <p className="font-medium">
-            No tickets yet
-          </p>
+          <p className="font-medium">No tickets yet</p>
 
           <p className="mt-1 text-sm text-muted-foreground">
             {showCreateButton
-              ? "Create your first ticket to get help from the support team."
-              : "There are no tickets to display yet."}
+              ? 'Create your first ticket to get help from the support team.'
+              : 'There are no tickets to display yet.'}
           </p>
 
           {showCreateButton && (
@@ -60,13 +54,10 @@ function RecentTickets({
             >
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
-                  <p className="break-words font-medium">
-                    {ticket.title}
-                  </p>
+                  <p className="break-words font-medium">{ticket.title}</p>
 
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {ticket.ticketNumber} ·{" "}
-                    {formatDate(ticket.createdAt)}
+                    {ticket.ticketNumber} · {formatDate(ticket.createdAt)}
                   </p>
                 </div>
 
@@ -80,10 +71,7 @@ function RecentTickets({
       )}
 
       <div className="border-t p-4">
-        <Link
-          to={viewAllPath}
-          className="text-sm font-medium hover:underline"
-        >
+        <Link to={viewAllPath} className="text-sm font-medium hover:underline">
           View all tickets →
         </Link>
       </div>

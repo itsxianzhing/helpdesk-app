@@ -1,13 +1,11 @@
-import type { CommentResponse } from "../types";
-import CommentItem from "./CommentItem";
+import type { CommentResponse } from '../types';
+import CommentItem from './CommentItem';
 
 interface CommentListProps {
   comments: CommentResponse[];
   currentUserId: number;
   isAdmin?: boolean;
-  onUpdated: (
-    comment: CommentResponse,
-  ) => void;
+  onUpdated: (comment: CommentResponse) => void;
   onDeleted: (commentId: number) => void;
 }
 
@@ -21,9 +19,7 @@ function CommentList({
   if (comments.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-6 text-center">
-        <p className="text-sm text-muted-foreground">
-          No comments yet.
-        </p>
+        <p className="text-sm text-muted-foreground">No comments yet.</p>
       </div>
     );
   }

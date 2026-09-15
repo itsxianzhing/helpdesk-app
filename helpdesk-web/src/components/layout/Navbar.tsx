@@ -9,17 +9,17 @@ import {
   Plus,
   Users,
   ShieldCheck,
-} from "lucide-react";
-import { NavLink } from "react-router";
-import { useState } from "react";
-import { useAuth } from "../../features/auth/hooks/useAuth";
+} from 'lucide-react';
+import { NavLink } from 'react-router';
+import { useState } from 'react';
+import { useAuth } from '../../features/auth/hooks/useAuth';
 
 function Navbar() {
   const { logout, auth } = useAuth();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const isAdmin = auth?.role === "Admin";
+  const isAdmin = auth?.role === 'Admin';
 
   function closeMenu() {
     setIsMenuOpen(false);
@@ -33,47 +33,29 @@ function Navbar() {
           type="button"
           onClick={() => setIsMenuOpen((current) => !current)}
           className="rounded-md p-2 hover:bg-muted md:hidden"
-          aria-label={
-            isMenuOpen
-              ? "Close navigation menu"
-              : "Open navigation menu"
-          }
+          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={isMenuOpen}
         >
           {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
 
-        <span className="text-lg font-semibold">
-          Helpdesk
-        </span>
+        <span className="text-lg font-semibold">Helpdesk</span>
       </div>
 
       {/* Right side */}
       <div className="flex items-center gap-2 md:gap-4">
-        <button
-          type="button"
-          className="rounded-md p-2 hover:bg-muted"
-          aria-label="Notifications"
-        >
+        <button type="button" className="rounded-md p-2 hover:bg-muted" aria-label="Notifications">
           <Bell size={20} />
         </button>
 
         <div className="flex items-center gap-2 md:gap-3">
           <div className="hidden text-right sm:block">
-            <p className="text-sm font-medium">
-              {auth?.name}
-            </p>
+            <p className="text-sm font-medium">{auth?.name}</p>
 
-            <p className="text-xs text-muted-foreground">
-              {auth?.role}
-            </p>
+            <p className="text-xs text-muted-foreground">{auth?.role}</p>
           </div>
 
-          <button
-            type="button"
-            className="rounded-md p-2 hover:bg-muted"
-            aria-label="User profile"
-          >
+          <button type="button" className="rounded-md p-2 hover:bg-muted" aria-label="User profile">
             <CircleUserRound size={22} />
           </button>
 

@@ -1,6 +1,6 @@
-import { Link, useParams } from "react-router";
-import { ArrowLeft } from "lucide-react";
-import TicketDetail from "../components/TicketDetail";
+import { Link, useParams } from 'react-router';
+import { ArrowLeft } from 'lucide-react';
+import TicketDetail from '../components/TicketDetail';
 
 function TicketDetailPage() {
   const { id } = useParams();

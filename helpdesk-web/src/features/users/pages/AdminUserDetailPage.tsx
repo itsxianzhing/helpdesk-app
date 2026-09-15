@@ -1,6 +1,6 @@
-import { Link, useParams } from "react-router";
-import { ArrowLeft } from "lucide-react";
-import AdminUserDetail from "../components/AdminUserDetail";
+import { Link, useParams } from 'react-router';
+import { ArrowLeft } from 'lucide-react';
+import AdminUserDetail from '../components/AdminUserDetail';
 
 function AdminUserDetailPage() {
   const { id } = useParams();

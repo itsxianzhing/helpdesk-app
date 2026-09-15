@@ -1,19 +1,17 @@
-import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router";
-import { createTicket } from "../api/ticketApi";
-import { ApiError } from "../../../lib/apiError";
-import { useNotification } from "../../../app/notification/NotificationContext";
+import { useState, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { createTicket } from '../api/ticketApi';
+import { ApiError } from '../../../lib/apiError';
+import { useNotification } from '../../../app/notification/NotificationContext';
 
 function TicketForm() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] =
-    useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
   const navigate = useNavigate();
   const { showNotification } = useNotification();
 
-  const [isSubmitting, setIsSubmitting] =
-    useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [errors, setErrors] = useState<{
     title?: string;
@@ -21,14 +19,11 @@ function TicketForm() {
     submit?: string;
   }>({});
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmedTitle = title.trim();
-    const trimmedDescription =
-      description.trim();
+    const trimmedDescription = description.trim();
 
     const validationErrors: {
       title?: string;
@@ -36,27 +31,18 @@ function TicketForm() {
     } = {};
 
     if (!trimmedTitle) {
-      validationErrors.title =
-        "Title is required.";
+      validationErrors.title = 'Title is required.';
     } else if (trimmedTitle.length > 100) {
-      validationErrors.title =
-        "Title cannot exceed 100 characters.";
+      validationErrors.title = 'Title cannot exceed 100 characters.';
     }
 
     if (!trimmedDescription) {
-      validationErrors.description =
-        "Description is required.";
-    } else if (
-      trimmedDescription.length > 1000
-    ) {
-      validationErrors.description =
-        "Description cannot exceed 1000 characters.";
+      validationErrors.description = 'Description is required.';
+    } else if (trimmedDescription.length > 1000) {
+      validationErrors.description = 'Description cannot exceed 1000 characters.';
     }
 
-    if (
-      validationErrors.title ||
-      validationErrors.description
-    ) {
+    if (validationErrors.title || validationErrors.description) {
       setErrors(validationErrors);
       return;
     }
@@ -70,10 +56,7 @@ function TicketForm() {
         description: trimmedDescription,
       });
 
-      showNotification(
-        "Ticket created successfully.",
-        "success",
-      );
+      showNotification('Ticket created successfully.', 'success');
 
       navigate(`/tickets/${ticket.id}`);
     } catch (error) {
@@ -83,7 +66,7 @@ function TicketForm() {
         });
       } else {
         setErrors({
-          submit: "Failed to create ticket.",
+          submit: 'Failed to create ticket.',
         });
       }
     } finally {
@@ -92,16 +75,10 @@ function TicketForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6"
-    >
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Title */}
       <div className="space-y-2">
-        <label
-          htmlFor="title"
-          className="text-sm font-medium"
-        >
+        <label htmlFor="title" className="text-sm font-medium">
           Title
         </label>
 
@@ -122,25 +99,16 @@ function TicketForm() {
           maxLength={100}
           required
           aria-invalid={!!errors.title}
-          aria-describedby={
-            errors.title
-              ? "title-error"
-              : undefined
-          }
+          aria-describedby={errors.title ? 'title-error' : undefined}
           className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none transition focus:ring-2 focus:ring-ring"
         />
 
         <div className="flex justify-end">
-          <span className="text-xs text-muted-foreground">
-            {title.length}/100
-          </span>
+          <span className="text-xs text-muted-foreground">{title.length}/100</span>
         </div>
 
         {errors.title && (
-          <p
-            id="title-error"
-            className="text-sm text-destructive"
-          >
+          <p id="title-error" className="text-sm text-destructive">
             {errors.title}
           </p>
         )}
@@ -148,10 +116,7 @@ function TicketForm() {
 
       {/* Description */}
       <div className="space-y-2">
-        <label
-          htmlFor="description"
-          className="text-sm font-medium"
-        >
+        <label htmlFor="description" className="text-sm font-medium">
           Description
         </label>
 
@@ -172,25 +137,16 @@ function TicketForm() {
           rows={7}
           required
           aria-invalid={!!errors.description}
-          aria-describedby={
-            errors.description
-              ? "description-error"
-              : undefined
-          }
+          aria-describedby={errors.description ? 'description-error' : undefined}
           className="w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm outline-none transition focus:ring-2 focus:ring-ring"
         />
 
         <div className="flex justify-end">
-          <span className="text-xs text-muted-foreground">
-            {description.length}/1000
-          </span>
+          <span className="text-xs text-muted-foreground">{description.length}/1000</span>
         </div>
 
         {errors.description && (
-          <p
-            id="description-error"
-            className="text-sm text-destructive"
-          >
+          <p id="description-error" className="text-sm text-destructive">
             {errors.description}
           </p>
         )}
@@ -198,10 +154,7 @@ function TicketForm() {
 
       {/* Submit Error */}
       {errors.submit && (
-        <p
-          role="alert"
-          className="text-sm text-destructive"
-        >
+        <p role="alert" className="text-sm text-destructive">
           {errors.submit}
         </p>
       )}
@@ -220,9 +173,7 @@ function TicketForm() {
           disabled={isSubmitting}
           className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
-          {isSubmitting
-            ? "Creating..."
-            : "Create Ticket"}
+          {isSubmitting ? 'Creating...' : 'Create Ticket'}
         </button>
       </div>
     </form>

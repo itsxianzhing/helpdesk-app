@@ -1,16 +1,11 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import { Plus, Search } from "lucide-react";
-import { getUsers } from "../api/userApi";
-import type {
-  Role,
-  UserResponse,
-  UserSortBy,
-  UserStatus,
-} from "../types";
-import { ApiError } from "../../../lib/apiError";
-import useDebounce from "../../../hooks/useDebounce";
-import UserTable from "../../users/components/UserTable";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import { Plus, Search } from 'lucide-react';
+import { getUsers } from '../api/userApi';
+import type { Role, UserResponse, UserSortBy, UserStatus } from '../types';
+import { ApiError } from '../../../lib/apiError';
+import useDebounce from '../../../hooks/useDebounce';
+import UserTable from '../../users/components/UserTable';
 
 function AdminUsersPage() {
   const [users, setUsers] = useState<UserResponse[]>([]);
@@ -20,37 +15,26 @@ function AdminUsersPage() {
   const [pageSize] = useState(10);
 
   // Filters
-  const [search, setSearch] = useState("");
-  const [role, setRole] = useState<Role | "">("");
-  const [status, setStatus] = useState<UserStatus | "">(
-    "",
-  );
+  const [search, setSearch] = useState('');
+  const [role, setRole] = useState<Role | ''>('');
+  const [status, setStatus] = useState<UserStatus | ''>('');
 
   // Sorting
-  const [sortBy, setSortBy] =
-    useState<UserSortBy>("CreatedAt");
+  const [sortBy, setSortBy] = useState<UserSortBy>('CreatedAt');
 
-  const [descending, setDescending] =
-    useState(true);
+  const [descending, setDescending] = useState(true);
 
-  const debouncedSearch = useDebounce(
-    search,
-    500,
-  );
+  const debouncedSearch = useDebounce(search, 500);
 
   // Pagination metadata
-  const [totalItems, setTotalItems] =
-    useState(0);
+  const [totalItems, setTotalItems] = useState(0);
 
-  const [totalPages, setTotalPages] =
-    useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   // Request state
-  const [isLoading, setIsLoading] =
-    useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -61,8 +45,7 @@ function AdminUsersPage() {
         const response = await getUsers({
           page,
           pageSize,
-          search:
-            debouncedSearch || undefined,
+          search: debouncedSearch || undefined,
           role: role || undefined,
           status: status || undefined,
           sortBy: sortBy || undefined,
@@ -76,7 +59,7 @@ function AdminUsersPage() {
         if (error instanceof ApiError) {
           setError(error.message);
         } else {
-          setError("Failed to load users.");
+          setError('Failed to load users.');
         }
       } finally {
         setIsLoading(false);
@@ -84,22 +67,12 @@ function AdminUsersPage() {
     }
 
     fetchUsers();
-  }, [
-    page,
-    pageSize,
-    debouncedSearch,
-    role,
-    status,
-    sortBy,
-    descending,
-  ]);
+  }, [page, pageSize, debouncedSearch, role, status, sortBy, descending]);
 
   if (isLoading) {
     return (
       <div className="p-6">
-        <p className="text-sm text-muted-foreground">
-          Loading users...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading users...</p>
       </div>
     );
   }
@@ -107,9 +80,7 @@ function AdminUsersPage() {
   if (error) {
     return (
       <div className="p-6">
-        <p className="text-sm text-destructive">
-          {error}
-        </p>
+        <p className="text-sm text-destructive">{error}</p>
       </div>
     );
   }
@@ -118,13 +89,9 @@ function AdminUsersPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          All Users
-        </h1>
+        <h1 className="text-2xl font-semibold tracking-tight">All Users</h1>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage users and their access.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Manage users and their access.</p>
       </div>
 
       <Link
@@ -161,7 +128,7 @@ function AdminUsersPage() {
         <select
           value={role}
           onChange={(event) => {
-            setRole(event.target.value as Role | "");
+            setRole(event.target.value as Role | '');
             setPage(1);
           }}
           aria-label="Filter by role"
@@ -176,7 +143,7 @@ function AdminUsersPage() {
         <select
           value={status}
           onChange={(event) => {
-            setStatus(event.target.value as UserStatus | "");
+            setStatus(event.target.value as UserStatus | '');
             setPage(1);
           }}
           aria-label="Filter by status"
@@ -213,7 +180,7 @@ function AdminUsersPage() {
           }}
           className="w-full rounded-md border px-3 py-2.5 text-sm hover:bg-muted lg:w-auto"
         >
-          {descending ? "Descending" : "Ascending"}
+          {descending ? 'Descending' : 'Ascending'}
         </button>
       </div>
 
@@ -223,29 +190,15 @@ function AdminUsersPage() {
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Showing{" "}
-          {totalItems === 0
-            ? 0
-            : (page - 1) * pageSize + 1}
-          –
-          {Math.min(
-            page * pageSize,
-            totalItems,
-          )}{" "}
-          of {totalItems} users
+          Showing {totalItems === 0 ? 0 : (page - 1) * pageSize + 1}–
+          {Math.min(page * pageSize, totalItems)} of {totalItems} users
         </p>
 
         <div className="flex items-center gap-1">
           <button
             type="button"
-            disabled={
-              page === 1 || isLoading
-            }
-            onClick={() =>
-              setPage(
-                (current) => current - 1,
-              )
-            }
+            disabled={page === 1 || isLoading}
+            onClick={() => setPage((current) => current - 1)}
             className="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             Previous
@@ -257,16 +210,8 @@ function AdminUsersPage() {
 
           <button
             type="button"
-            disabled={
-              page === totalPages ||
-              isLoading ||
-              totalPages === 0
-            }
-            onClick={() =>
-              setPage(
-                (current) => current + 1,
-              )
-            }
+            disabled={page === totalPages || isLoading || totalPages === 0}
+            onClick={() => setPage((current) => current + 1)}
             className="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             Next

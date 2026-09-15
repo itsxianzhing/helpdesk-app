@@ -1,26 +1,13 @@
-import {
-  useEffect,
-  useState,
-  type FormEvent,
-} from "react";
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from "react-router";
-import { ArrowLeft } from "lucide-react";
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link, useNavigate, useParams } from 'react-router';
+import { ArrowLeft } from 'lucide-react';
 
-import {
-  getTicketById,
-  updateMyTicket,
-} from "../api/ticketApi";
+import { getTicketById, updateMyTicket } from '../api/ticketApi';
 
-import type {
-  TicketDetailResponse,
-} from "../types";
+import type { TicketDetailResponse } from '../types';
 
-import { ApiError } from "../../../lib/apiError";
-import { useNotification } from "../../../app/notification/NotificationContext";
+import { ApiError } from '../../../lib/apiError';
+import { useNotification } from '../../../app/notification/NotificationContext';
 
 function EditTicketPage() {
   const { id } = useParams();
@@ -30,30 +17,23 @@ function EditTicketPage() {
 
   const ticketId = Number(id);
 
-  const [ticket, setTicket] =
-    useState<TicketDetailResponse | null>(null);
+  const [ticket, setTicket] = useState<TicketDetailResponse | null>(null);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] =
-    useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
-  const [isLoading, setIsLoading] =
-    useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [isSubmitting, setIsSubmitting] =
-    useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const [fieldErrors, setFieldErrors] =
-    useState<{
-      title?: string;
-      description?: string;
-    }>({});
+  const [fieldErrors, setFieldErrors] = useState<{
+    title?: string;
+    description?: string;
+  }>({});
 
-  const [actionError, setActionError] =
-    useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchTicket() {
@@ -61,8 +41,7 @@ function EditTicketPage() {
       setError(null);
 
       try {
-        const response =
-          await getTicketById(ticketId);
+        const response = await getTicketById(ticketId);
 
         setTicket(response);
         setTitle(response.title);
@@ -71,7 +50,7 @@ function EditTicketPage() {
         if (error instanceof ApiError) {
           setError(error.message);
         } else {
-          setError("Failed to load ticket.");
+          setError('Failed to load ticket.');
         }
       } finally {
         setIsLoading(false);
@@ -79,7 +58,7 @@ function EditTicketPage() {
     }
 
     if (!Number.isInteger(ticketId)) {
-      setError("Invalid ticket ID.");
+      setError('Invalid ticket ID.');
       setIsLoading(false);
       return;
     }
@@ -87,9 +66,7 @@ function EditTicketPage() {
     fetchTicket();
   }, [ticketId]);
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!ticket) {
@@ -97,8 +74,7 @@ function EditTicketPage() {
     }
 
     const trimmedTitle = title.trim();
-    const trimmedDescription =
-      description.trim();
+    const trimmedDescription = description.trim();
 
     const validationErrors: {
       title?: string;
@@ -106,27 +82,18 @@ function EditTicketPage() {
     } = {};
 
     if (!trimmedTitle) {
-      validationErrors.title =
-        "Title is required.";
+      validationErrors.title = 'Title is required.';
     } else if (trimmedTitle.length > 100) {
-      validationErrors.title =
-        "Title cannot exceed 100 characters.";
+      validationErrors.title = 'Title cannot exceed 100 characters.';
     }
 
     if (!trimmedDescription) {
-      validationErrors.description =
-        "Description is required.";
-    } else if (
-      trimmedDescription.length > 1000
-    ) {
-      validationErrors.description =
-        "Description cannot exceed 1000 characters.";
+      validationErrors.description = 'Description is required.';
+    } else if (trimmedDescription.length > 1000) {
+      validationErrors.description = 'Description cannot exceed 1000 characters.';
     }
 
-    if (
-      validationErrors.title ||
-      validationErrors.description
-    ) {
+    if (validationErrors.title || validationErrors.description) {
       setFieldErrors(validationErrors);
       return;
     }
@@ -142,25 +109,18 @@ function EditTicketPage() {
         version: ticket.version,
       });
 
-      showNotification(
-        "Ticket updated successfully.",
-        "success",
-      );
+      showNotification('Ticket updated successfully.', 'success');
 
       navigate(`/tickets/${ticket.id}`);
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.statusCode === 409) {
-          setActionError(
-            "This ticket was modified by another user. Please refresh and try again.",
-          );
+          setActionError('This ticket was modified by another user. Please refresh and try again.');
         } else {
           setActionError(error.message);
         }
       } else {
-        setActionError(
-          "Failed to update ticket.",
-        );
+        setActionError('Failed to update ticket.');
       }
     } finally {
       setIsSubmitting(false);
@@ -170,9 +130,7 @@ function EditTicketPage() {
   if (isLoading) {
     return (
       <div className="p-6">
-        <p className="text-sm text-muted-foreground">
-          Loading ticket...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading ticket...</p>
       </div>
     );
   }
@@ -180,14 +138,9 @@ function EditTicketPage() {
   if (error && !ticket) {
     return (
       <div className="space-y-4 p-6">
-        <p className="text-sm text-destructive">
-          {error}
-        </p>
+        <p className="text-sm text-destructive">{error}</p>
 
-        <Link
-          to="/tickets"
-          className="text-sm underline"
-        >
+        <Link to="/tickets" className="text-sm underline">
           Back to tickets
         </Link>
       </div>
@@ -209,25 +162,15 @@ function EditTicketPage() {
           Back to ticket
         </Link>
 
-        <h1 className="mt-4 text-2xl font-semibold tracking-tight">
-          Edit Ticket
-        </h1>
+        <h1 className="mt-4 text-2xl font-semibold tracking-tight">Edit Ticket</h1>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          Update your ticket information.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Update your ticket information.</p>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-6 rounded-lg border bg-card p-4 sm:p-6"
-      >
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-lg border bg-card p-4 sm:p-6">
         {/* Title */}
         <div className="space-y-2">
-          <label
-            htmlFor="title"
-            className="text-sm font-medium"
-          >
+          <label htmlFor="title" className="text-sm font-medium">
             Title
           </label>
 
@@ -249,25 +192,16 @@ function EditTicketPage() {
             required
             disabled={isSubmitting}
             aria-invalid={!!fieldErrors.title}
-            aria-describedby={
-              fieldErrors.title
-                ? "title-error"
-                : undefined
-            }
+            aria-describedby={fieldErrors.title ? 'title-error' : undefined}
             className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
           />
 
           <div className="flex justify-end">
-            <span className="text-xs text-muted-foreground">
-              {title.length}/100
-            </span>
+            <span className="text-xs text-muted-foreground">{title.length}/100</span>
           </div>
 
           {fieldErrors.title && (
-            <p
-              id="title-error"
-              className="text-sm text-destructive"
-            >
+            <p id="title-error" className="text-sm text-destructive">
               {fieldErrors.title}
             </p>
           )}
@@ -275,10 +209,7 @@ function EditTicketPage() {
 
         {/* Description */}
         <div className="space-y-2">
-          <label
-            htmlFor="description"
-            className="text-sm font-medium"
-          >
+          <label htmlFor="description" className="text-sm font-medium">
             Description
           </label>
 
@@ -286,9 +217,7 @@ function EditTicketPage() {
             id="description"
             value={description}
             onChange={(event) => {
-              setDescription(
-                event.target.value,
-              );
+              setDescription(event.target.value);
 
               setFieldErrors((current) => ({
                 ...current,
@@ -301,28 +230,17 @@ function EditTicketPage() {
             rows={7}
             required
             disabled={isSubmitting}
-            aria-invalid={
-              !!fieldErrors.description
-            }
-            aria-describedby={
-              fieldErrors.description
-                ? "description-error"
-                : undefined
-            }
+            aria-invalid={!!fieldErrors.description}
+            aria-describedby={fieldErrors.description ? 'description-error' : undefined}
             className="w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
           />
 
           <div className="flex justify-end">
-            <span className="text-xs text-muted-foreground">
-              {description.length}/1000
-            </span>
+            <span className="text-xs text-muted-foreground">{description.length}/1000</span>
           </div>
 
           {fieldErrors.description && (
-            <p
-              id="description-error"
-              className="text-sm text-destructive"
-            >
+            <p id="description-error" className="text-sm text-destructive">
               {fieldErrors.description}
             </p>
           )}
@@ -330,10 +248,7 @@ function EditTicketPage() {
 
         {/* Action Error */}
         {actionError && (
-          <p
-            role="alert"
-            className="text-sm text-destructive"
-          >
+          <p role="alert" className="text-sm text-destructive">
             {actionError}
           </p>
         )}
@@ -352,9 +267,7 @@ function EditTicketPage() {
             disabled={isSubmitting}
             className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground sm:w-auto hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isSubmitting
-              ? "Saving..."
-              : "Save Changes"}
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </form>

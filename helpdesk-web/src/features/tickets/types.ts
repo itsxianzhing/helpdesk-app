@@ -1,22 +1,10 @@
-import type { CommentResponse } from "../comments/types";
+import type { CommentResponse } from '../comments/types';
 
-export type TicketStatus =
-  | "Open"
-  | "InProgress"
-  | "Resolved"
-  | "Closed";
+export type TicketStatus = 'Open' | 'InProgress' | 'Resolved' | 'Closed';
 
-export type TicketPriority =
-  | "Low"
-  | "Medium"
-  | "High"
-  | "Critical";
+export type TicketPriority = 'Low' | 'Medium' | 'High' | 'Critical';
 
-export type TicketSortBy =
-  | "CreatedAt"
-  | "Title"
-  | "Priority"
-  | "Status";
+export type TicketSortBy = 'CreatedAt' | 'Title' | 'Priority' | 'Status';
 
 export interface TicketQueryRequest {
   page?: number;

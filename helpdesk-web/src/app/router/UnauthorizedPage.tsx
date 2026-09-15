@@ -1,12 +1,10 @@
-import { Link } from "react-router";
+import { Link } from 'react-router';
 
 function UnauthorizedPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="text-center">
-        <h1 className="text-3xl font-semibold">
-          Access Denied
-        </h1>
+        <h1 className="text-3xl font-semibold">Access Denied</h1>
 
         <p className="mt-2 text-sm text-muted-foreground">
           You don't have permission to access this page.

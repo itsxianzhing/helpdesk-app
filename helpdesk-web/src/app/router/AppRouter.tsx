@@ -1,121 +1,63 @@
-import {
-  BrowserRouter,
-  Navigate,
-  Route,
-  Routes,
-} from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 
-import MainLayout from "../../components/layout/MainLayout";
+import MainLayout from '../../components/layout/MainLayout';
 
-import LoginPage from "../../features/auth/pages/LoginPage";
-import DashboardPage from "../../features/dashboard/pages/DashboardPage";
+import LoginPage from '../../features/auth/pages/LoginPage';
+import DashboardPage from '../../features/dashboard/pages/DashboardPage';
 
-import TicketsPage from "../../features/tickets/pages/TicketsPage";
-import TicketDetailPage from "../../features/tickets/pages/TicketDetailPage";
-import CreateTicketPage from "../../features/tickets/pages/CreateTicketPage";
-import EditTicketPage from "../../features/tickets/pages/EditTicketPage";
+import TicketsPage from '../../features/tickets/pages/TicketsPage';
+import TicketDetailPage from '../../features/tickets/pages/TicketDetailPage';
+import CreateTicketPage from '../../features/tickets/pages/CreateTicketPage';
+import EditTicketPage from '../../features/tickets/pages/EditTicketPage';
 
-import AdminDashboardPage from "../../features/dashboard/pages/AdminDashboardPage";
-import AdminTicketsPage from "../../features/tickets/pages/AdminTicketsPage";
-import AdminTicketDetailPage from "../../features/tickets/pages/AdminTicketDetailPage";
-import AdminUsersPage from "../../features/users/pages/AdminUsersPage";
-import CreateUserPage from "../../features/users/pages/CreateUserPage";
-import AdminUserDetailPage from "../../features/users/pages/AdminUserDetailPage";
+import AdminDashboardPage from '../../features/dashboard/pages/AdminDashboardPage';
+import AdminTicketsPage from '../../features/tickets/pages/AdminTicketsPage';
+import AdminTicketDetailPage from '../../features/tickets/pages/AdminTicketDetailPage';
+import AdminUsersPage from '../../features/users/pages/AdminUsersPage';
+import CreateUserPage from '../../features/users/pages/CreateUserPage';
+import AdminUserDetailPage from '../../features/users/pages/AdminUserDetailPage';
 
-import ProtectedRoute from "./ProtectedRoute";
-import RoleRoute from "./RoleRoute";
-import UnauthorizedPage from "./UnauthorizedPage";
+import ProtectedRoute from './ProtectedRoute';
+import RoleRoute from './RoleRoute';
+import UnauthorizedPage from './UnauthorizedPage';
 
 function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Public */}
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
+        <Route path="/login" element={<LoginPage />} />
 
-        <Route
-          path="/unauthorized"
-          element={<UnauthorizedPage />}
-        />
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
         {/* Protected application */}
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
-            <Route
-              path="/"
-              element={
-                <Navigate
-                  to="/login"
-                  replace
-                />
-              }
-            />
+            <Route path="/" element={<Navigate to="/login" replace />} />
 
-            <Route
-              path="/dashboard"
-              element={<DashboardPage />}
-            />
+            <Route path="/dashboard" element={<DashboardPage />} />
 
-            <Route
-              path="/tickets"
-              element={<TicketsPage />}
-            />
+            <Route path="/tickets" element={<TicketsPage />} />
 
-            <Route
-              path="/tickets/new"
-              element={<CreateTicketPage />}
-            />
+            <Route path="/tickets/new" element={<CreateTicketPage />} />
 
-            <Route
-              path="/tickets/:id"
-              element={<TicketDetailPage />}
-            />
+            <Route path="/tickets/:id" element={<TicketDetailPage />} />
 
-            <Route
-              path="/tickets/:id/edit"
-              element={<EditTicketPage />}
-            />
+            <Route path="/tickets/:id/edit" element={<EditTicketPage />} />
 
             {/* Admin */}
-            <Route
-              element={
-                <RoleRoute
-                  allowedRoles={["Admin"]}
-                />
-              }
-            >
-              <Route
-                path="/admin/dashboard"
-                element={<AdminDashboardPage />}
-              />
+            <Route element={<RoleRoute allowedRoles={['Admin']} />}>
+              <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
 
-              <Route
-                path="/admin/tickets"
-                element={<AdminTicketsPage />}
-              />
+              <Route path="/admin/tickets" element={<AdminTicketsPage />} />
 
-              <Route
-                path="/admin/tickets/:id"
-                element={<AdminTicketDetailPage />}
-              />
+              <Route path="/admin/tickets/:id" element={<AdminTicketDetailPage />} />
 
-              <Route
-                path="/admin/users"
-                element={<AdminUsersPage />}
-              />
+              <Route path="/admin/users" element={<AdminUsersPage />} />
 
-              <Route
-                path="/admin/users/create"
-                element={<CreateUserPage />}
-              />
+              <Route path="/admin/users/create" element={<CreateUserPage />} />
 
-              <Route
-                path="/admin/users/:id"
-                element={<AdminUserDetailPage />}
-              />
+              <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />
             </Route>
           </Route>
         </Route>

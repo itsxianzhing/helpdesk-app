@@ -1,17 +1,8 @@
-export type Role =
-  | "User"
-  | "Admin";
+export type Role = 'User' | 'Admin';
 
-export type UserStatus =
-  | "Active"
-  | "Inactive";
+export type UserStatus = 'Active' | 'Inactive';
 
-export type UserSortBy =
-  | "Name"
-  | "Email"
-  | "Role"
-  | "Status"
-  | "CreatedAt";
+export type UserSortBy = 'Name' | 'Email' | 'Role' | 'Status' | 'CreatedAt';
 
 export interface UserQueryRequest {
   page?: number;

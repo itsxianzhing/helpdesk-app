@@ -1,18 +1,9 @@
-import {
-  createContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useEffect, useState, type ReactNode } from 'react';
 
-import {
-  clearStoredAuth,
-  getStoredAuth,
-  saveAuth,
-} from "./authStorage";
+import { clearStoredAuth, getStoredAuth, saveAuth } from './authStorage';
 
-import type { AuthResponse } from "./types";
-import { setUnauthorizedHandler } from "../../lib/api";
+import type { AuthResponse } from './types';
+import { setUnauthorizedHandler } from '../../lib/api';
 
 interface AuthContextValue {
   auth: AuthResponse | null;
@@ -21,18 +12,14 @@ interface AuthContextValue {
   logout: () => void;
 }
 
-export const AuthContext =
-  createContext<AuthContextValue | null>(null);
+export const AuthContext = createContext<AuthContextValue | null>(null);
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export function AuthProvider({
-  children,
-}: AuthProviderProps) {
-  const [auth, setAuth] =
-    useState<AuthResponse | null>(getStoredAuth);
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [auth, setAuth] = useState<AuthResponse | null>(getStoredAuth);
 
   useEffect(() => {
     setUnauthorizedHandler(() => {

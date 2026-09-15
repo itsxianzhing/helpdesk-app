@@ -1,49 +1,35 @@
-import {
-  useState,
-  type FormEvent,
-} from "react";
-import { ApiError } from "../../../lib/apiError";
-import { createComment } from "../api/commentApi";
-import type { CommentResponse } from "../types";
-import { useNotification } from "../../../app/notification/NotificationContext";
+import { useState, type FormEvent } from 'react';
+import { ApiError } from '../../../lib/apiError';
+import { createComment } from '../api/commentApi';
+import type { CommentResponse } from '../types';
+import { useNotification } from '../../../app/notification/NotificationContext';
 
 interface CommentFormProps {
   ticketId: number;
   onCreated: (comment: CommentResponse) => void;
 }
 
-function CommentForm({
-  ticketId,
-  onCreated,
-}: CommentFormProps) {
-  const [content, setContent] =
-    useState("");
+function CommentForm({ ticketId, onCreated }: CommentFormProps) {
+  const [content, setContent] = useState('');
 
   const { showNotification } = useNotification();
 
-  const [isSubmitting, setIsSubmitting] =
-    useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const trimmedContent =
-      content.trim();
+    const trimmedContent = content.trim();
 
     if (!trimmedContent) {
-      setError("Comment is required.");
+      setError('Comment is required.');
       return;
     }
 
     if (trimmedContent.length > 1000) {
-      setError(
-        "Comment cannot exceed 1000 characters.",
-      );
+      setError('Comment cannot exceed 1000 characters.');
       return;
     }
 
@@ -51,28 +37,20 @@ function CommentForm({
     setIsSubmitting(true);
 
     try {
-      const comment = await createComment(
-        ticketId,
-        {
-          content: trimmedContent,
-        },
-      );
+      const comment = await createComment(ticketId, {
+        content: trimmedContent,
+      });
 
       onCreated(comment);
 
-      showNotification(
-        "Comment created successfully.",
-        "success",
-      );
+      showNotification('Comment created successfully.', 'success');
 
-      setContent("");
+      setContent('');
     } catch (error) {
       if (error instanceof ApiError) {
         setError(error.message);
       } else {
-        setError(
-          "Failed to create comment.",
-        );
+        setError('Failed to create comment.');
       }
     } finally {
       setIsSubmitting(false);
@@ -80,14 +58,8 @@ function CommentForm({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-3"
-    >
-      <label
-        htmlFor="comment"
-        className="text-sm font-medium"
-      >
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <label htmlFor="comment" className="text-sm font-medium">
         Add a comment
       </label>
 
@@ -104,34 +76,24 @@ function CommentForm({
         required
         disabled={isSubmitting}
         aria-invalid={!!error}
-        aria-describedby={
-          error ? "comment-error" : undefined
-        }
+        aria-describedby={error ? 'comment-error' : undefined}
         className="w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
       />
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <span className="text-xs text-muted-foreground">
-          {content.length}/1000
-        </span>
+        <span className="text-xs text-muted-foreground">{content.length}/1000</span>
 
         <button
           type="submit"
           disabled={isSubmitting}
           className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
-          {isSubmitting
-            ? "Posting..."
-            : "Add Comment"}
+          {isSubmitting ? 'Posting...' : 'Add Comment'}
         </button>
       </div>
 
       {error && (
-        <p
-          id="comment-error"
-          role="alert"
-          className="text-sm text-destructive"
-        >
+        <p id="comment-error" role="alert" className="text-sm text-destructive">
           {error}
         </p>
       )}

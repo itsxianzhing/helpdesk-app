@@ -1,45 +1,34 @@
-import { getStoredAuth } from "../features/auth/authStorage";
-import { ApiError } from "./apiError";
+import { getStoredAuth } from '../features/auth/authStorage';
+import { ApiError } from './apiError';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 let unauthorizedHandler: (() => void) | null = null;
 
-export function setUnauthorizedHandler(
-  handler: () => void,
-) {
+export function setUnauthorizedHandler(handler: () => void) {
   unauthorizedHandler = handler;
 }
 
-export async function apiFetch<T>(
-  endpoint: string,
-  options?: RequestInit,
-): Promise<T> {
+export async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const auth = getStoredAuth();
 
   let response: Response;
 
   try {
-    response = await fetch(
-      `${API_URL}${endpoint}`,
-      {
-        ...options,
-        headers: {
-          "Content-Type": "application/json",
+    response = await fetch(`${API_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
 
-          ...(auth?.token && {
-            Authorization: `Bearer ${auth.token}`,
-          }),
+        ...(auth?.token && {
+          Authorization: `Bearer ${auth.token}`,
+        }),
 
-          ...options?.headers,
-        },
+        ...options?.headers,
       },
-    );
+    });
   } catch {
-    throw new ApiError(
-      "Unable to connect to the server.",
-      0,
-    );
+    throw new ApiError('Unable to connect to the server.', 0);
   }
 
   if (!response.ok) {
@@ -59,8 +48,7 @@ export async function apiFetch<T>(
     }
 
     throw new ApiError(
-      errorData.message ??
-        "Something went wrong.",
+      errorData.message ?? 'Something went wrong.',
       response.status,
       errorData.errors ?? [],
     );

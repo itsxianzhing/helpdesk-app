@@ -1,17 +1,11 @@
-import {
-  LayoutDashboard,
-  Ticket,
-  Plus,
-  Users,
-  ShieldCheck,
-} from "lucide-react";
-import { NavLink } from "react-router";
-import { useAuth } from "../../features/auth/hooks/useAuth";
+import { LayoutDashboard, Ticket, Plus, Users, ShieldCheck } from 'lucide-react';
+import { NavLink } from 'react-router';
+import { useAuth } from '../../features/auth/hooks/useAuth';
 
 function Sidebar() {
   const { auth } = useAuth();
 
-  const isAdmin = auth?.role === "Admin";
+  const isAdmin = auth?.role === 'Admin';
 
   return (
     <aside className="hidden w-64 shrink-0 border-r bg-background md:block">

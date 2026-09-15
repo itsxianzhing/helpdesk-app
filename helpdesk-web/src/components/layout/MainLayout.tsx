@@ -1,6 +1,6 @@
-import { Outlet } from "react-router";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
+import { Outlet } from 'react-router';
+import Navbar from './Navbar';
+import Sidebar from './Sidebar';
 
 function MainLayout() {
   return (
@@ -8,7 +8,7 @@ function MainLayout() {
       <Navbar />
 
       <div className="flex min-h-[calc(100vh-4rem)]">
-          <Sidebar />
+        <Sidebar />
 
         <main className="min-w-0 flex-1 p-4 md:p-6">
           <Outlet />

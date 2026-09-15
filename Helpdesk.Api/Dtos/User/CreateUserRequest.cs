@@ -4,7 +4,7 @@ namespace Helpdesk.Dtos.User;
 
 public class CreateUserRequest
 {
-	[Required(ErrorMessage = "Name is required.")]
+    [Required(ErrorMessage = "Name is required.")]
     public string Name { get; set; } = "";
 
     [Required(ErrorMessage = "Email is required.")]

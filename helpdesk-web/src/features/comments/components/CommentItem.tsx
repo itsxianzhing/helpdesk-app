@@ -1,55 +1,34 @@
-import {
-  useState,
-  type FormEvent,
-} from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { useState, type FormEvent } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 
-import type { CommentResponse } from "../types";
-import {
-  updateComment,
-  deleteComment,
-} from "../api/commentApi";
-import { ApiError } from "../../../lib/apiError";
-import { formatDate } from "../../../lib/formatDate";
-import { useNotification } from "../../../app/notification/NotificationContext";
+import type { CommentResponse } from '../types';
+import { updateComment, deleteComment } from '../api/commentApi';
+import { ApiError } from '../../../lib/apiError';
+import { formatDate } from '../../../lib/formatDate';
+import { useNotification } from '../../../app/notification/NotificationContext';
 
 interface CommentItemProps {
   comment: CommentResponse;
   currentUserId: number;
   isAdmin: boolean;
-  onUpdated: (
-    comment: CommentResponse,
-  ) => void;
+  onUpdated: (comment: CommentResponse) => void;
   onDeleted: (commentId: number) => void;
 }
 
-function CommentItem({
-  comment,
-  currentUserId,
-  isAdmin,
-  onUpdated,
-  onDeleted,
-}: CommentItemProps) {
+function CommentItem({ comment, currentUserId, isAdmin, onUpdated, onDeleted }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
 
-  const [content, setContent] = useState(
-    comment.content,
-  );
+  const [content, setContent] = useState(comment.content);
 
   const { showNotification } = useNotification();
 
-  const [isSubmitting, setIsSubmitting] =
-    useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [isDeleting, setIsDeleting] =
-    useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const [error, setError] = useState<string | null>(
-    null,
-  );
+  const [error, setError] = useState<string | null>(null);
 
-  const canManage =
-    isAdmin || currentUserId === comment.userId;
+  const canManage = isAdmin || currentUserId === comment.userId;
 
   function handleCancel() {
     setContent(comment.content);
@@ -57,22 +36,18 @@ function CommentItem({
     setIsEditing(false);
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmedContent = content.trim();
 
     if (!trimmedContent) {
-      setError("Comment is required.");
+      setError('Comment is required.');
       return;
     }
 
     if (trimmedContent.length > 1000) {
-      setError(
-        "Comment cannot exceed 1000 characters.",
-      );
+      setError('Comment cannot exceed 1000 characters.');
       return;
     }
 
@@ -80,33 +55,25 @@ function CommentItem({
     setIsSubmitting(true);
 
     try {
-      const updatedComment = await updateComment(
-        comment.id,
-        {
-          content: trimmedContent,
-          version: comment.version,
-        },
-      );
+      const updatedComment = await updateComment(comment.id, {
+        content: trimmedContent,
+        version: comment.version,
+      });
 
       onUpdated(updatedComment);
 
-      showNotification(
-        "Comment updated successfully.",
-        "success",
-      );
+      showNotification('Comment updated successfully.', 'success');
 
       setIsEditing(false);
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.statusCode === 409) {
-          setError(
-            "This comment was modified by another user. Please refresh and try again.",
-          );
+          setError('This comment was modified by another user. Please refresh and try again.');
         } else {
           setError(error.message);
         }
       } else {
-        setError("Failed to update comment.");
+        setError('Failed to update comment.');
       }
     } finally {
       setIsSubmitting(false);
@@ -118,9 +85,7 @@ function CommentItem({
       return;
     }
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this comment?",
-    );
+    const confirmed = window.confirm('Are you sure you want to delete this comment?');
 
     if (!confirmed) {
       return;
@@ -134,15 +99,12 @@ function CommentItem({
 
       onDeleted(comment.id);
 
-      showNotification(
-        "Comment deleted successfully.",
-        "success",
-      );
+      showNotification('Comment deleted successfully.', 'success');
     } catch (error) {
       if (error instanceof ApiError) {
         setError(error.message);
       } else {
-        setError("Failed to delete comment.");
+        setError('Failed to delete comment.');
       }
     } finally {
       setIsDeleting(false);
@@ -153,13 +115,9 @@ function CommentItem({
     <article className="rounded-lg border p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium">
-            {comment.userName}
-          </p>
+          <p className="text-sm font-medium">{comment.userName}</p>
 
-          <p className="mt-1 text-xs text-muted-foreground">
-            {formatDate(comment.createdAt)}
-          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{formatDate(comment.createdAt)}</p>
         </div>
 
         {canManage && !isEditing && (
@@ -185,19 +143,14 @@ function CommentItem({
             >
               <Trash2 size={14} />
 
-              {isDeleting
-                ? "Deleting..."
-                : "Delete"}
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </button>
           </div>
         )}
       </div>
 
       {isEditing ? (
-        <form
-          onSubmit={handleSubmit}
-          className="mt-4 space-y-3"
-        >
+        <form onSubmit={handleSubmit} className="mt-4 space-y-3">
           <textarea
             value={content}
             onChange={(event) => {
@@ -209,18 +162,12 @@ function CommentItem({
             disabled={isSubmitting}
             required
             aria-invalid={!!error}
-            aria-describedby={
-              error
-                ? "comment-edit-error"
-                : undefined
-            }
+            aria-describedby={error ? 'comment-edit-error' : undefined}
             className="w-full resize-y rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
           />
 
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              {content.length}/1000
-            </span>
+            <span className="text-xs text-muted-foreground">{content.length}/1000</span>
 
             <div className="flex gap-2">
               <button
@@ -237,27 +184,19 @@ function CommentItem({
                 disabled={isSubmitting}
                 className="rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground hover:opacity-90 disabled:opacity-50"
               >
-                {isSubmitting
-                  ? "Saving..."
-                  : "Save"}
+                {isSubmitting ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>
 
           {error && (
-            <p
-              id="comment-edit-error"
-              role="alert"
-              className="text-sm text-destructive"
-            >
+            <p id="comment-edit-error" role="alert" className="text-sm text-destructive">
               {error}
             </p>
           )}
         </form>
       ) : (
-        <p className="mt-4 whitespace-pre-wrap break-all text-sm leading-6">
-          {comment.content}
-        </p>
+        <p className="mt-4 whitespace-pre-wrap break-all text-sm leading-6">{comment.content}</p>
       )}
     </article>
   );
