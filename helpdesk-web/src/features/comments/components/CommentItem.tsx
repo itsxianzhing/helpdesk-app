@@ -16,6 +16,7 @@ import { useNotification } from "../../../app/notification/NotificationContext";
 interface CommentItemProps {
   comment: CommentResponse;
   currentUserId: number;
+  isAdmin: boolean;
   onUpdated: (
     comment: CommentResponse,
   ) => void;
@@ -25,6 +26,7 @@ interface CommentItemProps {
 function CommentItem({
   comment,
   currentUserId,
+  isAdmin,
   onUpdated,
   onDeleted,
 }: CommentItemProps) {
@@ -46,8 +48,8 @@ function CommentItem({
     null,
   );
 
-  const isOwner =
-    currentUserId === comment.userId;
+  const canManage =
+    isAdmin || currentUserId === comment.userId;
 
   function handleCancel() {
     setContent(comment.content);
@@ -160,7 +162,7 @@ function CommentItem({
           </p>
         </div>
 
-        {isOwner && !isEditing && (
+        {canManage && !isEditing && (
           <div className="flex items-center gap-1">
             <button
               type="button"

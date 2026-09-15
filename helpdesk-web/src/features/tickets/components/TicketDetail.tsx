@@ -12,6 +12,7 @@ import { formatDate } from "../../../lib/formatDate";
 import CommentList from "../../comments/components/CommentList";
 import CommentForm from "../../comments/components/CommentForm";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { useNotification } from "../../../app/notification/NotificationContext";
 
 interface TicketDetailProps {
   ticketId: number;
@@ -20,6 +21,8 @@ interface TicketDetailProps {
 function TicketDetail({ ticketId }: TicketDetailProps) {
   const { auth } = useAuth();
   const navigate = useNavigate();
+
+  const { showNotification } = useNotification();
 
   const [ticket, setTicket] =
     useState<TicketDetailResponse | null>(null);
@@ -80,6 +83,11 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
 
     try {
       await deleteTicket(ticket.id);
+
+      showNotification(
+        "Ticket deleted successfully.",
+        "success",
+      );
 
       navigate("/tickets");
     } catch (error) {
@@ -255,6 +263,7 @@ function TicketDetail({ ticketId }: TicketDetailProps) {
           <CommentList
             comments={ticket.comments}
             currentUserId={auth.id}
+            isAdmin={auth.role === "Admin"}
             onUpdated={handleCommentUpdated}
             onDeleted={handleCommentDeleted}
           />

@@ -4,6 +4,7 @@ import CommentItem from "./CommentItem";
 interface CommentListProps {
   comments: CommentResponse[];
   currentUserId: number;
+  isAdmin?: boolean;
   onUpdated: (
     comment: CommentResponse,
   ) => void;
@@ -13,6 +14,7 @@ interface CommentListProps {
 function CommentList({
   comments,
   currentUserId,
+  isAdmin = false,
   onUpdated,
   onDeleted,
 }: CommentListProps) {
@@ -33,6 +35,7 @@ function CommentList({
           key={comment.id}
           comment={comment}
           currentUserId={currentUserId}
+          isAdmin={isAdmin}
           onUpdated={onUpdated}
           onDeleted={onDeleted}
         />

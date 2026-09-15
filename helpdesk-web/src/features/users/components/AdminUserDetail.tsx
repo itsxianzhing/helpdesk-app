@@ -5,7 +5,11 @@ import {
   updateUser,
   deleteUser,
 } from "../api/userApi";
-import type { UserResponse } from "../types";
+import type {
+  Role,
+  UserResponse,
+  UserStatus,
+} from "../types";
 import { ApiError } from "../../../lib/apiError";
 import { formatDate } from "../../../lib/formatDate";
 import { useNotification } from "../../../app/notification/NotificationContext";
@@ -22,8 +26,8 @@ function AdminUserDetail({
   const [user, setUser] =
     useState<UserResponse | null>(null);
 
-  const [role, setRole] = useState("");
-  const [status, setStatus] = useState("");
+  const [role, setRole] = useState<Role>("User");
+  const [status, setStatus] = useState<UserStatus>("Active");
 
   const { showNotification } = useNotification();
 
@@ -79,12 +83,12 @@ function AdminUserDetail({
       return;
     }
 
-    const validRoles = [
+    const validRoles: Role[] = [
       "User",
       "Admin",
     ];
 
-    const validStatuses = [
+    const validStatuses: UserStatus[] = [
       "Active",
       "Inactive",
     ];
@@ -246,7 +250,7 @@ function AdminUserDetail({
             id="role"
             value={role}
             onChange={(event) => {
-              setRole(event.target.value);
+              setRole(event.target.value as Role);
               setActionError(null);
             }}
             disabled={
@@ -276,7 +280,7 @@ function AdminUserDetail({
             id="status"
             value={status}
             onChange={(event) => {
-              setStatus(event.target.value);
+              setStatus(event.target.value as UserStatus);
               setActionError(null);
             }}
             disabled={

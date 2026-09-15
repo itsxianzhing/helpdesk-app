@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
-import type { TicketListResponse } from "../types";
+import type {
+  TicketListResponse,
+  TicketPriority,
+  TicketSortBy,
+  TicketStatus,
+} from "../types";
 import { getTickets } from "../api/ticketApi";
 import { ApiError } from "../../../lib/apiError";
 import TicketTable from "../components/TicketTable";
@@ -16,10 +21,16 @@ function AdminTicketsPage() {
 
   const [search, setSearch] = useState("");
 
-  const [status, setStatus] = useState("");
-  const [priority, setPriority] = useState("");
+  const [status, setStatus] = useState<
+    TicketStatus | ""
+  >("");
+  const [priority, setPriority] = useState<
+    TicketPriority | ""
+  >("");
 
-  const [sortBy, setSortBy] = useState("CreatedAt");
+  const [sortBy, setSortBy] = useState<TicketSortBy>(
+    "CreatedAt",
+  );
   const [descending, setDescending] = useState(true);
 
   const debouncedSearch = useDebounce(
@@ -137,7 +148,9 @@ function AdminTicketsPage() {
         <select
           value={status}
           onChange={(event) => {
-            setStatus(event.target.value);
+            setStatus(
+              event.target.value as TicketStatus | "",
+            );
             setPage(1);
           }}
           aria-label="Filter by status"
@@ -153,7 +166,9 @@ function AdminTicketsPage() {
         <select
           value={priority}
           onChange={(event) => {
-            setPriority(event.target.value);
+            setPriority(
+              event.target.value as TicketPriority | "",
+            );
             setPage(1);
           }}
           aria-label="Filter by priority"
@@ -169,7 +184,9 @@ function AdminTicketsPage() {
         <select
           value={sortBy}
           onChange={(event) => {
-            setSortBy(event.target.value);
+            setSortBy(
+              event.target.value as TicketSortBy,
+            );
             setPage(1);
           }}
           aria-label="Sort tickets by"

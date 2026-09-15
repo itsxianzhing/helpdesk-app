@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Plus, Search } from "lucide-react";
 import { getUsers } from "../api/userApi";
-import type { UserResponse } from "../types";
+import type {
+  Role,
+  UserResponse,
+  UserSortBy,
+  UserStatus,
+} from "../types";
 import { ApiError } from "../../../lib/apiError";
 import useDebounce from "../../../hooks/useDebounce";
 import UserTable from "../../users/components/UserTable";
@@ -16,12 +21,14 @@ function AdminUsersPage() {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [role, setRole] = useState("");
-  const [status, setStatus] = useState("");
+  const [role, setRole] = useState<Role | "">("");
+  const [status, setStatus] = useState<UserStatus | "">(
+    "",
+  );
 
   // Sorting
   const [sortBy, setSortBy] =
-    useState("CreatedAt");
+    useState<UserSortBy>("CreatedAt");
 
   const [descending, setDescending] =
     useState(true);
@@ -154,7 +161,7 @@ function AdminUsersPage() {
         <select
           value={role}
           onChange={(event) => {
-            setRole(event.target.value);
+            setRole(event.target.value as Role | "");
             setPage(1);
           }}
           aria-label="Filter by role"
@@ -169,7 +176,7 @@ function AdminUsersPage() {
         <select
           value={status}
           onChange={(event) => {
-            setStatus(event.target.value);
+            setStatus(event.target.value as UserStatus | "");
             setPage(1);
           }}
           aria-label="Filter by status"
@@ -184,7 +191,7 @@ function AdminUsersPage() {
         <select
           value={sortBy}
           onChange={(event) => {
-            setSortBy(event.target.value);
+            setSortBy(event.target.value as UserSortBy);
             setPage(1);
           }}
           aria-label="Sort users by"

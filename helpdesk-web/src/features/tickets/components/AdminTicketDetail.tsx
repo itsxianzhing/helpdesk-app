@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import type { TicketDetailResponse } from "../../tickets/types";
+import type {
+  TicketDetailResponse,
+  TicketPriority,
+  TicketStatus,
+} from "../../tickets/types";
 import { ApiError } from "../../../lib/apiError";
 import {
   getTicketById,
@@ -23,8 +27,12 @@ function AdminTicketDetail({
   const [ticket, setTicket] =
     useState<TicketDetailResponse | null>(null);
 
-  const [status, setStatus] = useState("");
-  const [priority, setPriority] = useState("");
+  const [status, setStatus] = useState<TicketStatus>(
+    "Open",
+  );
+  const [priority, setPriority] = useState<TicketPriority>(
+    "Medium",
+  );
 
   const { showNotification } = useNotification();
 
@@ -235,7 +243,7 @@ function AdminTicketDetail({
             id="ticket-status"
             value={status}
             onChange={(event) => {
-              setStatus(event.target.value);
+              setStatus(event.target.value as TicketStatus);
               setActionError(null);
             }}
             disabled={isUpdating}
@@ -270,7 +278,7 @@ function AdminTicketDetail({
             id="ticket-priority"
             value={priority}
             onChange={(event) => {
-              setPriority(event.target.value);
+              setPriority(event.target.value as TicketPriority);
               setActionError(null);
             }}
             disabled={isUpdating}
@@ -310,6 +318,7 @@ function AdminTicketDetail({
           <CommentList
             comments={ticket.comments}
             currentUserId={auth.id}
+            isAdmin={auth.role === "Admin"}
             onUpdated={handleCommentUpdated}
             onDeleted={handleCommentDeleted}
           />
