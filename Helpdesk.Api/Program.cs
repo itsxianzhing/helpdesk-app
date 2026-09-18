@@ -157,6 +157,16 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     await db.Database.MigrateAsync();
+
+    var demoSeedEnabled = builder.Configuration.GetValue<bool>(
+        "DemoSeed:Enabled");
+
+    if (demoSeedEnabled)
+    {
+        await DbSeeder.SeedAsync(
+            db,
+            builder.Configuration);
+    }
 }
 
 app.UseHttpsRedirection();

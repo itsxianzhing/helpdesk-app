@@ -238,20 +238,6 @@ namespace Helpdesk.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2026, 8, 11, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@helpdesk.lokal",
-                            Name = "Administrator",
-                            PasswordHash = "$2a$11$kN7oAFekSN.gHJ9z97vdi.DWM3LOImaSKB8NloyEAB497EDNgqkVe",
-                            PhoneNumber = "-",
-                            Role = "Admin",
-                            Status = "Active",
-                            Version = 0u
-                        });
                 });
 
             modelBuilder.Entity("Helpdesk.Models.ActivityLog", b =>
