@@ -1,0 +1,32 @@
+services:
+  backend:
+    build:
+      context: ./Helpdesk.Api
+    container_name: helpdesk-api
+    restart: unless-stopped
+    expose:
+      - "8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: ${CONNECTION_STRING}
+      Jwt__Key: ${JWT_KEY}
+    networks:
+      - proxy-tier
+
+  frontend:
+    build:
+      context: ./helpdesk-web
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    container_name: helpdesk-web
+    restart: unless-stopped
+    expose:
+      - "80"
+    depends_on:
+      - backend
+    networks:
+      - proxy-tier
+
+networks:
+  proxy-tier:
+    external: true
