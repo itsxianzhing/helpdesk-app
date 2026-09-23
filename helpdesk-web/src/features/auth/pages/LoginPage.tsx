@@ -5,6 +5,25 @@ import { LockKeyhole, Mail } from 'lucide-react';
 import { login as loginApi } from '../api/authApi';
 import { useAuth } from '../hooks/useAuth';
 
+interface DemoAccount {
+  role: 'Admin' | 'User';
+  email: string;
+  password: string;
+}
+
+const DEMO_ACCOUNTS: DemoAccount[] = [
+  {
+    role: 'Admin',
+    email: 'demo.admin@helpdesk.local',
+    password: 'Admin123!',
+  },
+  {
+    role: 'User',
+    email: 'budi@helpdesk.local',
+    password: 'User123!',
+  },
+];
+
 function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -45,6 +64,12 @@ function LoginPage() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function handleDemoAccount(account: DemoAccount) {
+    setEmail(account.email);
+    setPassword(account.password);
+    setError(null);
   }
 
   return (
@@ -129,6 +154,35 @@ function LoginPage() {
             {isLoading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
+
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+
+            <span className="text-xs text-muted-foreground">Demo account</span>
+
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <div className="grid gap-2">
+            {DEMO_ACCOUNTS.map((account) => (
+              <button
+                key={account.email}
+                type="button"
+                onClick={() => handleDemoAccount(account)}
+                className="w-full rounded-md border bg-background p-3 text-left transition hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">{account.role}</span>
+
+                  <span className="text-xs text-muted-foreground">Click to fill</span>
+                </div>
+
+                <div className="mt-1 text-xs text-muted-foreground">{account.email}</div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </main>
   );

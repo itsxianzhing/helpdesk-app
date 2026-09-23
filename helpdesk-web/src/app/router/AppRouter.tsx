@@ -1,10 +1,10 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+import { BrowserRouter, Route, Routes } from 'react-router';
 
 import MainLayout from '../../components/layout/MainLayout';
 
 import LoginPage from '../../features/auth/pages/LoginPage';
-import DashboardPage from '../../features/dashboard/pages/DashboardPage';
 
+import DashboardPage from '../../features/dashboard/pages/DashboardPage';
 import TicketsPage from '../../features/tickets/pages/TicketsPage';
 import TicketDetailPage from '../../features/tickets/pages/TicketDetailPage';
 import CreateTicketPage from '../../features/tickets/pages/CreateTicketPage';
@@ -17,6 +17,7 @@ import AdminUsersPage from '../../features/users/pages/AdminUsersPage';
 import CreateUserPage from '../../features/users/pages/CreateUserPage';
 import AdminUserDetailPage from '../../features/users/pages/AdminUserDetailPage';
 
+import HomeRedirect from './HomeRedirect';
 import ProtectedRoute from './ProtectedRoute';
 import RoleRoute from './RoleRoute';
 import UnauthorizedPage from './UnauthorizedPage';
@@ -30,20 +31,24 @@ function AppRouter() {
 
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-        {/* Protected application */}
+        {/* Protected */}
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            {/* Home */}
+            <Route path="/" element={<HomeRedirect />} />
 
-            <Route path="/dashboard" element={<DashboardPage />} />
+            {/* User */}
+            <Route element={<RoleRoute allowedRoles={['User']} />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
 
-            <Route path="/tickets" element={<TicketsPage />} />
+              <Route path="/tickets" element={<TicketsPage />} />
 
-            <Route path="/tickets/new" element={<CreateTicketPage />} />
+              <Route path="/tickets/new" element={<CreateTicketPage />} />
 
-            <Route path="/tickets/:id" element={<TicketDetailPage />} />
+              <Route path="/tickets/:id" element={<TicketDetailPage />} />
 
-            <Route path="/tickets/:id/edit" element={<EditTicketPage />} />
+              <Route path="/tickets/:id/edit" element={<EditTicketPage />} />
+            </Route>
 
             {/* Admin */}
             <Route element={<RoleRoute allowedRoles={['Admin']} />}>
