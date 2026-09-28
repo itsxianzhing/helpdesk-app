@@ -1,15 +1,25 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react';
 
-import { clearStoredAuth, getStoredAuth, saveAuth } from './authStorage';
+import {
+  clearStoredAuth,
+  getStoredAuth,
+  saveAuth,
+} from './authStorage';
+
+import { logout as logoutApi } from './api/authApi';
 
 import type { AuthResponse } from './types';
-import { setUnauthorizedHandler } from '../../lib/api';
+
+import {
+  setAuthRefreshedHandler,
+  setUnauthorizedHandler,
+} from '../../lib/api';
 
 interface AuthContextValue {
   auth: AuthResponse | null;
   isAuthenticated: boolean;
   login: (auth: AuthResponse) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -19,9 +29,14 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [auth, setAuth] = useState<AuthResponse | null>(getStoredAuth);
+  const [auth, setAuth] =
+    useState<AuthResponse | null>(getStoredAuth);
 
   useEffect(() => {
+    setAuthRefreshedHandler((authResponse) => {
+      setAuth(authResponse);
+    });
+
     setUnauthorizedHandler(() => {
       setAuth((currentAuth) => {
         if (currentAuth) {
@@ -39,9 +54,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setAuth(authResponse);
   }
 
-  function logout() {
-    clearStoredAuth();
-    setAuth(null);
+  async function logout() {
+    try {
+      await logoutApi();
+    } finally {
+      clearStoredAuth();
+      setAuth(null);
+    }
   }
 
   const isAuthenticated = auth !== null;
