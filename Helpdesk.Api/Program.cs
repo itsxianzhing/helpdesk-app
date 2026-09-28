@@ -41,7 +41,8 @@ builder.Services.AddCors(options =>
                 "https://helpdesk.tansys.my.id"
             )
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -123,6 +124,7 @@ builder.Services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 builder.Services.AddScoped<CurrentUserService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<RefreshTokenService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<CommentService>();

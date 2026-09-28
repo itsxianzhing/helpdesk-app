@@ -1,8 +1,6 @@
 using Helpdesk.Services;
 using Helpdesk.Dtos.Auth;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Helpdesk.Controllers;
 
@@ -17,33 +15,85 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    // [HttpPost("register")]
-    // public async Task<IActionResult> Register(RegisterRequest request)
-    // {
-    //     var user = await _authService.Register(request);
-
-    //     return Created("", new
-    //     {
-    //         user.Id,
-    //         user.Name,
-    //         user.Email,
-    //         user.PhoneNumber
-    //     });
-    // }
-
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         LoginRequest request,
         CancellationToken cancellationToken)
     {
-        return Ok(await _authService.Login(
+        var result = await _authService.Login(
             request,
-            cancellationToken));
+            cancellationToken);
+
+        Response.Cookies.Append(
+            "refreshToken",
+            result.RefreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = result.RefreshTokenExpiresAt,
+                Path = "/api/Auth"
+            });
+
+        return Ok(result.Response);
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(
+        CancellationToken cancellationToken)
+    {
+        if (!Request.Cookies.TryGetValue(
+            "refreshToken",
+            out var refreshToken))
+        {
+            return Unauthorized(new
+            {
+                message = "Refresh token is missing."
+            });
+        }
+
+        var result = await _authService.Refresh(
+            refreshToken,
+            cancellationToken);
+
+        Response.Cookies.Append(
+            "refreshToken",
+            result.RefreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = result.RefreshTokenExpiresAt,
+                Path = "/api/Auth"
+            });
+
+        return Ok(result.Response);
     }
 
     [HttpPost("logout")]
-    public IActionResult Logout()
+    public async Task<IActionResult> Logout(
+        CancellationToken cancellationToken)
     {
+        Request.Cookies.TryGetValue(
+            "refreshToken",
+            out var refreshToken);
+
+        await _authService.Logout(
+            refreshToken,
+            cancellationToken);
+
+        Response.Cookies.Delete(
+            "refreshToken",
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Path = "/api/Auth"
+            });
+
         return Ok(new
         {
             message = "Logout successful."

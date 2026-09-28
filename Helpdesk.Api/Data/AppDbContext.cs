@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -95,6 +96,20 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Comment>()
             .HasQueryFilter(c => c.DeletedAt == null);
+
+        // =========================
+        // Refresh Token
+        // =========================
+
+        modelBuilder.Entity<RefreshToken>()
+            .HasOne(rt => rt.User)
+            .WithMany(u => u.RefreshTokens)
+            .HasForeignKey(rt => rt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<RefreshToken>()
+            .HasIndex(rt => rt.TokenHash)
+            .IsUnique();
 
         base.OnModelCreating(modelBuilder);
     }

@@ -19,4 +19,6 @@ public class User : SoftDeleteEntity
     public ICollection<Ticket> Tickets { get; set; } = [];
 
     public ICollection<Comment> Comments { get; set; } = [];
+
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
 }
