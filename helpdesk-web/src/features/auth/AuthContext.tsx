@@ -19,6 +19,9 @@ interface AuthContextValue {
   auth: AuthResponse | null;
   isAuthenticated: boolean;
   login: (auth: AuthResponse) => void;
+  updateUser: (
+    data: Pick<AuthResponse, 'name' | 'email'>,
+  ) => void;
   logout: () => Promise<void>;
 }
 
@@ -54,6 +57,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setAuth(authResponse);
   }
 
+  function updateUser(
+    data: Pick<AuthResponse, 'name' | 'email'>,
+  ) {
+    setAuth((currentAuth) => {
+      if (!currentAuth) {
+        return currentAuth;
+      }
+
+      const updatedAuth = {
+        ...currentAuth,
+        name: data.name,
+        email: data.email,
+      };
+
+      saveAuth(updatedAuth);
+
+      return updatedAuth;
+    });
+  }
+
   async function logout() {
     try {
       await logoutApi();
@@ -71,6 +94,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         auth,
         isAuthenticated,
         login,
+        updateUser,
         logout,
       }}
     >

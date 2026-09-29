@@ -26,6 +26,13 @@ export interface UpdateUserRequest {
   version: number;
 }
 
+export interface UpdateProfileRequest {
+  name: string;
+  email: string;
+  password?: string;
+  version: number;
+}
+
 export interface UserResponse {
   id: number;
   name: string;

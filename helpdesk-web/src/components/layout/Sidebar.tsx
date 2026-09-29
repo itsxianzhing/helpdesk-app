@@ -1,5 +1,14 @@
-import { LayoutDashboard, Ticket, Plus, Users, ShieldCheck } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Ticket,
+  Plus,
+  Users,
+  ShieldCheck,
+  UserCircle,
+} from 'lucide-react';
+
 import { NavLink } from 'react-router';
+
 import { useAuth } from '../../features/auth/hooks/useAuth';
 
 function Sidebar() {
@@ -63,6 +72,16 @@ function Sidebar() {
             </NavLink>
           </>
         )}
+
+        <div className="my-3 border-t" />
+
+        <NavLink
+          to="/profile"
+          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-muted"
+        >
+          <UserCircle size={18} />
+          Profile
+        </NavLink>
       </nav>
     </aside>
   );

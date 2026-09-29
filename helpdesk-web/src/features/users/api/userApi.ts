@@ -3,6 +3,7 @@ import { apiFetch } from '../../../lib/api';
 import type {
   CreateUserRequest,
   PagedResponse,
+  UpdateProfileRequest,
   UpdateUserRequest,
   UserQueryRequest,
   UserResponse,
@@ -58,6 +59,10 @@ export function getUserById(id: number) {
   return apiFetch<UserResponse>(`/users/${id}`);
 }
 
+export function getProfile() {
+  return apiFetch<UserResponse>('/users/me');
+}
+
 export function createUser(request: CreateUserRequest) {
   return apiFetch<UserResponse>('/users', {
     method: 'POST',
@@ -67,6 +72,15 @@ export function createUser(request: CreateUserRequest) {
 
 export function updateUser(id: number, request: UpdateUserRequest) {
   return apiFetch<UserResponse>(`/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  });
+}
+
+export function updateProfile(
+  request: UpdateProfileRequest,
+) {
+  return apiFetch<UserResponse>('/users/me', {
     method: 'PUT',
     body: JSON.stringify(request),
   });

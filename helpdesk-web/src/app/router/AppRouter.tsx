@@ -17,6 +17,8 @@ import AdminUsersPage from '../../features/users/pages/AdminUsersPage';
 import CreateUserPage from '../../features/users/pages/CreateUserPage';
 import AdminUserDetailPage from '../../features/users/pages/AdminUserDetailPage';
 
+import ProfilePage from '../../features/users/pages/ProfilePage';
+
 import HomeRedirect from './HomeRedirect';
 import ProtectedRoute from './ProtectedRoute';
 import RoleRoute from './RoleRoute';
@@ -36,6 +38,9 @@ function AppRouter() {
           <Route element={<MainLayout />}>
             {/* Home */}
             <Route path="/" element={<HomeRedirect />} />
+
+            {/* Profile - User & Admin */}
+            <Route path="/profile" element={<ProfilePage />} />
 
             {/* User */}
             <Route element={<RoleRoute allowedRoles={['User']} />}>
