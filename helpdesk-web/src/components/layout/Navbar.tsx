@@ -11,18 +11,42 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { NavLink } from 'react-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 
 function Navbar() {
   const { logout, auth } = useAuth();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   const isAdmin = auth?.role === 'Admin';
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileMenuOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   function closeMenu() {
     setIsMenuOpen(false);
+  }
+
+  function closeProfileMenu() {
+    setIsProfileMenuOpen(false);
   }
 
   return (
@@ -33,7 +57,9 @@ function Navbar() {
           type="button"
           onClick={() => setIsMenuOpen((current) => !current)}
           className="rounded-md p-2 hover:bg-muted md:hidden"
-          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-label={
+            isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'
+          }
           aria-expanded={isMenuOpen}
         >
           {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -44,30 +70,64 @@ function Navbar() {
 
       {/* Right side */}
       <div className="flex items-center gap-2 md:gap-4">
-        <button type="button" className="rounded-md p-2 hover:bg-muted" aria-label="Notifications">
+        <button
+          type="button"
+          className="rounded-md p-2 hover:bg-muted"
+          aria-label="Notifications"
+        >
           <Bell size={20} />
         </button>
 
         <div className="flex items-center gap-2 md:gap-3">
-          <div className="hidden text-right sm:block">
-            <p className="text-sm font-medium">{auth?.name}</p>
-
-            <p className="text-xs text-muted-foreground">{auth?.role}</p>
-          </div>
-
-          <button type="button" className="rounded-md p-2 hover:bg-muted" aria-label="User profile">
-            <CircleUserRound size={22} />
-          </button>
-
-          <button
-            type="button"
-            onClick={logout}
-            className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-            aria-label="Logout"
-            title="Logout"
+          {/* User menu */}
+          <div
+            ref={profileMenuRef}
+            className="relative"
           >
-            <LogOut size={20} />
-          </button>
+            <button
+              type="button"
+              onClick={() =>
+                setIsProfileMenuOpen((current) => !current)
+              }
+              className="rounded-md p-2 hover:bg-muted"
+              aria-label="Open user menu"
+              aria-expanded={isProfileMenuOpen}
+            >
+              <CircleUserRound size={22} />
+            </button>
+
+            {isProfileMenuOpen && (
+              <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-lg border bg-background p-1 shadow-lg">
+                {/* Profile */}
+                <NavLink
+                  to="/profile"
+                  onClick={closeProfileMenu}
+                  className="flex items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-muted"
+                >
+                  <CircleUserRound size={18} />
+
+                  <div>
+                    <p className="font-medium">Profile</p>
+
+                    <p className="text-xs text-muted-foreground">
+                      View and edit your profile
+                    </p>
+                  </div>
+                </NavLink>
+
+                {/* Logout */}
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  <LogOut size={18} />
+
+                  <span>Logout</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

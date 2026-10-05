@@ -2,17 +2,25 @@ import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 
 import { getActivityLogs } from '../api/activityLogApi';
+import { getUsers } from '../../users/api/userApi';
 import type {
   ActivityLogAction,
   ActivityLogEntityType,
   ActivityLogResponse,
 } from '../types';
+import type {
+  UserResponse
+} from '../../users/types';
 import { ApiError } from '../../../lib/apiError';
 import useDebounce from '../../../hooks/useDebounce';
 import ActivityLogTable from '../components/ActivityLogTable';
 
 function ActivityLogsPage() {
   const [logs, setLogs] = useState<ActivityLogResponse[]>([]);
+
+  // Users entity
+  const [users, setUsers] = useState<UserResponse[]>([]);
+  const [userId, setUserId] = useState<number | ''>('');
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -37,6 +45,26 @@ function ActivityLogsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const response = await getUsers({
+          page: 1,
+          pageSize: 100,
+          sortBy: 'Name',
+          descending: false,
+        });
+
+        setUsers(response.items);
+      } catch {
+        // Activity logs tetap bisa digunakan
+        // meskipun daftar user gagal dimuat.
+      }
+    }
+
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
     async function fetchActivityLogs() {
       setIsLoading(true);
       setError(null);
@@ -48,6 +76,7 @@ function ActivityLogsPage() {
           search: debouncedSearch || undefined,
           action: action || undefined,
           entityType: entityType || undefined,
+          userId: userId || undefined,
           descending,
         });
 
@@ -66,7 +95,15 @@ function ActivityLogsPage() {
     }
 
     fetchActivityLogs();
-  }, [page, pageSize, debouncedSearch, action, entityType, descending]);
+  }, [
+    page,
+    pageSize,
+    debouncedSearch,
+    userId,
+    action,
+    entityType,
+    descending,
+  ]);
 
   if (isLoading) {
     return (
@@ -120,6 +157,27 @@ function ActivityLogsPage() {
             className="w-full rounded-md border bg-background py-2.5 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
+
+        {/* User */}
+        <select
+          value={userId}
+          onChange={(event) => {
+            const value = event.target.value;
+
+            setUserId(value ? Number(value) : '');
+            setPage(1);
+          }}
+          aria-label="Filter by user"
+          className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-auto"
+        >
+          <option value="">All users</option>
+
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.name}
+            </option>
+          ))}
+        </select>
 
         {/* Action */}
         <select
