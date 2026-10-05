@@ -29,6 +29,17 @@ public class ExceptionMiddleware
                 errors = ex.Errors
             });
         }
+        catch (ConflictException ex)
+        {
+            context.Response.StatusCode = ex.StatusCode;
+            context.Response.ContentType = "application/json";
+
+            await context.Response.WriteAsJsonAsync(new
+            {
+                message = ex.Message,
+                code = ex.Code
+            });
+        }
         catch (AppException ex)
         {
             context.Response.StatusCode = ex.StatusCode;
@@ -46,7 +57,8 @@ public class ExceptionMiddleware
 
             await context.Response.WriteAsJsonAsync(new
             {
-                message = "The resource was modified by another user. Please refresh and try again."
+                message = "The resource was modified by another user. Please refresh and try again.",
+                code = "CONCURRENCY_CONFLICT"
             });
         }
         catch (Exception)

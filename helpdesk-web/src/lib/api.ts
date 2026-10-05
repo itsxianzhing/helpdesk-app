@@ -119,9 +119,10 @@ export async function apiFetch<T>(
 
   if (!response.ok) {
     let errorData: {
-      message?: string;
-      errors?: string[];
-    } = {};
+    message?: string;
+    errors?: string[];
+    code?: string;
+  } = {};
 
     try {
       errorData = await response.json();
@@ -130,10 +131,10 @@ export async function apiFetch<T>(
     }
 
     throw new ApiError(
-      errorData.message ??
-        'Something went wrong.',
+      errorData.message ?? 'Something went wrong.',
       response.status,
       errorData.errors ?? [],
+      errorData.code,
     );
   }
 

@@ -85,9 +85,9 @@ function ProfilePage() {
       );
     } catch (error) {
       if (error instanceof ApiError) {
-        if (error.statusCode === 409) {
+        if (error.code === 'CONCURRENCY_CONFLICT') {
           setActionError(
-            'Your profile was modified by another request. Please refresh and try again.',
+            'Your profile was modified by another user. Please refresh and try again.',
           );
         } else {
           setActionError(error.message);

@@ -4,8 +4,13 @@ namespace Helpdesk.Exceptions;
 
 public class ConflictException : AppException
 {
-    public ConflictException(string message)
+    public string Code { get; }
+
+    public ConflictException(
+        string message,
+        string code)
         : base(message, (int)HttpStatusCode.Conflict)
     {
+        Code = code;
     }
 }

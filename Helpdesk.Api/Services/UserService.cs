@@ -55,7 +55,9 @@ public class UserService : BaseService
             cancellationToken);
 
         if (exists)
-            throw new ConflictException("Email already exists.");
+            throw new ConflictException(
+                "Email already exists.",
+                "EMAIL_ALREADY_EXISTS");
     }
 
     public async Task<PagedResponse<UserResponse>> GetAll(
