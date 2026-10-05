@@ -77,9 +77,7 @@ export function updateUser(id: number, request: UpdateUserRequest) {
   });
 }
 
-export function updateProfile(
-  request: UpdateProfileRequest,
-) {
+export function updateProfile(request: UpdateProfileRequest) {
   return apiFetch<UserResponse>('/users/me', {
     method: 'PUT',
     body: JSON.stringify(request),

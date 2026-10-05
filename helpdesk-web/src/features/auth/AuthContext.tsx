@@ -1,27 +1,18 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react';
 
-import {
-  clearStoredAuth,
-  getStoredAuth,
-  saveAuth,
-} from './authStorage';
+import { clearStoredAuth, getStoredAuth, saveAuth } from './authStorage';
 
 import { logout as logoutApi } from './api/authApi';
 
 import type { AuthResponse } from './types';
 
-import {
-  setAuthRefreshedHandler,
-  setUnauthorizedHandler,
-} from '../../lib/api';
+import { setAuthRefreshedHandler, setUnauthorizedHandler } from '../../lib/api';
 
 interface AuthContextValue {
   auth: AuthResponse | null;
   isAuthenticated: boolean;
   login: (auth: AuthResponse) => void;
-  updateUser: (
-    data: Pick<AuthResponse, 'name' | 'email'>,
-  ) => void;
+  updateUser: (data: Pick<AuthResponse, 'name' | 'email'>) => void;
   logout: () => Promise<void>;
 }
 
@@ -32,8 +23,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [auth, setAuth] =
-    useState<AuthResponse | null>(getStoredAuth);
+  const [auth, setAuth] = useState<AuthResponse | null>(getStoredAuth);
 
   useEffect(() => {
     setAuthRefreshedHandler((authResponse) => {
@@ -57,9 +47,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setAuth(authResponse);
   }
 
-  function updateUser(
-    data: Pick<AuthResponse, 'name' | 'email'>,
-  ) {
+  function updateUser(data: Pick<AuthResponse, 'name' | 'email'>) {
     setAuth((currentAuth) => {
       if (!currentAuth) {
         return currentAuth;

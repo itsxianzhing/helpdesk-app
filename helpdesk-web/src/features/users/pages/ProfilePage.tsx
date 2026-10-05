@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import {
-  getProfile,
-  updateProfile,
-} from '../api/userApi';
+import { getProfile, updateProfile } from '../api/userApi';
 
 import ProfileForm from '../components/ProfileForm';
 
-import type {
-  UpdateProfileRequest,
-  UserResponse,
-} from '../types';
+import type { UpdateProfileRequest, UserResponse } from '../types';
 
 import { ApiError } from '../../../lib/apiError';
 import { formatDate } from '../../../lib/formatDate';
@@ -24,8 +18,7 @@ function ProfilePage() {
 
   const { showNotification } = useNotification();
 
-  const [profile, setProfile] =
-    useState<UserResponse | null>(null);
+  const [profile, setProfile] = useState<UserResponse | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,8 +26,7 @@ function ProfilePage() {
 
   const [error, setError] = useState<string | null>(null);
 
-  const [actionError, setActionError] =
-    useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -59,9 +51,7 @@ function ProfilePage() {
     fetchProfile();
   }, []);
 
-  async function handleUpdate(
-    request: UpdateProfileRequest,
-  ) {
+  async function handleUpdate(request: UpdateProfileRequest) {
     if (!profile || isUpdating) {
       return;
     }
@@ -79,10 +69,7 @@ function ProfilePage() {
         email: response.email,
       });
 
-      showNotification(
-        'Profile updated successfully.',
-        'success',
-      );
+      showNotification('Profile updated successfully.', 'success');
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.code === 'CONCURRENCY_CONFLICT') {
@@ -93,9 +80,7 @@ function ProfilePage() {
           setActionError(error.message);
         }
       } else {
-        setActionError(
-          'Failed to update profile.',
-        );
+        setActionError('Failed to update profile.');
       }
     } finally {
       setIsUpdating(false);
@@ -105,9 +90,7 @@ function ProfilePage() {
   if (isLoading) {
     return (
       <div className="rounded-xl border bg-card p-4 sm:p-6">
-        <p className="text-sm text-muted-foreground">
-          Loading profile...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading profile...</p>
       </div>
     );
   }
@@ -115,9 +98,7 @@ function ProfilePage() {
   if (error) {
     return (
       <div className="rounded-xl border bg-card p-4 sm:p-6">
-        <p className="text-sm text-destructive">
-          {error}
-        </p>
+        <p className="text-sm text-destructive">{error}</p>
       </div>
     );
   }
@@ -130,13 +111,10 @@ function ProfilePage() {
     <div className="space-y-6">
       <div className="rounded-xl border bg-card p-4 sm:p-6">
         <div className="mb-6">
-          <h1 className="text-xl font-semibold">
-            Profile
-          </h1>
+          <h1 className="text-xl font-semibold">Profile</h1>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage your personal information and account
-            settings.
+            Manage your personal information and account settings.
           </p>
         </div>
 
@@ -150,9 +128,7 @@ function ProfilePage() {
 
       <div className="rounded-xl border bg-card p-4 sm:p-6">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold">
-            Account Information
-          </h2>
+          <h2 className="text-xl font-semibold">Account Information</h2>
 
           <p className="mt-1 text-sm text-muted-foreground">
             View information about your Helpdesk account.
@@ -161,44 +137,28 @@ function ProfilePage() {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
-            <p className="text-sm text-muted-foreground">
-              Role
-            </p>
+            <p className="text-sm text-muted-foreground">Role</p>
 
-            <p className="mt-1 font-medium">
-              {profile.role}
-            </p>
+            <p className="mt-1 font-medium">{profile.role}</p>
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground">
-              Status
-            </p>
+            <p className="text-sm text-muted-foreground">Status</p>
 
-            <p className="mt-1 font-medium">
-              {profile.status}
-            </p>
+            <p className="mt-1 font-medium">{profile.status}</p>
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground">
-              Created
-            </p>
+            <p className="text-sm text-muted-foreground">Created</p>
 
-            <p className="mt-1 font-medium">
-              {formatDate(profile.createdAt)}
-            </p>
+            <p className="mt-1 font-medium">{formatDate(profile.createdAt)}</p>
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground">
-              Last Updated
-            </p>
+            <p className="text-sm text-muted-foreground">Last Updated</p>
 
             <p className="mt-1 font-medium">
-              {profile.updatedAt
-                ? formatDate(profile.updatedAt)
-                : '-'}
+              {profile.updatedAt ? formatDate(profile.updatedAt) : '-'}
             </p>
           </div>
         </div>

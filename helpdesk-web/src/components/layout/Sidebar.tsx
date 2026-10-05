@@ -1,11 +1,4 @@
-import {
-  LayoutDashboard,
-  Ticket,
-  Plus,
-  Users,
-  ShieldCheck,
-  UserCircle,
-} from 'lucide-react';
+import { LayoutDashboard, Ticket, Plus, Users, ShieldCheck, UserCircle } from 'lucide-react';
 
 import { NavLink } from 'react-router';
 

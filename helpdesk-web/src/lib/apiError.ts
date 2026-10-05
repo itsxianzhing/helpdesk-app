@@ -3,12 +3,7 @@ export class ApiError extends Error {
   errors: string[];
   code?: string;
 
-  constructor(
-    message: string,
-    statusCode: number,
-    errors: string[] = [],
-    code?: string,
-  ) {
+  constructor(message: string, statusCode: number, errors: string[] = [], code?: string) {
     super(message);
 
     this.name = 'ApiError';
