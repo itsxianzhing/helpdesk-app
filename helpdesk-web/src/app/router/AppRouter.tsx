@@ -17,6 +17,8 @@ import AdminUsersPage from '../../features/users/pages/AdminUsersPage';
 import CreateUserPage from '../../features/users/pages/CreateUserPage';
 import AdminUserDetailPage from '../../features/users/pages/AdminUserDetailPage';
 
+import ActivityLogsPage from '../../features/activityLogs/pages/ActivityLogsPage';
+
 import ProfilePage from '../../features/users/pages/ProfilePage';
 
 import HomeRedirect from './HomeRedirect';
@@ -68,6 +70,8 @@ function AppRouter() {
               <Route path="/admin/users/create" element={<CreateUserPage />} />
 
               <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />
+
+              <Route path="/admin/activity-logs" element={<ActivityLogsPage />} />
             </Route>
           </Route>
         </Route>

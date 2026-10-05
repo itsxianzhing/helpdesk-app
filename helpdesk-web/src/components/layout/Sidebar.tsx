@@ -1,4 +1,4 @@
-import { LayoutDashboard, Ticket, Plus, Users, ShieldCheck, UserCircle } from 'lucide-react';
+import { LayoutDashboard, Ticket, Plus, Users, ShieldCheck, UserCircle, ClipboardList } from 'lucide-react';
 
 import { NavLink } from 'react-router';
 
@@ -36,6 +36,14 @@ function Sidebar() {
             >
               <Users size={18} />
               Manage Users
+            </NavLink>
+
+            <NavLink
+              to="/admin/activity-logs"
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-muted"
+            >
+              <ClipboardList size={18} />
+              Activity Logs
             </NavLink>
           </>
         ) : (
