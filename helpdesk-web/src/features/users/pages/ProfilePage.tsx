@@ -89,16 +89,44 @@ function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border bg-card p-4 sm:p-6">
-        <p className="text-sm text-muted-foreground">Loading profile...</p>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Profile
+          </h1>
+
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage your personal information and account settings.
+          </p>
+        </div>
+
+        <div className="rounded-xl border bg-card p-4 md:p-6">
+          <p className="text-sm text-muted-foreground">
+            Loading profile...
+          </p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-xl border bg-card p-4 sm:p-6">
-        <p className="text-sm text-destructive">{error}</p>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Profile
+          </h1>
+
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage your personal information and account settings.
+          </p>
+        </div>
+
+        <div className="rounded-xl border bg-card p-4 md:p-6">
+          <p className="text-sm text-destructive">
+            {error}
+          </p>
+        </div>
       </div>
     );
   }
@@ -109,12 +137,26 @@ function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border bg-card p-4 sm:p-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Profile
+        </h1>
+
+        <p className="mt-1 text-sm text-muted-foreground">
+          Manage your personal information and account settings.
+        </p>
+      </div>
+
+      {/* Profile Form */}
+      <div className="rounded-xl border bg-card p-4 md:p-6">
         <div className="mb-6">
-          <h1 className="text-xl font-semibold">Profile</h1>
+          <h2 className="text-lg font-semibold">
+            Personal Information
+          </h2>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage your personal information and account settings.
+            Update your name, email address, or password.
           </p>
         </div>
 
@@ -126,39 +168,58 @@ function ProfilePage() {
         />
       </div>
 
-      <div className="rounded-xl border bg-card p-4 sm:p-6">
+      {/* Account Information */}
+      <div className="rounded-xl border bg-card p-4 md:p-6">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold">Account Information</h2>
+          <h2 className="text-lg font-semibold">
+            Account Information
+          </h2>
 
           <p className="mt-1 text-sm text-muted-foreground">
             View information about your Helpdesk account.
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-2">
           <div>
-            <p className="text-sm text-muted-foreground">Role</p>
+            <p className="text-sm text-muted-foreground">
+              Role
+            </p>
 
-            <p className="mt-1 font-medium">{profile.role}</p>
+            <p className="mt-1 text-sm font-medium">
+              {profile.role}
+            </p>
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground">Status</p>
+            <p className="text-sm text-muted-foreground">
+              Status
+            </p>
 
-            <p className="mt-1 font-medium">{profile.status}</p>
+            <p className="mt-1 text-sm font-medium">
+              {profile.status}
+            </p>
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground">Created</p>
+            <p className="text-sm text-muted-foreground">
+              Created
+            </p>
 
-            <p className="mt-1 font-medium">{formatDate(profile.createdAt)}</p>
+            <p className="mt-1 text-sm font-medium">
+              {formatDate(profile.createdAt)}
+            </p>
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground">Last Updated</p>
+            <p className="text-sm text-muted-foreground">
+              Last Updated
+            </p>
 
-            <p className="mt-1 font-medium">
-              {profile.updatedAt ? formatDate(profile.updatedAt) : '-'}
+            <p className="mt-1 text-sm font-medium">
+              {profile.updatedAt
+                ? formatDate(profile.updatedAt)
+                : '-'}
             </p>
           </div>
         </div>

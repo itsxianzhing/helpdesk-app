@@ -10,12 +10,24 @@ import {
   Users,
   ShieldCheck,
   ClipboardList,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
+
 import { NavLink } from 'react-router';
 import { useEffect, useRef, useState } from 'react';
+
 import { useAuth } from '../../features/auth/hooks/useAuth';
 
-function Navbar() {
+interface NavbarProps {
+  isSidebarCollapsed: boolean;
+  onToggleSidebar: () => void;
+}
+
+function Navbar({
+  isSidebarCollapsed,
+  onToggleSidebar,
+}: NavbarProps) {
   const { logout, auth } = useAuth();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -51,26 +63,55 @@ function Navbar() {
   }
 
   return (
-    <header className="relative flex h-16 items-center justify-between border-b bg-background px-4">
-      {/* Brand */}
+    <header className="relative flex h-16 shrink-0 items-center justify-between border-b bg-background px-4">
+      {/* Brand / Navigation controls */}
       <div className="flex items-center gap-2">
+        {/* Mobile hamburger */}
         <button
           type="button"
           onClick={() => setIsMenuOpen((current) => !current)}
           className="rounded-md p-2 hover:bg-muted md:hidden"
           aria-label={
-            isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'
+            isMenuOpen
+              ? 'Close navigation menu'
+              : 'Open navigation menu'
           }
           aria-expanded={isMenuOpen}
         >
           {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
 
-        <span className="text-lg font-semibold">Helpdesk</span>
+        {/* Desktop sidebar toggle */}
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          className="hidden rounded-md p-2 hover:bg-muted md:block"
+          aria-label={
+            isSidebarCollapsed
+              ? 'Expand sidebar'
+              : 'Collapse sidebar'
+          }
+          title={
+            isSidebarCollapsed
+              ? 'Expand sidebar'
+              : 'Collapse sidebar'
+          }
+        >
+          {isSidebarCollapsed ? (
+            <PanelLeftOpen size={20} />
+          ) : (
+            <PanelLeftClose size={20} />
+          )}
+        </button>
+
+        <span className="text-lg font-semibold">
+          Helpdesk
+        </span>
       </div>
 
       {/* Right side */}
       <div className="flex items-center gap-2 md:gap-4">
+        {/* Notifications */}
         <button
           type="button"
           className="rounded-md p-2 hover:bg-muted"
@@ -79,8 +120,8 @@ function Navbar() {
           <Bell size={20} />
         </button>
 
+        {/* User menu */}
         <div className="flex items-center gap-2 md:gap-3">
-          {/* User menu */}
           <div
             ref={profileMenuRef}
             className="relative"
@@ -108,7 +149,9 @@ function Navbar() {
                   <CircleUserRound size={18} />
 
                   <div>
-                    <p className="font-medium">Profile</p>
+                    <p className="font-medium">
+                      Profile
+                    </p>
 
                     <p className="text-xs text-muted-foreground">
                       View and edit your profile
