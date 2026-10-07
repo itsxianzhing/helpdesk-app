@@ -9,12 +9,7 @@ interface ProfileFormProps {
   onSubmit: (request: UpdateProfileRequest) => Promise<void>;
 }
 
-function ProfileForm({
-  profile,
-  isSubmitting,
-  error,
-  onSubmit,
-}: ProfileFormProps) {
+function ProfileForm({ profile, isSubmitting, error, onSubmit }: ProfileFormProps) {
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
   const [password, setPassword] = useState('');
@@ -31,9 +26,7 @@ function ProfileForm({
     setPassword('');
   }, [profile]);
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (isSubmitting) {
@@ -55,23 +48,15 @@ function ProfileForm({
 
     if (!trimmedEmail) {
       validationErrors.email = 'Email is required.';
-    } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)
-    ) {
-      validationErrors.email =
-        'Please enter a valid email address.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      validationErrors.email = 'Please enter a valid email address.';
     }
 
     if (password && password.length < 8) {
-      validationErrors.password =
-        'Password must be at least 8 characters.';
+      validationErrors.password = 'Password must be at least 8 characters.';
     }
 
-    if (
-      validationErrors.name ||
-      validationErrors.email ||
-      validationErrors.password
-    ) {
+    if (validationErrors.name || validationErrors.email || validationErrors.password) {
       setErrors(validationErrors);
       return;
     }
@@ -90,10 +75,7 @@ function ProfileForm({
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Name */}
       <div className="space-y-2">
-        <label
-          htmlFor="profile-name"
-          className="text-sm font-medium"
-        >
+        <label htmlFor="profile-name" className="text-sm font-medium">
           Name
         </label>
 
@@ -112,17 +94,12 @@ function ProfileForm({
           disabled={isSubmitting}
           required
           aria-invalid={!!errors.name}
-          aria-describedby={
-            errors.name ? 'profile-name-error' : undefined
-          }
+          aria-describedby={errors.name ? 'profile-name-error' : undefined}
           className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
         />
 
         {errors.name && (
-          <p
-            id="profile-name-error"
-            className="text-sm text-destructive"
-          >
+          <p id="profile-name-error" className="text-sm text-destructive">
             {errors.name}
           </p>
         )}
@@ -130,10 +107,7 @@ function ProfileForm({
 
       {/* Email */}
       <div className="space-y-2">
-        <label
-          htmlFor="profile-email"
-          className="text-sm font-medium"
-        >
+        <label htmlFor="profile-email" className="text-sm font-medium">
           Email
         </label>
 
@@ -152,19 +126,12 @@ function ProfileForm({
           disabled={isSubmitting}
           required
           aria-invalid={!!errors.email}
-          aria-describedby={
-            errors.email
-              ? 'profile-email-error'
-              : undefined
-          }
+          aria-describedby={errors.email ? 'profile-email-error' : undefined}
           className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
         />
 
         {errors.email && (
-          <p
-            id="profile-email-error"
-            className="text-sm text-destructive"
-          >
+          <p id="profile-email-error" className="text-sm text-destructive">
             {errors.email}
           </p>
         )}
@@ -172,10 +139,7 @@ function ProfileForm({
 
       {/* Password */}
       <div className="space-y-2">
-        <label
-          htmlFor="profile-password"
-          className="text-sm font-medium"
-        >
+        <label htmlFor="profile-password" className="text-sm font-medium">
           New Password
         </label>
 
@@ -194,25 +158,17 @@ function ProfileForm({
           disabled={isSubmitting}
           minLength={8}
           aria-invalid={!!errors.password}
-          aria-describedby={
-            errors.password
-              ? 'profile-password-error'
-              : undefined
-          }
+          aria-describedby={errors.password ? 'profile-password-error' : undefined}
           placeholder="Leave blank to keep your current password"
           className="w-full rounded-md border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
         />
 
         <p className="text-xs text-muted-foreground">
-          Leave blank if you don't want to change your
-          password.
+          Leave blank if you don't want to change your password.
         </p>
 
         {errors.password && (
-          <p
-            id="profile-password-error"
-            className="text-sm text-destructive"
-          >
+          <p id="profile-password-error" className="text-sm text-destructive">
             {errors.password}
           </p>
         )}

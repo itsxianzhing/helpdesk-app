@@ -129,6 +129,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<ActivityLogService>();
+builder.Services.AddScoped<NotificationService>();
 
 builder.Services.AddScoped<AuditSaveChangesInterceptor>();
 

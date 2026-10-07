@@ -1,12 +1,6 @@
-export type ActivityLogAction =
-  | 'Create'
-  | 'Update'
-  | 'Delete';
+export type ActivityLogAction = 'Create' | 'Update' | 'Delete';
 
-export type ActivityLogEntityType =
-  | 'User'
-  | 'Ticket'
-  | 'Comment';
+export type ActivityLogEntityType = 'User' | 'Ticket' | 'Comment';
 
 export interface ActivityLogQueryRequest {
   page?: number;

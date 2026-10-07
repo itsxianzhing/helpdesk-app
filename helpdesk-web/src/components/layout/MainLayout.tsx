@@ -12,10 +12,7 @@ function MainLayout() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
-      <Navbar
-        isSidebarCollapsed={isSidebarCollapsed}
-        onToggleSidebar={toggleSidebar}
-      />
+      <Navbar isSidebarCollapsed={isSidebarCollapsed} onToggleSidebar={toggleSidebar} />
 
       <div className="flex min-h-0 flex-1">
         <Sidebar isCollapsed={isSidebarCollapsed} />

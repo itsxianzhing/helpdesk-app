@@ -14,14 +14,17 @@ namespace Helpdesk.Services;
 public class TicketService : BaseService
 {
     private readonly ActivityLogService _activityLogService;
+    private readonly NotificationService _notificationService;
 
     public TicketService(
         AppDbContext context,
         CurrentUserService currentUserService,
-        ActivityLogService activityLogService)
+        ActivityLogService activityLogService,
+        NotificationService notificationService)
         : base(context, currentUserService)
     {
         _activityLogService = activityLogService;
+        _notificationService = notificationService;
     }
 
     private async Task<Ticket> GetTicketOrThrow(
@@ -158,6 +161,22 @@ public class TicketService : BaseService
                 entityId: ticket.Id,
                 description: $"Created ticket {ticket.TicketNumber}");
 
+            var adminIds = await Context.Users
+                .Where(u => u.Role == Role.Admin)
+                .Select(u => u.Id)
+                .ToListAsync(cancellationToken);
+
+            foreach (var adminId in adminIds)
+            {
+                _notificationService.Add(
+                    userId: adminId,
+                    type: "TicketCreated",
+                    title: "New ticket created",
+                    message: $"A new ticket \"{ticket.Title}\" has been created.",
+                    entityType: "Ticket",
+                    entityId: ticket.Id);
+            }
+
             await Context.SaveChangesAsync(
                 cancellationToken);
 
@@ -233,6 +252,8 @@ public class TicketService : BaseService
             .Property(t => t.Version)
             .OriginalValue = request.Version;
 
+        var previousStatus = ticket.Status;
+
         ticket.Priority = request.Priority!.Value;
         ticket.Status = request.Status!.Value;
 
@@ -241,6 +262,17 @@ public class TicketService : BaseService
             entityType: "Ticket",
             entityId: ticket.Id,
             description: $"Admin updated ticket {ticket.TicketNumber}");
+
+        if (previousStatus != ticket.Status)
+        {
+            _notificationService.Add(
+                userId: ticket.UserId,
+                type: "TicketStatusChanged",
+                title: "Ticket status updated",
+                message: $"Your ticket \"{ticket.Title}\" has been marked as {ticket.Status}.",
+                entityType: "Ticket",
+                entityId: ticket.Id);
+        }
 
         await Context.SaveChangesAsync(
             cancellationToken);

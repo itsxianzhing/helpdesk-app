@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
+    public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,8 +30,8 @@ public class AppDbContext : DbContext
         // =========================
 
         modelBuilder.Entity<User>()
-        .Property(u => u.Role)
-        .HasConversion<string>();
+            .Property(u => u.Role)
+            .HasConversion<string>();
 
         modelBuilder.Entity<User>()
             .Property(u => u.Status)
@@ -96,6 +97,33 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Comment>()
             .HasQueryFilter(c => c.DeletedAt == null);
+
+        // =========================
+        // Notification
+        // =========================
+
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(n => n.Id);
+
+            entity.Property(n => n.Type)
+                .IsRequired();
+
+            entity.Property(n => n.Title)
+                .IsRequired();
+
+            entity.Property(n => n.Message)
+                .IsRequired();
+
+            entity.HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(n => new { n.UserId, n.IsRead });
+
+            entity.HasIndex(n => n.CreatedAt);
+        });
 
         // =========================
         // Refresh Token

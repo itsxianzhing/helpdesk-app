@@ -22,8 +22,7 @@ function Sidebar({ isCollapsed }: SidebarProps) {
 
   const isAdmin = auth?.role === 'Admin';
 
-  const navLinkClass =
-    'flex items-center rounded-md py-2 text-sm hover:bg-muted';
+  const navLinkClass = 'flex items-center rounded-md py-2 text-sm hover:bg-muted';
 
   return (
     <aside
@@ -41,27 +40,17 @@ function Sidebar({ isCollapsed }: SidebarProps) {
             <>
               <NavLink
                 to="/admin/dashboard"
-                className={`${navLinkClass} ${
-                  isCollapsed
-                    ? 'justify-center px-2'
-                    : 'gap-3 px-3'
-                }`}
+                className={`${navLinkClass} ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-3'}`}
                 title={isCollapsed ? 'Dashboard' : undefined}
               >
-                <LayoutDashboard
-                  size={18}
-                  className="shrink-0"
-                />
+                <LayoutDashboard size={18} className="shrink-0" />
 
                 <span
                   className={`whitespace-nowrap overflow-hidden ${
-                    isCollapsed
-                      ? 'pointer-events-none w-0 opacity-0'
-                      : 'w-auto opacity-100'
+                    isCollapsed ? 'pointer-events-none w-0 opacity-0' : 'w-auto opacity-100'
                   }`}
                   style={{
-                    transition:
-                      'opacity 100ms ease, width 200ms ease',
+                    transition: 'opacity 100ms ease, width 200ms ease',
                   }}
                 >
                   Dashboard
@@ -70,27 +59,17 @@ function Sidebar({ isCollapsed }: SidebarProps) {
 
               <NavLink
                 to="/admin/tickets"
-                className={`${navLinkClass} ${
-                  isCollapsed
-                    ? 'justify-center px-2'
-                    : 'gap-3 px-3'
-                }`}
+                className={`${navLinkClass} ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-3'}`}
                 title={isCollapsed ? 'Manage Tickets' : undefined}
               >
-                <ShieldCheck
-                  size={18}
-                  className="shrink-0"
-                />
+                <ShieldCheck size={18} className="shrink-0" />
 
                 <span
                   className={`whitespace-nowrap overflow-hidden ${
-                    isCollapsed
-                      ? 'pointer-events-none w-0 opacity-0'
-                      : 'w-auto opacity-100'
+                    isCollapsed ? 'pointer-events-none w-0 opacity-0' : 'w-auto opacity-100'
                   }`}
                   style={{
-                    transition:
-                      'opacity 100ms ease, width 200ms ease',
+                    transition: 'opacity 100ms ease, width 200ms ease',
                   }}
                 >
                   Manage Tickets
@@ -99,27 +78,17 @@ function Sidebar({ isCollapsed }: SidebarProps) {
 
               <NavLink
                 to="/admin/users"
-                className={`${navLinkClass} ${
-                  isCollapsed
-                    ? 'justify-center px-2'
-                    : 'gap-3 px-3'
-                }`}
+                className={`${navLinkClass} ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-3'}`}
                 title={isCollapsed ? 'Manage Users' : undefined}
               >
-                <Users
-                  size={18}
-                  className="shrink-0"
-                />
+                <Users size={18} className="shrink-0" />
 
                 <span
                   className={`whitespace-nowrap overflow-hidden ${
-                    isCollapsed
-                      ? 'pointer-events-none w-0 opacity-0'
-                      : 'w-auto opacity-100'
+                    isCollapsed ? 'pointer-events-none w-0 opacity-0' : 'w-auto opacity-100'
                   }`}
                   style={{
-                    transition:
-                      'opacity 100ms ease, width 200ms ease',
+                    transition: 'opacity 100ms ease, width 200ms ease',
                   }}
                 >
                   Manage Users
@@ -128,27 +97,17 @@ function Sidebar({ isCollapsed }: SidebarProps) {
 
               <NavLink
                 to="/admin/activity-logs"
-                className={`${navLinkClass} ${
-                  isCollapsed
-                    ? 'justify-center px-2'
-                    : 'gap-3 px-3'
-                }`}
+                className={`${navLinkClass} ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-3'}`}
                 title={isCollapsed ? 'Activity Logs' : undefined}
               >
-                <ClipboardList
-                  size={18}
-                  className="shrink-0"
-                />
+                <ClipboardList size={18} className="shrink-0" />
 
                 <span
                   className={`whitespace-nowrap overflow-hidden ${
-                    isCollapsed
-                      ? 'pointer-events-none w-0 opacity-0'
-                      : 'w-auto opacity-100'
+                    isCollapsed ? 'pointer-events-none w-0 opacity-0' : 'w-auto opacity-100'
                   }`}
                   style={{
-                    transition:
-                      'opacity 100ms ease, width 200ms ease',
+                    transition: 'opacity 100ms ease, width 200ms ease',
                   }}
                 >
                   Activity Logs
@@ -159,27 +118,17 @@ function Sidebar({ isCollapsed }: SidebarProps) {
             <>
               <NavLink
                 to="/dashboard"
-                className={`${navLinkClass} ${
-                  isCollapsed
-                    ? 'justify-center px-2'
-                    : 'gap-3 px-3'
-                }`}
+                className={`${navLinkClass} ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-3'}`}
                 title={isCollapsed ? 'Dashboard' : undefined}
               >
-                <LayoutDashboard
-                  size={18}
-                  className="shrink-0"
-                />
+                <LayoutDashboard size={18} className="shrink-0" />
 
                 <span
                   className={`whitespace-nowrap overflow-hidden ${
-                    isCollapsed
-                      ? 'pointer-events-none w-0 opacity-0'
-                      : 'w-auto opacity-100'
+                    isCollapsed ? 'pointer-events-none w-0 opacity-0' : 'w-auto opacity-100'
                   }`}
                   style={{
-                    transition:
-                      'opacity 100ms ease, width 200ms ease',
+                    transition: 'opacity 100ms ease, width 200ms ease',
                   }}
                 >
                   Dashboard
@@ -188,27 +137,17 @@ function Sidebar({ isCollapsed }: SidebarProps) {
 
               <NavLink
                 to="/tickets"
-                className={`${navLinkClass} ${
-                  isCollapsed
-                    ? 'justify-center px-2'
-                    : 'gap-3 px-3'
-                }`}
+                className={`${navLinkClass} ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-3'}`}
                 title={isCollapsed ? 'Tickets' : undefined}
               >
-                <Ticket
-                  size={18}
-                  className="shrink-0"
-                />
+                <Ticket size={18} className="shrink-0" />
 
                 <span
                   className={`whitespace-nowrap overflow-hidden ${
-                    isCollapsed
-                      ? 'pointer-events-none w-0 opacity-0'
-                      : 'w-auto opacity-100'
+                    isCollapsed ? 'pointer-events-none w-0 opacity-0' : 'w-auto opacity-100'
                   }`}
                   style={{
-                    transition:
-                      'opacity 100ms ease, width 200ms ease',
+                    transition: 'opacity 100ms ease, width 200ms ease',
                   }}
                 >
                   Tickets
@@ -217,27 +156,17 @@ function Sidebar({ isCollapsed }: SidebarProps) {
 
               <NavLink
                 to="/tickets/new"
-                className={`${navLinkClass} ${
-                  isCollapsed
-                    ? 'justify-center px-2'
-                    : 'gap-3 px-3'
-                }`}
+                className={`${navLinkClass} ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-3'}`}
                 title={isCollapsed ? 'Create Ticket' : undefined}
               >
-                <Plus
-                  size={18}
-                  className="shrink-0"
-                />
+                <Plus size={18} className="shrink-0" />
 
                 <span
                   className={`whitespace-nowrap overflow-hidden ${
-                    isCollapsed
-                      ? 'pointer-events-none w-0 opacity-0'
-                      : 'w-auto opacity-100'
+                    isCollapsed ? 'pointer-events-none w-0 opacity-0' : 'w-auto opacity-100'
                   }`}
                   style={{
-                    transition:
-                      'opacity 100ms ease, width 200ms ease',
+                    transition: 'opacity 100ms ease, width 200ms ease',
                   }}
                 >
                   Create Ticket
@@ -250,45 +179,27 @@ function Sidebar({ isCollapsed }: SidebarProps) {
 
       {/* User section */}
       <div className="shrink-0 border-t bg-background p-2">
-        <div
-          className={`flex items-center ${
-            isCollapsed
-              ? 'justify-center'
-              : 'gap-1'
-          }`}
-        >
+        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-1'}`}>
           <NavLink
             to="/profile"
             className={`flex min-w-0 items-center rounded-md py-2 hover:bg-muted ${
-              isCollapsed
-                ? 'justify-center px-2'
-                : 'flex-1 gap-3 px-3'
+              isCollapsed ? 'justify-center px-2' : 'flex-1 gap-3 px-3'
             }`}
             title={isCollapsed ? 'Profile' : undefined}
           >
-            <UserCircle
-              size={20}
-              className="shrink-0 text-muted-foreground"
-            />
+            <UserCircle size={20} className="shrink-0 text-muted-foreground" />
 
             <div
               className={`min-w-0 overflow-hidden whitespace-nowrap ${
-                isCollapsed
-                  ? 'w-0 opacity-0'
-                  : 'w-auto opacity-100'
+                isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'
               }`}
               style={{
-                transition:
-                  'opacity 100ms ease, width 200ms ease',
+                transition: 'opacity 100ms ease, width 200ms ease',
               }}
             >
-              <p className="truncate text-sm font-medium">
-                {auth?.name}
-              </p>
+              <p className="truncate text-sm font-medium">{auth?.name}</p>
 
-              <p className="text-xs text-muted-foreground">
-                {auth?.role}
-              </p>
+              <p className="text-xs text-muted-foreground">{auth?.role}</p>
             </div>
           </NavLink>
 

@@ -12,14 +12,17 @@ namespace Helpdesk.Services;
 public class CommentService : BaseService
 {
     private readonly ActivityLogService _activityLogService;
+    private readonly NotificationService _notificationService;
 
     public CommentService(
         AppDbContext context,
         CurrentUserService currentUserService,
-        ActivityLogService activityLogService)
+        ActivityLogService activityLogService,
+        NotificationService notificationService)
         : base(context, currentUserService)
     {
         _activityLogService = activityLogService;
+        _notificationService = notificationService;
     }
 
     private async Task<Ticket> GetTicketOrThrow(
@@ -130,6 +133,44 @@ public class CommentService : BaseService
                 entityType: "Comment",
                 entityId: comment.Id,
                 description: $"Created comment on ticket {ticket.TicketNumber}");
+
+            if (currentUser.Role == Role.Admin)
+            {
+                // Admin commented → notify ticket owner,
+                // unless admin is the ticket owner.
+                if (ticket.UserId != currentUser.Id)
+                {
+                    _notificationService.Add(
+                        userId: ticket.UserId,
+                        type: "NewComment",
+                        title: "New comment on your ticket",
+                        message: $"An admin commented on your ticket \"{ticket.Title}\".",
+                        entityType: "Ticket",
+                        entityId: ticket.Id);
+                }
+            }
+            else
+            {
+                // User commented → notify all admins,
+                // except the current user (normally not an admin anyway).
+                var adminIds = await Context.Users
+                    .Where(u =>
+                        u.Role == Role.Admin &&
+                        u.Id != currentUser.Id)
+                    .Select(u => u.Id)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var adminId in adminIds)
+                {
+                    _notificationService.Add(
+                        userId: adminId,
+                        type: "NewComment",
+                        title: "New comment on ticket",
+                        message: $"{currentUser.Name} commented on ticket \"{ticket.Title}\".",
+                        entityType: "Ticket",
+                        entityId: ticket.Id);
+                }
+            }
 
             await Context.SaveChangesAsync(
                 cancellationToken);

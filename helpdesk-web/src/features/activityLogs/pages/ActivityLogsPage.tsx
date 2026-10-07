@@ -3,14 +3,8 @@ import { Search } from 'lucide-react';
 
 import { getActivityLogs } from '../api/activityLogApi';
 import { getUsers } from '../../users/api/userApi';
-import type {
-  ActivityLogAction,
-  ActivityLogEntityType,
-  ActivityLogResponse,
-} from '../types';
-import type {
-  UserResponse
-} from '../../users/types';
+import type { ActivityLogAction, ActivityLogEntityType, ActivityLogResponse } from '../types';
+import type { UserResponse } from '../../users/types';
 import { ApiError } from '../../../lib/apiError';
 import useDebounce from '../../../hooks/useDebounce';
 import ActivityLogTable from '../components/ActivityLogTable';
@@ -95,22 +89,12 @@ function ActivityLogsPage() {
     }
 
     fetchActivityLogs();
-  }, [
-    page,
-    pageSize,
-    debouncedSearch,
-    userId,
-    action,
-    entityType,
-    descending,
-  ]);
+  }, [page, pageSize, debouncedSearch, userId, action, entityType, descending]);
 
   if (isLoading) {
     return (
       <div className="p-6">
-        <p className="text-sm text-muted-foreground">
-          Loading activity logs...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading activity logs...</p>
       </div>
     );
   }
@@ -127,9 +111,7 @@ function ActivityLogsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Activity Logs
-        </h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Activity Logs</h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
           View important activities performed in the system.
@@ -183,9 +165,7 @@ function ActivityLogsPage() {
         <select
           value={action}
           onChange={(event) => {
-            setAction(
-              event.target.value as ActivityLogAction | '',
-            );
+            setAction(event.target.value as ActivityLogAction | '');
             setPage(1);
           }}
           aria-label="Filter by action"
@@ -201,9 +181,7 @@ function ActivityLogsPage() {
         <select
           value={entityType}
           onChange={(event) => {
-            setEntityType(
-              event.target.value as ActivityLogEntityType | '',
-            );
+            setEntityType(event.target.value as ActivityLogEntityType | '');
             setPage(1);
           }}
           aria-label="Filter by entity type"
@@ -254,11 +232,7 @@ function ActivityLogsPage() {
 
           <button
             type="button"
-            disabled={
-              page === totalPages ||
-              isLoading ||
-              totalPages === 0
-            }
+            disabled={page === totalPages || isLoading || totalPages === 0}
             onClick={() => setPage((current) => current + 1)}
             className="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >

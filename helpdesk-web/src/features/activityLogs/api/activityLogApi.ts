@@ -1,13 +1,7 @@
 import { apiFetch } from '../../../lib/api';
-import type {
-  ActivityLogQueryRequest,
-  ActivityLogResponse,
-  PagedResponse,
-} from '../types';
+import type { ActivityLogQueryRequest, ActivityLogResponse, PagedResponse } from '../types';
 
-function buildQueryParams(
-  query: ActivityLogQueryRequest,
-): string {
+function buildQueryParams(query: ActivityLogQueryRequest): string {
   const params = new URLSearchParams();
 
   if (query.page !== undefined) {
@@ -35,10 +29,7 @@ function buildQueryParams(
   }
 
   if (query.descending !== undefined) {
-    params.set(
-      'descending',
-      String(query.descending),
-    );
+    params.set('descending', String(query.descending));
   }
 
   const queryString = params.toString();
@@ -46,12 +37,8 @@ function buildQueryParams(
   return queryString ? `?${queryString}` : '';
 }
 
-export function getActivityLogs(
-  query: ActivityLogQueryRequest = {},
-) {
+export function getActivityLogs(query: ActivityLogQueryRequest = {}) {
   const queryString = buildQueryParams(query);
 
-  return apiFetch<PagedResponse<ActivityLogResponse>>(
-    `/ActivityLogs${queryString}`,
-  );
+  return apiFetch<PagedResponse<ActivityLogResponse>>(`/ActivityLogs${queryString}`);
 }

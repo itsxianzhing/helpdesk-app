@@ -17,6 +17,9 @@ import {
 import { NavLink } from 'react-router';
 import { useEffect, useRef, useState } from 'react';
 
+import { useNotifications } from '../../features/notifications/hooks/useNotifications';
+import NotificationDropdown from '../../features/notifications/components/NotificationDropdown';
+
 import { useAuth } from '../../features/auth/hooks/useAuth';
 
 interface NavbarProps {
@@ -24,26 +27,36 @@ interface NavbarProps {
   onToggleSidebar: () => void;
 }
 
-function Navbar({
-  isSidebarCollapsed,
-  onToggleSidebar,
-}: NavbarProps) {
+function Navbar({ isSidebarCollapsed, onToggleSidebar }: NavbarProps) {
   const { logout, auth } = useAuth();
+
+  const {
+    notifications,
+    unreadCount,
+    isLoading: isNotificationsLoading,
+    markAsRead,
+    markAllAsRead,
+  } = useNotifications();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const profileMenuRef = useRef<HTMLDivElement>(null);
+  const notificationMenuRef = useRef<HTMLDivElement>(null);
 
   const isAdmin = auth?.role === 'Admin';
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        profileMenuRef.current &&
-        !profileMenuRef.current.contains(event.target as Node)
-      ) {
+      const target = event.target as Node;
+
+      if (profileMenuRef.current && !profileMenuRef.current.contains(target)) {
         setIsProfileMenuOpen(false);
+      }
+
+      if (notificationMenuRef.current && !notificationMenuRef.current.contains(target)) {
+        setIsNotificationOpen(false);
       }
     }
 
@@ -62,6 +75,23 @@ function Navbar({
     setIsProfileMenuOpen(false);
   }
 
+  function toggleProfileMenu() {
+    setIsProfileMenuOpen((current) => !current);
+    setIsNotificationOpen(false);
+  }
+
+  function toggleNotificationMenu() {
+    setIsNotificationOpen((current) => !current);
+    setIsProfileMenuOpen(false);
+  }
+
+  async function handleLogout() {
+    setIsProfileMenuOpen(false);
+    setIsNotificationOpen(false);
+
+    await logout();
+  }
+
   return (
     <header className="relative flex h-16 shrink-0 items-center justify-between border-b bg-background px-4">
       {/* Brand / Navigation controls */}
@@ -71,11 +101,7 @@ function Navbar({
           type="button"
           onClick={() => setIsMenuOpen((current) => !current)}
           className="rounded-md p-2 hover:bg-muted md:hidden"
-          aria-label={
-            isMenuOpen
-              ? 'Close navigation menu'
-              : 'Open navigation menu'
-          }
+          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={isMenuOpen}
         >
           {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -86,51 +112,54 @@ function Navbar({
           type="button"
           onClick={onToggleSidebar}
           className="hidden rounded-md p-2 hover:bg-muted md:block"
-          aria-label={
-            isSidebarCollapsed
-              ? 'Expand sidebar'
-              : 'Collapse sidebar'
-          }
-          title={
-            isSidebarCollapsed
-              ? 'Expand sidebar'
-              : 'Collapse sidebar'
-          }
+          aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {isSidebarCollapsed ? (
-            <PanelLeftOpen size={20} />
-          ) : (
-            <PanelLeftClose size={20} />
-          )}
+          {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
         </button>
 
-        <span className="text-lg font-semibold">
-          Helpdesk
-        </span>
+        <span className="text-lg font-semibold">Helpdesk</span>
       </div>
 
       {/* Right side */}
       <div className="flex items-center gap-2 md:gap-4">
         {/* Notifications */}
-        <button
-          type="button"
-          className="rounded-md p-2 hover:bg-muted"
-          aria-label="Notifications"
-        >
-          <Bell size={20} />
-        </button>
+        <div ref={notificationMenuRef} className="relative">
+          <button
+            type="button"
+            onClick={toggleNotificationMenu}
+            className="relative rounded-md p-2 hover:bg-muted"
+            aria-label="Notifications"
+            aria-expanded={isNotificationOpen}
+          >
+            <Bell size={20} />
+
+            {unreadCount > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {isNotificationOpen && (
+            <NotificationDropdown
+              notifications={notifications}
+              unreadCount={unreadCount}
+              isLoading={isNotificationsLoading}
+              isAdmin={isAdmin}
+              onMarkAsRead={markAsRead}
+              onMarkAllAsRead={markAllAsRead}
+              onClose={() => setIsNotificationOpen(false)}
+            />
+          )}
+        </div>
 
         {/* User menu */}
         <div className="flex items-center gap-2 md:gap-3">
-          <div
-            ref={profileMenuRef}
-            className="relative"
-          >
+          <div ref={profileMenuRef} className="relative">
             <button
               type="button"
-              onClick={() =>
-                setIsProfileMenuOpen((current) => !current)
-              }
+              onClick={toggleProfileMenu}
               className="rounded-md p-2 hover:bg-muted"
               aria-label="Open user menu"
               aria-expanded={isProfileMenuOpen}
@@ -149,20 +178,16 @@ function Navbar({
                   <CircleUserRound size={18} />
 
                   <div>
-                    <p className="font-medium">
-                      Profile
-                    </p>
+                    <p className="font-medium">Profile</p>
 
-                    <p className="text-xs text-muted-foreground">
-                      View and edit your profile
-                    </p>
+                    <p className="text-xs text-muted-foreground">View and edit your profile</p>
                   </div>
                 </NavLink>
 
                 {/* Logout */}
                 <button
                   type="button"
-                  onClick={logout}
+                  onClick={() => void handleLogout()}
                   className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <LogOut size={18} />
