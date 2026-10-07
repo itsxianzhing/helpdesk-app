@@ -7,9 +7,11 @@ using Helpdesk.Data;
 using Helpdesk.Data.Interceptors;
 using Helpdesk.Middleware;
 using Helpdesk.Filters;
+using Helpdesk.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
@@ -29,6 +31,9 @@ builder.Services.AddControllers(options =>
     options.JsonSerializerOptions.Converters.Add(
         new JsonStringEnumConverter());
 });
+
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, SignalRUserIdProvider>();
 
 builder.Services.AddCors(options =>
 {
@@ -91,6 +96,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         options.Events = new JwtBearerEvents
         {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/hubs/notifications"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            },
+
             OnChallenge = async context =>
             {
                 context.HandleResponse();
@@ -183,6 +203,8 @@ app.UseExceptionMiddleware();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.MapControllers();
 

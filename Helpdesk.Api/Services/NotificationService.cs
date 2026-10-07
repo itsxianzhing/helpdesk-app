@@ -2,6 +2,8 @@ using Helpdesk.Data;
 using Helpdesk.Dtos.Notification;
 using Helpdesk.Exceptions;
 using Helpdesk.Models;
+using Helpdesk.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Helpdesk.Services;
@@ -9,13 +11,17 @@ namespace Helpdesk.Services;
 public class NotificationService
 {
     private readonly AppDbContext _context;
+    private readonly IHubContext<NotificationHub> _hubContext;
 
-    public NotificationService(AppDbContext context)
+    public NotificationService(
+        AppDbContext context,
+        IHubContext<NotificationHub> hubContext)
     {
         _context = context;
+        _hubContext = hubContext;
     }
 
-    public void Add(
+    public Notification Add(
         int userId,
         string type,
         string title,
@@ -36,6 +42,8 @@ public class NotificationService
         };
 
         _context.Notifications.Add(notification);
+
+        return notification;
     }
 
     public async Task<List<NotificationResponse>> GetAll(
@@ -117,5 +125,29 @@ public class NotificationService
 
         await _context.SaveChangesAsync(
             cancellationToken);
+    }
+
+    public async Task SendCreated(
+        IEnumerable<Notification> notifications)
+    {
+        foreach (var notification in notifications)
+        {
+            await _hubContext.Clients
+                .User(notification.UserId.ToString())
+                .SendAsync(
+                    "NotificationCreated",
+                    new NotificationResponse
+                    {
+                        Id = notification.Id,
+                        Type = notification.Type,
+                        Title = notification.Title,
+                        Message = notification.Message,
+                        EntityType = notification.EntityType,
+                        EntityId = notification.EntityId,
+                        IsRead = notification.IsRead,
+                        CreatedAt = notification.CreatedAt,
+                        ReadAt = notification.ReadAt
+                    });
+        }
     }
 }

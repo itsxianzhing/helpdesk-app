@@ -134,19 +134,23 @@ public class CommentService : BaseService
                 entityId: comment.Id,
                 description: $"Created comment on ticket {ticket.TicketNumber}");
 
+            var notifications = new List<Notification>();
+
             if (currentUser.Role == Role.Admin)
             {
                 // Admin commented → notify ticket owner,
                 // unless admin is the ticket owner.
                 if (ticket.UserId != currentUser.Id)
                 {
-                    _notificationService.Add(
+                    var notification = _notificationService.Add(
                         userId: ticket.UserId,
                         type: "NewComment",
                         title: "New comment on your ticket",
                         message: $"An admin commented on your ticket \"{ticket.Title}\".",
                         entityType: "Ticket",
                         entityId: ticket.Id);
+
+                    notifications.Add(notification);
                 }
             }
             else
@@ -162,13 +166,15 @@ public class CommentService : BaseService
 
                 foreach (var adminId in adminIds)
                 {
-                    _notificationService.Add(
+                    var notification = _notificationService.Add(
                         userId: adminId,
                         type: "NewComment",
                         title: "New comment on ticket",
                         message: $"{currentUser.Name} commented on ticket \"{ticket.Title}\".",
                         entityType: "Ticket",
                         entityId: ticket.Id);
+
+                    notifications.Add(notification);
                 }
             }
 
@@ -177,6 +183,9 @@ public class CommentService : BaseService
 
             await transaction.CommitAsync(
                 cancellationToken);
+
+            await _notificationService.SendCreated(
+                notifications);
 
             return CommentMapper.ToCommentResponse(comment);
         }

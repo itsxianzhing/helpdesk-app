@@ -2,9 +2,15 @@
 
 A full-stack helpdesk and ticket management system built with ASP.NET Core, PostgreSQL, and React.
 
-> 🚀 **Status: MVP Complete**
+> 🚀 **Status: Production Demo**
 >
-> The core full-stack helpdesk workflow has been implemented, including authentication, ticket management, comments, user management, and administrative functionality.
+> A complete full-stack helpdesk workflow with authentication, ticket management, comments, user management, administrative functionality, activity logging, and real-time notifications.
+
+## Live Demo
+
+🌐 **Application:** https://helpdesk.tansys.my.id
+
+The application is deployed and available as a production demo.
 
 ---
 
@@ -12,17 +18,18 @@ A full-stack helpdesk and ticket management system built with ASP.NET Core, Post
 
 Helpdesk System is a web-based application designed to manage internal support requests through a ticket-based workflow.
 
-Users can authenticate, create and manage their own support tickets, communicate through comments, and view their ticket history.
+Users can authenticate, create and manage their own support tickets, communicate through comments, receive real-time notifications, and view their ticket history.
 
-Administrators can manage users, manage tickets, update ticket status and priority, and perform administrative operations.
+Administrators can manage users, manage tickets, update ticket status and priority, monitor activity logs, and perform administrative operations.
 
 The project consists of:
 
 - A REST API backend built with ASP.NET Core
 - A React + TypeScript web frontend
 - PostgreSQL as the relational database
+- SignalR for real-time notifications
 
-The project focuses on applying practical software engineering concepts such as layered architecture, authentication and authorization, data integrity, optimistic concurrency, audit fields, soft deletion, pagination, filtering, sorting, and activity logging.
+The project focuses on applying practical software engineering concepts such as layered architecture, authentication and authorization, data integrity, optimistic concurrency, audit fields, soft deletion, pagination, filtering, sorting, activity logging, and real-time communication.
 
 ---
 
@@ -31,6 +38,7 @@ The project focuses on applying practical software engineering concepts such as 
 ### Authentication & Authorization
 
 - JWT-based authentication
+- Refresh token authentication
 - Role-based authorization
 - Admin and User roles
 - Password hashing with BCrypt
@@ -40,6 +48,7 @@ The project focuses on applying practical software engineering concepts such as 
 - Admin-only frontend routes
 - Custom `401 Unauthorized` and `403 Forbidden` responses
 - Logout functionality
+- Automatic access token refresh
 
 ---
 
@@ -94,6 +103,29 @@ Tickets support:
 
 ---
 
+### Notifications
+
+The application includes a notification system for important ticket activity.
+
+Supported notification events include:
+
+- New ticket creation
+- Ticket status changes
+- New comments
+- Read/unread notification state
+- Mark individual notifications as read
+- Mark all notifications as read
+- Unread notification counter
+
+Notifications are delivered through:
+
+- REST API for notification history and persistence
+- SignalR WebSocket connection for real-time delivery
+
+The frontend automatically receives new notifications without requiring a page refresh.
+
+---
+
 ### User Management
 
 Administrators can manage users through the admin interface.
@@ -124,6 +156,22 @@ Administrators can also:
 
 ---
 
+### Activity Logs
+
+Important administrative and user actions are recorded through an activity log.
+
+Examples include:
+
+- Create
+- Update
+- Delete
+
+Activity logs store information about the affected entity and the user performing the action.
+
+Administrators can search, filter, sort, and paginate activity logs.
+
+---
+
 ### Dashboard
 
 The frontend provides separate dashboard experiences for users and administrators.
@@ -136,6 +184,7 @@ Provides access to:
 - Ticket management
 - Ticket creation
 - Recent ticket activity
+- Notifications
 
 #### Admin Dashboard
 
@@ -143,11 +192,13 @@ Provides administrative access to:
 
 - Ticket management
 - User management
+- Activity logs
 - Administrative workflows
+- Notifications
 
 ---
 
-### Pagination, Filtering & Sorting
+## Pagination, Filtering & Sorting
 
 List endpoints use a reusable pagination response structure.
 
@@ -179,6 +230,15 @@ User queries support:
 - Account status filtering
 - Sorting
 - Ascending / descending order
+- Pagination
+
+Activity log queries support:
+
+- Search
+- Action filtering
+- Entity type filtering
+- User filtering
+- Sorting
 - Pagination
 
 ---
@@ -228,6 +288,46 @@ Activity logs store information about the affected entity and the user performin
 
 ---
 
+## Real-Time Communication
+
+The application uses **ASP.NET Core SignalR** to provide real-time notification delivery.
+
+### Flow
+
+```text
+┌──────────────────────────┐
+│      React Frontend      │
+│                          │
+│  Notification UI         │
+└────────────┬─────────────┘
+             │
+             │ WebSocket
+             ▼
+┌──────────────────────────┐
+│      SignalR Hub         │
+│ /hubs/notifications      │
+└────────────┬─────────────┘
+             │
+             ▼
+┌──────────────────────────┐
+│   Notification Service   │
+│                          │
+│ Create + Persist + Send  │
+└────────────┬─────────────┘
+             │
+             ▼
+┌──────────────────────────┐
+│       PostgreSQL         │
+│      Notifications       │
+└──────────────────────────┘
+```
+
+SignalR uses the authenticated user's ID to route notifications to the correct client.
+
+The frontend uses automatic reconnection and falls back to Server-Sent Events when WebSocket transport is unavailable.
+
+---
+
 ## Architecture
 
 The backend follows a simple layered architecture:
@@ -257,30 +357,36 @@ The backend follows a simple layered architecture:
 └──────────────────────────┘
 ```
 
-The frontend communicates with the REST API:
+The frontend communicates with the backend through both REST API requests and SignalR:
 
 ```text
-┌──────────────────────────┐
-│       React Frontend     │
-│    TypeScript + Vite     │
-└────────────┬─────────────┘
-             │
-             │ HTTP / JSON
-             ▼
-┌──────────────────────────┐
-│      ASP.NET Core API    │
-│ Controllers → Services   │
-└────────────┬─────────────┘
-             │
-             ▼
-┌──────────────────────────┐
-│    Entity Framework Core │
-└────────────┬─────────────┘
-             │
-             ▼
-┌──────────────────────────┐
-│        PostgreSQL        │
-└──────────────────────────┘
+                         ┌──────────────────────┐
+                         │    React Frontend    │
+                         │   TypeScript + Vite  │
+                         └──────────┬───────────┘
+                                    │
+                     ┌──────────────┴──────────────┐
+                     │                             │
+                  HTTP/JSON                    WebSocket
+                     │                             │
+                     ▼                             ▼
+          ┌────────────────────┐       ┌─────────────────────┐
+          │  ASP.NET Core API  │       │     SignalR Hub     │
+          │ Controllers/       │       │ /hubs/notifications │
+          │ Services           │       └──────────┬──────────┘
+          └──────────┬─────────┘                  │
+                     │                            │
+                     └────────────┬───────────────┘
+                                  ▼
+                       ┌────────────────────┐
+                       │ Entity Framework   │
+                       │ Core               │
+                       └──────────┬─────────┘
+                                  │
+                                  ▼
+                       ┌────────────────────┐
+                       │    PostgreSQL      │
+                       └────────────────────┘
 ```
 
 DTOs are used to define API request and response models, while mapper classes handle entity-to-response projections.
@@ -299,6 +405,7 @@ The architecture is intentionally kept straightforward. The goal is to maintain 
 - **PostgreSQL**
 - **Npgsql**
 - **JWT Bearer Authentication**
+- **SignalR**
 - **BCrypt**
 
 ### Frontend
@@ -309,11 +416,21 @@ The architecture is intentionally kept straightforward. The goal is to maintain 
 - **React Router**
 - **Tailwind CSS**
 - **Lucide React**
+- **@microsoft/signalr**
 
 ### API Documentation
 
 - **OpenAPI / Swagger**
 - **Scalar**
+
+### Infrastructure & Deployment
+
+- **Docker**
+- **Docker Compose**
+- **Nginx Proxy Manager**
+- **Cloudflare Tunnel**
+- **Cloudflare**
+- **Supabase PostgreSQL**
 
 ### Development
 
@@ -332,9 +449,11 @@ Helpdesk/
 ├── Helpdesk.Api/
 │   │
 │   ├── Controllers/
+│   │   ├── ActivityLogsController.cs
 │   │   ├── AdminTicketsController.cs
 │   │   ├── AuthController.cs
 │   │   ├── CommentsController.cs
+│   │   ├── NotificationsController.cs
 │   │   ├── TicketCommentController.cs
 │   │   ├── TicketsController.cs
 │   │   └── UsersController.cs
@@ -343,15 +462,21 @@ Helpdesk/
 │   │   └── AppDbContext.cs
 │   │
 │   ├── Dtos/
+│   │   ├── ActivityLogs/
 │   │   ├── Auth/
 │   │   ├── Comment/
 │   │   ├── Common/
+│   │   ├── Notification/
 │   │   ├── Ticket/
 │   │   └── User/
 │   │
 │   ├── Exceptions/
 │   ├── Extensions/
+│   ├── Filters/
 │   ├── Helpers/
+│   ├── Hubs/
+│   │   ├── NotificationHub.cs
+│   │   └── SignalRUserIdProvider.cs
 │   ├── Mappers/
 │   ├── Middleware/
 │   │
@@ -360,6 +485,8 @@ Helpdesk/
 │   │   ├── Enums/
 │   │   ├── ActivityLog.cs
 │   │   ├── Comment.cs
+│   │   ├── Notification.cs
+│   │   ├── RefreshToken.cs
 │   │   ├── Ticket.cs
 │   │   └── User.cs
 │   │
@@ -370,6 +497,8 @@ Helpdesk/
 │   │   ├── CurrentUserAccessor.cs
 │   │   ├── CurrentUserService.cs
 │   │   ├── JwtService.cs
+│   │   ├── NotificationService.cs
+│   │   ├── RefreshTokenService.cs
 │   │   ├── TicketService.cs
 │   │   └── UserService.cs
 │   │
@@ -384,9 +513,11 @@ Helpdesk/
 │   │   ├── app/
 │   │   ├── components/
 │   │   ├── features/
+│   │   │   ├── activityLogs/
 │   │   │   ├── auth/
 │   │   │   ├── comments/
 │   │   │   ├── dashboard/
+│   │   │   ├── notifications/
 │   │   │   ├── tickets/
 │   │   │   └── users/
 │   │   └── ...
@@ -408,10 +539,9 @@ The backend exposes REST-style endpoints.
 
 ```text
 POST /api/auth/login
+POST /api/auth/refresh
 POST /api/auth/logout
 ```
-
----
 
 ### Tickets
 
@@ -423,16 +553,12 @@ PUT    /api/tickets/{id}
 DELETE /api/tickets/{id}
 ```
 
----
-
 ### Ticket Comments
 
 ```text
 GET  /api/tickets/{ticketId}/comments
 POST /api/tickets/{ticketId}/comments
 ```
-
----
 
 ### Comments
 
@@ -441,15 +567,28 @@ PUT    /api/comments/{id}
 DELETE /api/comments/{id}
 ```
 
----
-
 ### Admin Tickets
 
 ```text
 PUT /api/admin/tickets/{id}
 ```
 
----
+### Notifications
+
+```text
+GET   /api/notifications
+GET   /api/notifications/unread-count
+PATCH /api/notifications/{id}/read
+PATCH /api/notifications/read-all
+```
+
+### SignalR
+
+```text
+/hubs/notifications
+```
+
+The SignalR hub uses the authenticated user's identity to deliver notifications to the appropriate client.
 
 ### Users
 
@@ -498,19 +637,72 @@ AppDbContext
 
 Database schema changes are managed using Entity Framework Core migrations.
 
-The project currently contains migrations covering features such as:
+The database contains entities for:
 
-- Initial database structure
-- Soft delete
-- Created timestamps
-- Base entity fields
-- Audit fields
-- Optimistic concurrency
-- Database-side `CreatedAt` defaults
-- Enum conversion
-- Ticket numbers
+- Users
+- Tickets
+- Comments
+- Notifications
+- Refresh tokens
 - Activity logs
-- Admin seeding
+
+---
+
+## Production Deployment
+
+The production environment uses the following architecture:
+
+```text
+                         Internet
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │   Cloudflare  │
+                    └───────┬───────┘
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │ Cloudflare    │
+                    │    Tunnel     │
+                    └───────┬───────┘
+                            │
+                            ▼
+                  ┌────────────────────┐
+                  │ Nginx Proxy Manager│
+                  └─────────┬──────────┘
+                            │
+               ┌────────────┴────────────┐
+               │                         │
+               ▼                         ▼
+       ┌───────────────┐        ┌────────────────┐
+       │ React / Nginx │        │ ASP.NET Core   │
+       │   Frontend    │        │      API       │
+       └───────────────┘        └───────┬────────┘
+                                        │
+                                        ▼
+                               ┌─────────────────┐
+                               │ Supabase        │
+                               │ PostgreSQL      │
+                               └─────────────────┘
+```
+
+The frontend is available at:
+
+```text
+https://helpdesk.tansys.my.id
+```
+
+The API is available at:
+
+```text
+https://helpdesk-api.tansys.my.id
+```
+
+Real-time notifications are delivered through:
+
+```text
+wss://helpdesk-api.tansys.my.id/hubs/notifications
+```
 
 ---
 
@@ -636,9 +828,12 @@ Make sure the backend API is running at the same time.
 - [x] Database migrations
 - [x] User management
 - [x] JWT authentication
+- [x] Refresh token authentication
 - [x] Role-based authorization
 - [x] Ticket management
 - [x] Ticket comments
+- [x] Notifications
+- [x] Real-time notifications with SignalR
 - [x] Pagination
 - [x] Filtering
 - [x] Sorting
@@ -668,6 +863,8 @@ Make sure the backend API is running at the same time.
 - [x] Ticket status and priority display
 - [x] User management
 - [x] Admin ticket management
+- [x] Notifications
+- [x] Real-time notification updates
 - [x] Backend API integration
 - [x] Responsive UI
 - [x] Basic accessibility
@@ -680,22 +877,24 @@ Make sure the backend API is running at the same time.
 - [x] User flow testing
 - [x] Admin flow testing
 
-### Production Readiness
+### Production
 
-- [ ] Production configuration
-- [ ] Production database
-- [ ] Production build verification
-- [ ] Deploy backend API
-- [ ] Deploy frontend
-- [ ] Configure reverse proxy
-- [ ] HTTPS
-- [ ] Production API documentation
+- [x] Production configuration
+- [x] Production database
+- [x] Production build
+- [x] Backend deployment
+- [x] Frontend deployment
+- [x] Reverse proxy
+- [x] HTTPS
+- [x] Cloudflare Tunnel
+- [x] Real-time WebSocket / SignalR
+- [x] Production API
 
 ---
 
 ## Future Improvements
 
-After the MVP and initial deployment are completed, possible future improvements include:
+Possible future improvements include:
 
 - Ticket categories
 - Ticket assignment
@@ -707,7 +906,7 @@ After the MVP and initial deployment are completed, possible future improvements
 - Reporting
 - Monitoring and logging improvements
 
-These features are not part of the current MVP implementation and may be added as the project evolves.
+These features are not part of the current implementation and may be added as the project evolves.
 
 ---
 
@@ -720,12 +919,13 @@ The main goals are:
 - Building a real-world REST API
 - Understanding ASP.NET Core and Entity Framework Core
 - Implementing authentication and authorization
+- Implementing real-time communication with SignalR
 - Designing a maintainable application structure
 - Handling data integrity and concurrent updates
 - Building a frontend that consumes the API
 - Applying frontend architecture with React and TypeScript
 - Testing complete user and administrative workflows
-- Preparing the application for production deployment
+- Deploying a full-stack application to a production environment
 
 The project prioritizes a practical architecture and incremental development rather than introducing unnecessary complexity.
 

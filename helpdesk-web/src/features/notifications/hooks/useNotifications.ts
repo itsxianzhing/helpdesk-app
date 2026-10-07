@@ -7,6 +7,8 @@ import {
   markNotificationAsRead,
 } from '../api/notificationApi';
 
+import { startNotificationHub, stopNotificationHub } from '../services/notificationHub';
+
 import type { NotificationResponse } from '../types';
 
 export function useNotifications() {
@@ -31,6 +33,29 @@ export function useNotifications() {
 
   useEffect(() => {
     void loadNotifications();
+
+    void startNotificationHub(
+      (notification) => {
+        setNotifications((current) => {
+          if (current.some((item) => item.id === notification.id)) {
+            return current;
+          }
+
+          return [notification, ...current];
+        });
+
+        if (!notification.isRead) {
+          setUnreadCount((current) => current + 1);
+        }
+      },
+      async () => {
+        await loadNotifications();
+      },
+    );
+
+    return () => {
+      void stopNotificationHub();
+    };
   }, [loadNotifications]);
 
   const markAsRead = useCallback(

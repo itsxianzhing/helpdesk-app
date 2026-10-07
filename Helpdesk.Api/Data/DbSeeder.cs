@@ -392,5 +392,103 @@ public static class DbSeeder
         context.ActivityLogs.AddRange(activityLogs);
 
         await context.SaveChangesAsync(cancellationToken);
+
+        // =========================
+        // Notifications
+        // =========================
+
+        var notifications = new[]
+        {
+            new Notification
+            {
+                UserId = admin.Id,
+                Type = "TicketCreated",
+                Title = "New ticket created",
+                Message = $"A new ticket \"{ticket1.Title}\" has been created.",
+                EntityType = "Ticket",
+                EntityId = ticket1.Id,
+                IsRead = false,
+                CreatedAt = now.AddMinutes(-8)
+            },
+
+            new Notification
+            {
+                UserId = admin.Id,
+                Type = "TicketCreated",
+                Title = "New ticket created",
+                Message = $"A new ticket \"{ticket5.Title}\" has been created.",
+                EntityType = "Ticket",
+                EntityId = ticket5.Id,
+                IsRead = false,
+                CreatedAt = now.AddMinutes(-6)
+            },
+
+            new Notification
+            {
+                UserId = admin.Id,
+                Type = "NewComment",
+                Title = "New comment on ticket",
+                Message = $"{budi.Name} commented on ticket \"{ticket1.Title}\".",
+                EntityType = "Ticket",
+                EntityId = ticket1.Id,
+                IsRead = true,
+                CreatedAt = now.AddMinutes(-5),
+                ReadAt = now.AddMinutes(-3)
+            },
+
+            new Notification
+            {
+                UserId = budi.Id,
+                Type = "TicketStatusChanged",
+                Title = "Ticket status updated",
+                Message = $"Your ticket \"{ticket1.Title}\" has been marked as {ticket1.Status}.",
+                EntityType = "Ticket",
+                EntityId = ticket1.Id,
+                IsRead = false,
+                CreatedAt = now.AddMinutes(-4)
+            },
+
+            new Notification
+            {
+                UserId = budi.Id,
+                Type = "NewComment",
+                Title = "New comment on your ticket",
+                Message = $"An admin commented on your ticket \"{ticket1.Title}\".",
+                EntityType = "Ticket",
+                EntityId = ticket1.Id,
+                IsRead = true,
+                CreatedAt = now.AddMinutes(-9),
+                ReadAt = now.AddMinutes(-7)
+            },
+
+            new Notification
+            {
+                UserId = siti.Id,
+                Type = "NewComment",
+                Title = "New comment on your ticket",
+                Message = $"An admin commented on your ticket \"{ticket2.Title}\".",
+                EntityType = "Ticket",
+                EntityId = ticket2.Id,
+                IsRead = false,
+                CreatedAt = now.AddMinutes(-7)
+            },
+
+            new Notification
+            {
+                UserId = andi.Id,
+                Type = "TicketStatusChanged",
+                Title = "Ticket status updated",
+                Message = $"Your ticket \"{ticket3.Title}\" has been marked as {ticket3.Status}.",
+                EntityType = "Ticket",
+                EntityId = ticket3.Id,
+                IsRead = true,
+                CreatedAt = now.AddMinutes(-12),
+                ReadAt = now.AddMinutes(-10)
+            }
+        };
+
+        context.Notifications.AddRange(notifications);
+
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

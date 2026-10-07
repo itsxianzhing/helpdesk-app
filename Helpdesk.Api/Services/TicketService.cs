@@ -161,6 +161,8 @@ public class TicketService : BaseService
                 entityId: ticket.Id,
                 description: $"Created ticket {ticket.TicketNumber}");
 
+            var notifications = new List<Notification>();
+
             var adminIds = await Context.Users
                 .Where(u => u.Role == Role.Admin)
                 .Select(u => u.Id)
@@ -168,13 +170,15 @@ public class TicketService : BaseService
 
             foreach (var adminId in adminIds)
             {
-                _notificationService.Add(
+                var notification = _notificationService.Add(
                     userId: adminId,
                     type: "TicketCreated",
                     title: "New ticket created",
                     message: $"A new ticket \"{ticket.Title}\" has been created.",
                     entityType: "Ticket",
                     entityId: ticket.Id);
+
+                notifications.Add(notification);
             }
 
             await Context.SaveChangesAsync(
@@ -182,6 +186,9 @@ public class TicketService : BaseService
 
             await transaction.CommitAsync(
                 cancellationToken);
+
+            await _notificationService.SendCreated(
+                notifications);
 
             return await GetById(
                 ticket.Id,
@@ -263,9 +270,11 @@ public class TicketService : BaseService
             entityId: ticket.Id,
             description: $"Admin updated ticket {ticket.TicketNumber}");
 
+        Notification? notification = null;
+
         if (previousStatus != ticket.Status)
         {
-            _notificationService.Add(
+            notification = _notificationService.Add(
                 userId: ticket.UserId,
                 type: "TicketStatusChanged",
                 title: "Ticket status updated",
@@ -276,6 +285,12 @@ public class TicketService : BaseService
 
         await Context.SaveChangesAsync(
             cancellationToken);
+
+        if (notification != null)
+        {
+            await _notificationService.SendCreated(
+                new[] { notification });
+        }
 
         return TicketMapper.ToDetailResponse(ticket);
     }
