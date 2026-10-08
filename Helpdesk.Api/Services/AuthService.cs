@@ -12,21 +12,47 @@ public class AuthService
     private readonly AppDbContext _context;
     private readonly JwtService _jwtService;
     private readonly RefreshTokenService _refreshTokenService;
+    private readonly ILoginRateLimiter _loginRateLimiter;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public AuthService(
         AppDbContext context,
         JwtService jwtService,
-        RefreshTokenService refreshTokenService)
+        RefreshTokenService refreshTokenService,
+        ILoginRateLimiter loginRateLimiter,
+        IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
         _jwtService = jwtService;
         _refreshTokenService = refreshTokenService;
+        _loginRateLimiter = loginRateLimiter;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<AuthResult> Login(
         LoginRequest request,
         CancellationToken cancellationToken)
     {
+        var ipAddress =
+            _httpContextAccessor.HttpContext?
+                .Connection.RemoteIpAddress?
+                .ToString();
+
+        if (string.IsNullOrWhiteSpace(ipAddress))
+        {
+            throw new UnauthorizedException(
+                "Unable to determine client IP.");
+        }
+
+        var allowed =
+            await _loginRateLimiter.IsAllowedAsync(ipAddress);
+
+        if (!allowed)
+        {
+            throw new TooManyRequestsException(
+                "Too many login attempts. Please try again later.");
+        }
+
         var user = await _context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(
@@ -36,24 +62,34 @@ public class AuthService
                 cancellationToken);
 
         if (user == null)
+        {
+            await _loginRateLimiter.RecordFailedAttemptAsync(ipAddress);
+
             throw new UnauthorizedException(
                 "Invalid email or password.");
+        }
 
         var validPassword = BCrypt.Net.BCrypt.Verify(
             request.Password,
             user.PasswordHash);
 
         if (!validPassword)
+        {
+            await _loginRateLimiter.RecordFailedAttemptAsync(ipAddress);
+
             throw new UnauthorizedException(
                 "Invalid email or password.");
+        }
 
         // Access token
         var accessToken = _jwtService.GenerateToken(user);
 
         // Refresh token
         var refreshToken = _refreshTokenService.GenerateToken();
+
         var refreshTokenHash =
             _refreshTokenService.HashToken(refreshToken);
+
         var refreshTokenExpiresAt =
             _refreshTokenService.GetExpiration();
 
@@ -68,6 +104,9 @@ public class AuthService
         _context.RefreshTokens.Add(refreshTokenEntity);
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Login benar-benar berhasil
+        await _loginRateLimiter.ResetAsync(ipAddress);
 
         return new AuthResult
         {

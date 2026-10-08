@@ -1,3 +1,4 @@
+using StackExchange.Redis;
 using System.Text.Json.Serialization;
 using System.Text;
 using Scalar.AspNetCore;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
+// using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
@@ -34,6 +36,12 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<IUserIdProvider, SignalRUserIdProvider>();
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    ConnectionMultiplexer.Connect(
+        builder.Configuration["Redis:ConnectionString"]!
+    )
+);
 
 builder.Services.AddCors(options =>
 {
@@ -76,6 +84,13 @@ builder.Services.AddSwaggerGen(options =>
         [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
     });
 });
+
+// builder.Services.Configure<ForwardedHeadersOptions>(options =>
+// {
+//     options.ForwardedHeaders =
+//         ForwardedHeaders.XForwardedFor |
+//         ForwardedHeaders.XForwardedProto;
+// });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -145,6 +160,7 @@ builder.Services.AddScoped<CurrentUserService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<RefreshTokenService>();
+builder.Services.AddScoped<ILoginRateLimiter, LoginRateLimiter>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<CommentService>();
@@ -192,6 +208,8 @@ using (var scope = app.Services.CreateScope())
             builder.Configuration);
     }
 }
+
+// app.UseForwardedHeaders();
 
 app.UseHttpsRedirection();
 
