@@ -1,3 +1,4 @@
+
 services:
   backend:
     build:
@@ -10,6 +11,10 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: ${CONNECTION_STRING}
       Jwt__Key: ${JWT_KEY}
+      Redis__ConnectionString: redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
     networks:
       - proxy-tier
 
@@ -24,6 +29,19 @@ services:
       - "80"
     depends_on:
       - backend
+    networks:
+      - proxy-tier
+
+  redis:
+    image: redis:7-alpine
+    container_name: helpdesk-redis
+    restart: unless-stopped
+    command: redis-server --save "" --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     networks:
       - proxy-tier
 
