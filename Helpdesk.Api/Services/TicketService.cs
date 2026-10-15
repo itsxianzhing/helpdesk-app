@@ -15,16 +15,19 @@ public class TicketService : BaseService
 {
     private readonly ActivityLogService _activityLogService;
     private readonly NotificationService _notificationService;
+    private readonly TicketCacheService _ticketCacheService;
 
     public TicketService(
         AppDbContext context,
         CurrentUserService currentUserService,
         ActivityLogService activityLogService,
-        NotificationService notificationService)
+        NotificationService notificationService,
+        TicketCacheService ticketCacheService)
         : base(context, currentUserService)
     {
         _activityLogService = activityLogService;
         _notificationService = notificationService;
+        _ticketCacheService = ticketCacheService;
     }
 
     private async Task<Ticket> GetTicketOrThrow(
@@ -67,6 +70,32 @@ public class TicketService : BaseService
         var currentUser = await GetCurrentUser(
             cancellationToken);
 
+        var roleScope = currentUser.Role == Role.Admin
+            ? "admin"
+            : $"user:{currentUser.Id}";
+
+        var search = request.Search?.Trim() ?? "";
+
+        var key = string.Join(":",
+            "cache",
+            "tickets",
+            "list",
+            roleScope,
+            $"page:{request.Page}",
+            $"size:{request.PageSize}",
+            $"search:{Uri.EscapeDataString(search)}",
+            $"status:{request.Status?.ToString() ?? "all"}",
+            $"priority:{request.Priority?.ToString() ?? "all"}",
+            $"sort:{request.SortBy?.ToString() ?? "default"}",
+            $"desc:{request.Descending.ToString().ToLowerInvariant()}");
+
+        var cachedResult = await _ticketCacheService.GetAsync(key);
+
+        if (cachedResult != null)
+        {
+            return cachedResult;
+        }
+
         IQueryable<Ticket> query =
             Context.Tickets.AsNoTracking();
 
@@ -91,10 +120,9 @@ public class TicketService : BaseService
             .ToListAsync(cancellationToken);
 
         var totalPages = (int)Math.Ceiling(
-            (double)totalItems /
-            request.PageSize);
+            (double)totalItems / request.PageSize);
 
-        return new PagedResponse<TicketListResponse>
+        var result = new PagedResponse<TicketListResponse>
         {
             Items = tickets,
             Page = request.Page,
@@ -102,6 +130,10 @@ public class TicketService : BaseService
             TotalItems = totalItems,
             TotalPages = totalPages
         };
+
+        await _ticketCacheService.SetAsync(key, result);
+
+        return result;
     }
 
     public async Task<TicketDetailResponse> GetById(
@@ -187,6 +219,8 @@ public class TicketService : BaseService
             await transaction.CommitAsync(
                 cancellationToken);
 
+            await _ticketCacheService.InvalidateAllAsync();
+
             await _notificationService.SendCreated(
                 notifications);
 
@@ -235,6 +269,8 @@ public class TicketService : BaseService
 
         await Context.SaveChangesAsync(
             cancellationToken);
+
+        await _ticketCacheService.InvalidateAllAsync();
 
         return TicketMapper.ToDetailResponse(ticket);
     }
@@ -286,6 +322,8 @@ public class TicketService : BaseService
         await Context.SaveChangesAsync(
             cancellationToken);
 
+        await _ticketCacheService.InvalidateAllAsync();
+
         if (notification != null)
         {
             await _notificationService.SendCreated(
@@ -321,5 +359,7 @@ public class TicketService : BaseService
 
         await Context.SaveChangesAsync(
             cancellationToken);
+
+        await _ticketCacheService.InvalidateAllAsync();
     }
 }
