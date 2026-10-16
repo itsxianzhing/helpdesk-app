@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { Ticket, CircleDot, Clock3, CheckCircle2, CircleCheckBig, Users } from 'lucide-react';
 
 import { useAuth } from '../../auth/hooks/useAuth';
-import { getTickets } from '../../tickets/api/ticketApi';
-import { getUsers } from '../../users/api/userApi';
+import { getDashboard } from '../api/dashboardApi';
 import type { TicketListResponse } from '../../tickets/types';
 import { ApiError } from '../../../lib/apiError';
 
@@ -32,70 +31,15 @@ function AdminDashboardPage() {
       setError(null);
 
       try {
-        const [
-          totalResponse,
-          openResponse,
-          inProgressResponse,
-          resolvedResponse,
-          closedResponse,
-          usersResponse,
-          recentResponse,
-        ] = await Promise.all([
-          getTickets({
-            page: 1,
-            pageSize: 1,
-          }),
+        const response = await getDashboard();
 
-          getTickets({
-            page: 1,
-            pageSize: 1,
-            status: 'Open',
-          }),
-
-          getTickets({
-            page: 1,
-            pageSize: 1,
-            status: 'InProgress',
-          }),
-
-          getTickets({
-            page: 1,
-            pageSize: 1,
-            status: 'Resolved',
-          }),
-
-          getTickets({
-            page: 1,
-            pageSize: 1,
-            status: 'Closed',
-          }),
-
-          getUsers({
-            page: 1,
-            pageSize: 1,
-          }),
-
-          getTickets({
-            page: 1,
-            pageSize: 5,
-            sortBy: 'CreatedAt',
-            descending: true,
-          }),
-        ]);
-
-        setTotalTickets(totalResponse.totalItems);
-
-        setOpenTickets(openResponse.totalItems);
-
-        setInProgressTickets(inProgressResponse.totalItems);
-
-        setResolvedTickets(resolvedResponse.totalItems);
-
-        setClosedTickets(closedResponse.totalItems);
-
-        setTotalUsers(usersResponse.totalItems);
-
-        setRecentTickets(recentResponse.items);
+        setTotalTickets(response.totalTickets);
+        setOpenTickets(response.openTickets);
+        setInProgressTickets(response.inProgressTickets);
+        setResolvedTickets(response.resolvedTickets);
+        setClosedTickets(response.closedTickets);
+        setTotalUsers(response.totalUsers ?? 0);
+        setRecentTickets(response.recentTickets);
       } catch (error) {
         if (error instanceof ApiError) {
           setError(error.message);
