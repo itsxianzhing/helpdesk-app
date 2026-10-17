@@ -60,15 +60,59 @@ public class TicketCacheService
         var server = _redis.GetServer(
             _redis.GetEndPoints()[0]);
 
-        var keys = server.Keys(
-            database: _redis.GetDatabase().Database,
-            pattern: "cache:tickets:list:*");
-
         var db = _redis.GetDatabase();
+
+        var keys = server.Keys(
+            database: db.Database,
+            pattern: "cache:tickets:*");
 
         foreach (var key in keys)
         {
             await db.KeyDeleteAsync(key);
         }
+    }
+
+    public async Task<TicketDetailResponse?> GetDetailAsync(int ticketId)
+    {
+        var db = _redis.GetDatabase();
+        var cacheKey = $"cache:tickets:detail:{ticketId}";
+
+        var cachedData = await db.StringGetAsync(cacheKey);
+
+        if (!cachedData.HasValue)
+            return null;
+
+        return JsonSerializer.Deserialize<TicketDetailResponse>(
+            cachedData.ToString(),
+            JsonOptions
+        );
+    }
+
+    public async Task SetDetailAsync(
+        int ticketId,
+        TicketDetailResponse ticket)
+    {
+        var db = _redis.GetDatabase();
+        var cacheKey = $"cache:tickets:detail:{ticketId}";
+
+        var serializedData = JsonSerializer.Serialize(
+            ticket,
+            JsonOptions
+        );
+
+        await db.StringSetAsync(
+            cacheKey,
+            serializedData,
+            TimeSpan.FromSeconds(30)
+        );
+    }
+
+    public async Task InvalidateDetailAsync(int ticketId)
+    {
+        var db = _redis.GetDatabase();
+
+        await db.KeyDeleteAsync(
+            $"cache:tickets:detail:{ticketId}"
+        );
     }
 }

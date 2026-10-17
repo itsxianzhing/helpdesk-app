@@ -140,9 +140,24 @@ public class TicketService : BaseService
         int id,
         CancellationToken cancellationToken)
     {
-        var currentUser = await GetCurrentUser(
-            cancellationToken);
+        var currentUser = await GetCurrentUser(cancellationToken);
 
+        // 1. Coba ambil detail ticket dari Redis.
+        var cachedTicket = await _ticketCacheService
+            .GetDetailAsync(id);
+
+        if (cachedTicket != null)
+        {
+            // Authorization tetap wajib meskipun cache hit.
+            AuthorizationHelper.EnsureOwnerOrAdmin(
+                cachedTicket.UserId,
+                currentUser
+            );
+
+            return cachedTicket;
+        }
+
+        // 2. Cache miss: ambil data dari database.
         var ticket = await Context.Tickets
             .AsNoTracking()
             .Where(t => t.Id == id)
@@ -152,9 +167,14 @@ public class TicketService : BaseService
         if (ticket == null)
             throw new NotFoundException("Ticket not found.");
 
+        // 3. Validasi akses sebelum menyimpan atau mengembalikan data.
         AuthorizationHelper.EnsureOwnerOrAdmin(
             ticket.UserId,
-            currentUser);
+            currentUser
+        );
+
+        // 4. Simpan detail ke Redis.
+        await _ticketCacheService.SetDetailAsync(id, ticket);
 
         return ticket;
     }
